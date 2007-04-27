@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build" name="nest" basedir=".">
+	
+	<!-- 工具类路径 -->
+	<path id="classpath">
+		<fileset dir="lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- 项目构建部分 -->
+	<property name="build.dir" value="dist"/>
+	
+    <!-- ================================= 
+          target: build jar              
+         ================================= -->
+    <target name="build" depends="build-core,build-test,build-spring,build-validation" description="--> description">
+    </target>
+	
+    <target name="build-core" description="--> description">
+    	<mkdir dir="${build.dir}/${ant.project.name}-core"/>
+        <javac debug="true" encoding="UTF-8" classpathref="classpath" srcdir="src/${ant.project.name}-core" destdir="${build.dir}/${ant.project.name}-core"/>
+    	<jar destfile="${build.dir}/${ant.project.name}-core.jar" manifest="core-MANIFEST.MF">
+    		<fileset dir="${build.dir}/${ant.project.name}-core">
+    		</fileset>
+    	</jar>
+    	<jar destfile="${build.dir}/${ant.project.name}-core_src.jar" manifest="core-MANIFEST.MF">
+    		<fileset dir="src/${ant.project.name}-core">
+    		</fileset>
+    	</jar>
+    </target>
+	
+    <target name="build-test" depends="build-core" description="--> description">
+    	<mkdir dir="${build.dir}/${ant.project.name}-test"/>
+    	<javac debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-test" destdir="${build.dir}/${ant.project.name}-test"/>
+    	<jar destfile="${build.dir}/${ant.project.name}-test.jar" manifest="test-MANIFEST.MF">
+    		<fileset dir="${build.dir}/${ant.project.name}-test">
+    		</fileset>
+    	</jar>
+    	<jar destfile="${build.dir}/${ant.project.name}-test_src.jar" manifest="test-MANIFEST.MF">
+    		<fileset dir="src/${ant.project.name}-test">
+    		</fileset>
+    	</jar>
+    </target>
+	
+    <target name="build-spring" depends="build-core" description="--> description">
+    	<mkdir dir="${build.dir}/${ant.project.name}-spring"/>
+    	<javac debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-spring" destdir="${build.dir}/${ant.project.name}-spring"/>
+    	<jar destfile="${build.dir}/${ant.project.name}-spring.jar" manifest="spring-MANIFEST.MF">
+    		<fileset dir="${build.dir}/${ant.project.name}-spring">
+    		</fileset>
+    	</jar>
+    	<jar destfile="${build.dir}/${ant.project.name}-spring_src.jar" manifest="spring-MANIFEST.MF">
+    		<fileset dir="src/${ant.project.name}-spring">
+    		</fileset>
+    	</jar>
+    </target>
+	
+    <target name="build-validation" depends="build-core" description="--> description">
+    	<mkdir dir="${build.dir}/${ant.project.name}-validation"/>
+        <javac debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-validation" destdir="${build.dir}/${ant.project.name}-validation"/>
+    	<copy todir="${build.dir}/${ant.project.name}-validation">
+    		<fileset dir="src/${ant.project.name}-validation">
+    			<exclude name="**/*.java"/>
+    			<exclude name="**/harvest.sig"/>
+    		</fileset>
+    	</copy>
+    	<jar destfile="${build.dir}/${ant.project.name}-validation.jar" manifest="validation-MANIFEST.MF">
+    		<fileset dir="${build.dir}/${ant.project.name}-validation">
+    		</fileset>
+    	</jar>
+    	<jar destfile="${build.dir}/${ant.project.name}-validation_src.jar" manifest="validation-MANIFEST.MF">
+    		<fileset dir="src/${ant.project.name}-validation">
+    		</fileset>
+    	</jar>
+    </target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"></delete>
+	</target>
+
+</project>
