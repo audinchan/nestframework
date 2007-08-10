@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build" name="nest" basedir=".">
+	
+	<!-- 工具类路径 -->
+	<path id="classpath">
+		<fileset dir="lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- 项目构建部分 -->
+	<property name="build.dir" value="dist"/>
+	
+    <!-- ================================= 
+          target: build jar              
+         ================================= -->
+    <target name="build" depends="build-test,build-spring,build-validation" description="--> description">
+    </target>
+	
+	<target name="build-jar" description="--> description">
+		<mkdir dir="${build.dir}/${ant.project.name}-${module}"/>
+	    <javac debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-${module}" destdir="${build.dir}/${ant.project.name}-${module}"/>
+    	<copy todir="${build.dir}/${ant.project.name}-${module}">
+    		<fileset dir="src/${ant.project.name}-${module}">
+    			<!--<exclude name="**/*.java"/>-->
+    			<exclude name="**/harvest.sig"/>
+    		</fileset>
+    	</copy>
+		<jar destfile="${build.dir}/${ant.project.name}-${module}.jar" manifest="${module}-MANIFEST.MF">
+			<fileset dir="${build.dir}/${ant.project.name}-${module}">
+			</fileset>
+		</jar>
+	</target>
+	
+    <target name="build-core" description="--> description">
+    	<antcall target="build-jar"><param name="module" value="core"/></antcall>
+    </target>
+	
+    <target name="build-test" depends="build-core" description="--> description">
+    	<antcall target="build-jar"><param name="module" value="test"/></antcall>
+    </target>
+	
+    <target name="build-spring" depends="build-core" description="--> description">
+    	<antcall target="build-jar"><param name="module" value="spring"/></antcall>
+    </target>
+	
+    <target name="build-validation" depends="build-core" description="--> description">
+    	<antcall target="build-jar"><param name="module" value="validation"/></antcall>
+    </target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"></delete>
+	</target>
+
+</project>
