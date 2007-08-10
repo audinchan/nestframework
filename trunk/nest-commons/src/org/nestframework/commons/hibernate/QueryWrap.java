@@ -9,8 +9,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.type.NullableType;
 
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
@@ -23,6 +25,7 @@ import freemarker.template.Template;
  */
 public class QueryWrap {
 	protected static Configuration freeMarkerEngine;
+	private static Map<String, NullableType> hibernateTypeMapping = new HashMap<String, NullableType>();
 	private Session session;
 	private Map<String, Object> namedParams = new HashMap<String, Object>();
 	private Map<String, String> appendValues = new HashMap<String, String>();
@@ -32,6 +35,22 @@ public class QueryWrap {
 	 * template cache to reduce compile time.
 	 */
 	private static ConcurrentMap<String, Template> templateCache = new ConcurrentHashMap<String, Template>();
+	
+	/**
+	 * eg. from SomeModel where someAttr = :someAttr[float]
+	 */
+	static {
+		hibernateTypeMapping.put("int", Hibernate.INTEGER);
+		hibernateTypeMapping.put("integer", Hibernate.INTEGER);
+		hibernateTypeMapping.put("boolean", Hibernate.BOOLEAN);
+		hibernateTypeMapping.put("byte", Hibernate.BYTE);
+		hibernateTypeMapping.put("date", Hibernate.DATE);
+		hibernateTypeMapping.put("long", Hibernate.LONG);
+		hibernateTypeMapping.put("short", Hibernate.SHORT);
+		hibernateTypeMapping.put("string", Hibernate.STRING);
+		hibernateTypeMapping.put("double", Hibernate.DOUBLE);
+		hibernateTypeMapping.put("float", Hibernate.FLOAT);
+	}
 	
     public QueryWrap() {
         
@@ -179,6 +198,37 @@ public class QueryWrap {
         hql = hql.replaceAll("%", "");
         // end handle like
         
+        // handle type define
+        // handle :param[type]
+        Map<String, NullableType> hbMap = new HashMap<String, NullableType>();
+        Map<String, Object> convertedValue = new HashMap<String, Object>();
+        p = Pattern.compile ("(:([a-zA-Z0-9_]+)\\[([a-z]+)\\])");
+        m = p.matcher (hql);
+        while (m.find()) {
+            String key = m.group(2);
+            String t = m.group(3);
+            hbMap.put(key, hibernateTypeMapping.get(t));
+            if ("int".equalsIgnoreCase(t) || "integer".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Integer.valueOf((String) namedParams.get(key)));
+            } else if ("float".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Float.valueOf((String) namedParams.get(key)));
+            } else if ("double".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Double.valueOf((String) namedParams.get(key)));
+            } else if ("short".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Short.valueOf((String) namedParams.get(key)));
+            } else if ("long".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Long.valueOf((String) namedParams.get(key)));
+            } else if ("boolean".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Boolean.valueOf((String) namedParams.get(key)));
+            } else if ("byte".equalsIgnoreCase(t)) {
+            	convertedValue.put(key, Byte.valueOf((String) namedParams.get(key)));
+            }
+        }
+        if (hbMap.size() > 0) {
+        	hql = hql.replaceAll("\\[([a-z]+)\\]", "");
+        }
+        // end handle type define
+        
         Query qry = session.createQuery(hql);
         
         for (Map.Entry<String, Object> paramEntry : namedParams.entrySet()) {
@@ -193,7 +243,13 @@ public class QueryWrap {
                 if (append != null) {
                     value = value + append;
                 }
-                qry.setParameter(name, value);
+                NullableType ht = hbMap.get(name);
+                Object cv = convertedValue.get(name);
+                if (ht == null || cv == null) {
+                	qry.setParameter(name, value);
+                } else {
+                	qry.setParameter(name, cv, ht);
+                }
             }
         }
         
