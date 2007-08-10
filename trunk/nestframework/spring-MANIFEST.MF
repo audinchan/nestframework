@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: 1.6.2
-Created-By: 1.5.0_04
-Nest-Framework-Version: 1.0.0-2
-Nest-Framework-Module: spring 1.0.0
-Build-Time: 2007-04-24 16:07
