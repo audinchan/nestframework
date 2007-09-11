@@ -30,9 +30,9 @@ public class CommonsValidator {
 
 	private static ValidatorResources resources = null;
 
-	protected static Map<String, Class> standardTypes;
+	protected static Map<String, Class<?>> standardTypes;
 	static {
-		standardTypes = new HashMap<String, Class>();
+		standardTypes = new HashMap<String, Class<?>>();
 		standardTypes.put("boolean", boolean.class);
 		standardTypes.put("byte", byte.class);
 		standardTypes.put("char", char.class);
@@ -44,7 +44,7 @@ public class CommonsValidator {
 		standardTypes.put("java.lang.String", String.class);
 	}
 	
-	protected static Map<String, Class> validatorClasses = new HashMap<String, Class>();
+	protected static Map<String, Class<?>> validatorClasses = new HashMap<String, Class<?>>();
 
 	// cache validator methods
 	protected static Map<String, Method> validatorMethods = new HashMap<String, Method>();
@@ -81,8 +81,8 @@ public class CommonsValidator {
 
 	public boolean validate(ExecuteContext context)
 			throws ValidateFailedException {
-		Object bean = context.getActionBean();
-		Validate beanValidation = bean.getClass().getAnnotation(Validate.class);
+		//Object bean = context.getActionBean();
+		Validate beanValidation = context.getActionClass().getAnnotation(Validate.class);
 		if (beanValidation == null || !beanValidation.server()) {
 			return true;
 		}
@@ -92,12 +92,12 @@ public class CommonsValidator {
 
 		String packageBase = context.getConfig().getPackageBase();
 		int baseLen = packageBase.length();
-		String labelBase = bean.getClass().getName().substring(baseLen + 1);
+		String labelBase = context.getActionClass().getName().substring(baseLen + 1);
 
-		String fullMethodName = bean.getClass().getName() + "."
+		String fullMethodName = context.getActionClass().getName() + "."
 				+ context.getAction().getName();
 		List<String> cachedFields = fieldsCache.get(fullMethodName);
-		Collection<Field> fields = NestUtil.getFields(bean.getClass());
+		Collection<Field> fields = NestUtil.getFields(context.getActionClass());
 		if (cachedFields == null) {
 			cachedFields = new ArrayList<String>();
 			fieldsCache.put(fullMethodName, cachedFields);
@@ -192,8 +192,8 @@ public class CommonsValidator {
 							msgFormResource, params, value, depend.trim());
 				}
 			}
-			Class validatorClass = loadValidatorClass(validatorAction);
-			Class[] paramClasses = loadMethodParamClasses(validatorAction);
+			Class<?> validatorClass = loadValidatorClass(validatorAction);
+			Class<?>[] paramClasses = loadMethodParamClasses(validatorAction);
 			Object[] paramValues = loadMethodParamValues(validatorAction,
 					paramClasses, value, params);
 			Method validatorMethod = loadValidatorMethod(validatorAction,
@@ -278,11 +278,11 @@ public class CommonsValidator {
 	 * @throws IllegalAccessException
 	 *             if there is no public constructor
 	 */
-	protected Class loadValidatorClass(ValidatorAction validatorAction)
+	protected Class<?> loadValidatorClass(ValidatorAction validatorAction)
 			throws ClassNotFoundException, InstantiationException,
 			IllegalAccessException {
 
-		Class clazz = validatorClasses.get(validatorAction.getClassname());
+		Class<?> clazz = validatorClasses.get(validatorAction.getClassname());
 		if (clazz != null) {
 			return clazz;
 		}
@@ -294,7 +294,7 @@ public class CommonsValidator {
 		assert classLoader != null;
 
 		// find the target class having the validator rule
-		Class validatorClass = classLoader.loadClass(validatorAction
+		Class<?> validatorClass = classLoader.loadClass(validatorAction
 				.getClassname());
 		
 		validatorClasses.put(validatorAction.getClassname(), validatorClass);
@@ -319,7 +319,7 @@ public class CommonsValidator {
 	 *             if the specified method cannot be found
 	 */
 	protected Method loadValidatorMethod(ValidatorAction validatorAction,
-			Class validatorClass, Class[] methodParamClasses)
+			Class<?> validatorClass, Class<?>[] methodParamClasses)
 			throws NoSuchMethodException {
 		// find the method on the target validator rule class
 		Method validatorMethod = validatorClass.getMethod(validatorAction
@@ -339,7 +339,7 @@ public class CommonsValidator {
 	 * @return an array of class types for the formal parameter list.
 	 * @throws ClassNotFoundException
 	 */
-	protected Class[] loadMethodParamClasses(ValidatorAction validationAction)
+	protected Class<?>[] loadMethodParamClasses(ValidatorAction validationAction)
 			throws ClassNotFoundException {
 
 		List<String> tmp = new ArrayList<String>();
@@ -359,11 +359,11 @@ public class CommonsValidator {
 		}
 		assert classLoader != null;
 
-		Class[] parameterClasses = new Class[tmp.size()];
+		Class<?>[] parameterClasses = new Class[tmp.size()];
 		for (int i = 0; i < tmp.size(); i++) {
 			String className = tmp.get(i);
 			if (standardTypes.containsKey(className)) {
-				parameterClasses[i] = (Class) standardTypes.get(className);
+				parameterClasses[i] = (Class<?>) standardTypes.get(className);
 			} else {
 				parameterClasses[i] = classLoader.loadClass(className);
 			}
@@ -385,7 +385,7 @@ public class CommonsValidator {
 	 * @return An array of object valuse for each method parameter.
 	 */
 	protected Object[] loadMethodParamValues(ValidatorAction validatorAction,
-			Class[] methodParamClasses, Object value, Param[] params) {
+			Class<?>[] methodParamClasses, Object value, Param[] params) {
 		Object[] target = new Object[methodParamClasses.length];
 		
 		Object[] values = new Object[params.length + 1];
@@ -427,7 +427,7 @@ public class CommonsValidator {
 	 * @param cl
 	 *            The type of object to convert to
 	 */
-	private static Object convert(Object obj, Class cl) {
+	private static Object convert(Object obj, Class<?> cl) {
 
 		if (cl.isInstance(obj)) {
 			return obj;

@@ -53,7 +53,7 @@ public class RuntimeConfiguration implements IConfiguration {
 	public IConfiguration addLifecycleHandler(Stage stage, IActionHandler handler) {
 		StageHandler s = handlers.get(stage);
 		if (s == null) {
-			s = new StageHandler(stage);
+			s = new StageHandler(stage, true);
 			handlers.put(stage, s);
 		}
 		s.addHandler(handler);
@@ -75,7 +75,7 @@ public class RuntimeConfiguration implements IConfiguration {
 	public StageHandler getStageHandler(Stage stage) {
 		StageHandler s = handlers.get(stage);
 		if (s == null) {
-			s = new StageHandler(stage);
+			s = new StageHandler(stage, true);
 		}
 		return s;
 	}

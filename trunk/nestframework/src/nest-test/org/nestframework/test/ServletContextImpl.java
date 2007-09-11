@@ -11,6 +11,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+@SuppressWarnings("unchecked")
 public class ServletContextImpl implements ServletContext {
 
 	public Object getAttribute(String arg0) {

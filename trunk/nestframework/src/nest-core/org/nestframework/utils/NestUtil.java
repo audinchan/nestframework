@@ -126,19 +126,19 @@ public class NestUtil {
 		return sb.toString();
 	}
 
-	public static Map<String, Object> getPropertiesMap(Object bean) {
+	public static Map<String, Object> getPropertiesMap(Object bean, Class<?> clazz) {
 		if (log.isDebugEnabled()) {
 			log.debug("getPropertiesMap(Object) - start");
 		}
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		Map ognlContext = Ognl.createDefaultContext(bean);
+		Map<?, ?> ognlContext = Ognl.createDefaultContext(bean);
 		DefaultMemberAccess memberAccess = new DefaultMemberAccess(true);
 		Ognl.setMemberAccess(ognlContext, memberAccess);
 		// get all properties with accessors.
 		BeanInfo info = null;
 		try {
-			info = Introspector.getBeanInfo(bean.getClass());
+			info = Introspector.getBeanInfo(clazz);
 		} catch (IntrospectionException e) {
 			log.warn("getPropertiesMap(Object)", e);
 		}
@@ -153,7 +153,7 @@ public class NestUtil {
 		}
 
 		// get all public properties.
-		Collection<Field> fields = NestUtil.getFields(bean.getClass());
+		Collection<Field> fields = NestUtil.getFields(clazz);
 		for (Field f : fields) {
 			if (Modifier.isPublic(f.getModifiers())) {
 				try {
@@ -177,7 +177,7 @@ public class NestUtil {
 		}
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		Map ognlContext = Ognl.createDefaultContext(bean);
+		Map<?, ?> ognlContext = Ognl.createDefaultContext(bean);
 		DefaultMemberAccess memberAccess = new DefaultMemberAccess(true);
 		Ognl.setMemberAccess(ognlContext, memberAccess);
 		for (String propName: propertyNames) {

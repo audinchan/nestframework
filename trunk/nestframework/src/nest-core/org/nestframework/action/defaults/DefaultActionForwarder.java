@@ -38,13 +38,6 @@ public class DefaultActionForwarder implements IActionHandler {
 			forward = forward.substring(1);
 		}
 		
-//		if (!redirect && !forward.startsWith("/")) {
-//			forward = '/'
-//					+ context.getActionBean().getClass().getName().substring(
-//							context.getConfig().getPackageBase().length() + 1,
-//							context.getActionBean().getClass().getName()
-//									.lastIndexOf('.')) + "/" + forward + ".jsp";
-//		}
 		if (redirect) {
 			if (isLocal && forward.startsWith("/")) {
 				forward = context.getRequest().getServletPath() + forward;

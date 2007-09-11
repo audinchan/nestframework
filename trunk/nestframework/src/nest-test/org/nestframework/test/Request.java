@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+@SuppressWarnings("unchecked")
 public class Request implements HttpServletRequest {
 	
 	private ThreadLocal<Session> session = new ThreadLocal<Session>();

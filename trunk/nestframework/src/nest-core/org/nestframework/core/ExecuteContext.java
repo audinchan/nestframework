@@ -42,6 +42,11 @@ public class ExecuteContext {
 	 * 执行对象。
 	 */
 	private Object actionBean;
+	
+	/**
+	 * Action类文件。
+	 */
+	private Class<?> actionClass;
 
 	/**
 	 * HttpRequest对象。
@@ -178,6 +183,14 @@ public class ExecuteContext {
 	public ExecuteContext setActionBean(Object actionBean) {
 		this.actionBean = actionBean;
 		return this;
+	}
+
+	public Class<?> getActionClass() {
+		return actionClass;
+	}
+
+	public void setActionClass(Class<?> actionClass) {
+		this.actionClass = actionClass;
 	}
 
 	public HttpServletRequest getRequest() {

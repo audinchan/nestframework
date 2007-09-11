@@ -8,6 +8,7 @@ import ognl.DefaultTypeConverter;
 public class RequestParamMapTypeConverter extends DefaultTypeConverter {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Object convertValue(Map context, Object value, Class toType) {
 		if (value.getClass().isArray() && !toType.isArray()) {
 			return super.convertValue(context, Array.get(value, 0), toType);

@@ -34,7 +34,7 @@ public class DefaultActionBeanSetter implements IActionHandler {
 		}
 		
 		Object bean = context.getActionBean();
-		Map ognlContext = Ognl.createDefaultContext(bean);
+		Map<?, ?> ognlContext = Ognl.createDefaultContext(bean);
 		DefaultMemberAccess memberAccess = new DefaultMemberAccess(true);
 		Ognl.setMemberAccess(ognlContext, memberAccess);
 		Ognl.setTypeConverter(ognlContext, new RequestParamMapTypeConverter());
