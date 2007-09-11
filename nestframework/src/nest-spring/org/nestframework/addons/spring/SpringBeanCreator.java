@@ -47,6 +47,7 @@ public class SpringBeanCreator implements IActionHandler {
 			}
 			
 			context.setActionBean(getBean(context, beanName));
+			context.setActionClass(class1);
 			return true;
 		}
 		return false;

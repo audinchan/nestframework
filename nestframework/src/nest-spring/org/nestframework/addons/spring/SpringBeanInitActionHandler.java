@@ -23,7 +23,7 @@ public class SpringBeanInitActionHandler implements IActionHandler {
 	
 	public boolean process(ExecuteContext context) throws Exception {
 		Object bean = context.getActionBean();
-		Collection<Method> methods = NestUtil.getMethods(bean.getClass());
+		Collection<Method> methods = NestUtil.getMethods(context.getActionClass());
 		for (Method m : methods) {
 			Spring s = m.getAnnotation(Spring.class);
 			if (s == null) {
@@ -43,7 +43,7 @@ public class SpringBeanInitActionHandler implements IActionHandler {
 			m.invoke(bean, ctx != null ? ctx.getBean(beanName) : SpringHelper.getBean(context, beanName));
 		}
 		
-		Collection<Field> fields = NestUtil.getFields(bean.getClass());
+		Collection<Field> fields = NestUtil.getFields(context.getActionClass());
 		for (Field f : fields) {
 			Spring spring = f.getAnnotation(Spring.class);
 			if (spring != null) {

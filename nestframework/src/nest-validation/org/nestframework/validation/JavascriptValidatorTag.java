@@ -262,7 +262,7 @@ public class JavascriptValidatorTag extends BodyTagSupport implements Constant {
 										
 										String varValueEscaped = escapeJavascript(varValue);
 										if (NestUtil.isEmpty(jsType)) {
-											Class cl = f.getClass();
+											Class<?> cl = f.getClass();
 											if (cl == boolean.class) {
 												jsType = Var.JSTYPE_INT;
 											}
@@ -396,7 +396,7 @@ public class JavascriptValidatorTag extends BodyTagSupport implements Constant {
     protected String getGlobalJavascript(ValidatorResources resources) {
         StringBuffer sb = new StringBuffer(lineEnd);
 
-        Iterator actions = resources.getValidatorActions().values().iterator();
+        Iterator<?> actions = resources.getValidatorActions().values().iterator();
         while (actions.hasNext()) {
             ValidatorAction va = (ValidatorAction) actions.next();
             if (va != null) {

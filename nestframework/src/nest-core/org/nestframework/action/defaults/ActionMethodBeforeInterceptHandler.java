@@ -19,7 +19,7 @@ public class ActionMethodBeforeInterceptHandler implements IActionHandler, Const
 		if (bean == null) {
 			return false;
 		}
-		Collection<Method> methods = NestUtil.getMethods(bean.getClass());
+		Collection<Method> methods = NestUtil.getMethods(context.getActionClass());
 		for (Method method : methods) {
 			InterceptBefore before = method.getAnnotation(InterceptBefore.class);
 			if (before != null) {

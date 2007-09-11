@@ -20,7 +20,7 @@ import org.nestframework.utils.NestUtil;
 public class DefaultActionMethodFinder implements IActionHandler {
 
 	public boolean process(ExecuteContext context) throws Exception {
-		Collection<Method> methods = NestUtil.getMethods(context.getActionBean().getClass());
+		Collection<Method> methods = NestUtil.getMethods(context.getActionClass());
 		Method actionMethod = null;
 		Method defaultActionMethod = null;
 		for (Method m : methods) {

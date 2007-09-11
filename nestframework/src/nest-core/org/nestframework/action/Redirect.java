@@ -29,7 +29,7 @@ public class Redirect {
 		} else {
 			sb.append('&');
 		}
-		Map<String, Object> propertiesMap = NestUtil.getPropertiesMap(actionBean);
+		Map<String, Object> propertiesMap = NestUtil.getPropertiesMap(actionBean, actionBean.getClass());
 		for (Entry<String, Object> entry: propertiesMap.entrySet()) {
 			if (entry.getValue() == null) continue;
 			String clazz = entry.getValue().getClass().getName();
