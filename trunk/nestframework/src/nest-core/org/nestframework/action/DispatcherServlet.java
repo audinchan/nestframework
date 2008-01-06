@@ -3,10 +3,6 @@ package org.nestframework.action;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,8 +16,6 @@ import org.nestframework.core.Constant;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.ServletExternalContextImpl;
 
-import com.oreilly.servlet.MultipartRequest;
-
 @SuppressWarnings("serial")
 public class DispatcherServlet extends HttpServlet {
 	/**
@@ -30,9 +24,9 @@ public class DispatcherServlet extends HttpServlet {
 	 */
 	public static final String MULTIPART_CONTENT_TYPE = "multipart/form-data";
 
-	/** Pattern used to parse useful info out of the IOException cos throws. */
-	private static Pattern EXCEPTION_PATTERN = Pattern
-			.compile("Posted content length of (\\d*) exceeds limit of (\\d*)");
+//	/** Pattern used to parse useful info out of the IOException cos throws. */
+//	private static Pattern EXCEPTION_PATTERN = Pattern
+//			.compile("Posted content length of (\\d*) exceeds limit of (\\d*)");
 
 	/**
 	 * max post size configuration's key.
@@ -117,7 +111,8 @@ public class DispatcherServlet extends HttpServlet {
 
 		// 处理文件上传.
 		if (isMultipart(req)) {
-			processMultipart(context, req, res);
+			config.getMultipartHandler().processMultipart(context, tempDir, maxPostSize, req, res);
+//			processMultipart(context, req, res);
 		}
 
 		try {
@@ -128,45 +123,45 @@ public class DispatcherServlet extends HttpServlet {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private void processMultipart(ExecuteContext context,
-			HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
-		try {
-			MultipartRequest mreq = new MultipartRequest(req, tempDir
-					.getAbsolutePath(), maxPostSize, req.getCharacterEncoding());
-
-			// handle parameters
-			Map<String, String[]> params = new HashMap<String, String[]>();
-			Enumeration<String> parameterNames = mreq.getParameterNames();
-			while (parameterNames.hasMoreElements()) {
-				String paramName = parameterNames.nextElement();
-				params.put(paramName, mreq.getParameterValues(paramName));
-			}
-			context.setParams(params);
-
-			// handle files
-			Map<String, FileItem> fileItems = new HashMap<String, FileItem>();
-			Enumeration<String> fileNames = mreq.getFileNames();
-			while (fileNames.hasMoreElements()) {
-				String fileName = fileNames.nextElement();
-				fileItems.put(fileName, new FileItem(mreq.getFile(fileName),
-						mreq.getContentType(fileName), mreq
-								.getOriginalFileName(fileName)));
-			}
-			context.setUploadedFiles(fileItems);
-		} catch (IOException e) {
-			Matcher matcher = EXCEPTION_PATTERN.matcher(e.getMessage());
-
-			if (matcher.matches()) {
-				throw new FileUploadLimitExceededException(Long
-						.parseLong(matcher.group(2)), Long.parseLong(matcher
-						.group(1)));
-			} else {
-				throw e;
-			}
-		}
-	}
+//	@SuppressWarnings("unchecked")
+//	private void processMultipart(ExecuteContext context,
+//			HttpServletRequest req, HttpServletResponse res)
+//			throws ServletException, IOException {
+//		try {
+//			MultipartRequest mreq = new MultipartRequest(req, tempDir
+//					.getAbsolutePath(), maxPostSize, req.getCharacterEncoding());
+//
+//			// handle parameters
+//			Map<String, String[]> params = new HashMap<String, String[]>();
+//			Enumeration<String> parameterNames = mreq.getParameterNames();
+//			while (parameterNames.hasMoreElements()) {
+//				String paramName = parameterNames.nextElement();
+//				params.put(paramName, mreq.getParameterValues(paramName));
+//			}
+//			context.setParams(params);
+//
+//			// handle files
+//			Map<String, FileItem> fileItems = new HashMap<String, FileItem>();
+//			Enumeration<String> fileNames = mreq.getFileNames();
+//			while (fileNames.hasMoreElements()) {
+//				String fileName = fileNames.nextElement();
+//				fileItems.put(fileName, new FileItem(mreq.getFile(fileName),
+//						mreq.getContentType(fileName), mreq
+//								.getOriginalFileName(fileName)));
+//			}
+//			context.setUploadedFiles(fileItems);
+//		} catch (IOException e) {
+//			Matcher matcher = EXCEPTION_PATTERN.matcher(e.getMessage());
+//
+//			if (matcher.matches()) {
+//				throw new FileUploadLimitExceededException(Long
+//						.parseLong(matcher.group(2)), Long.parseLong(matcher
+//						.group(1)));
+//			} else {
+//				throw e;
+//			}
+//		}
+//	}
 
 	public static boolean isMultipart(HttpServletRequest request) {
 		return request.getContentType() != null
