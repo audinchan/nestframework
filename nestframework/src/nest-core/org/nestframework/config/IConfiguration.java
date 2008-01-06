@@ -6,6 +6,7 @@ import java.util.Map;
 import org.nestframework.action.IActionHandler;
 import org.nestframework.action.IExceptionHandler;
 import org.nestframework.core.IExternalContext;
+import org.nestframework.core.IMultipartHandler;
 import org.nestframework.core.Stage;
 import org.nestframework.core.StageHandler;
 
@@ -29,6 +30,7 @@ public interface IConfiguration {
 	
 	public IConfiguration setExternalContext(IExternalContext context);
 	public IExternalContext getExternalContext();
+	public IMultipartHandler getMultipartHandler();
 	
 	public void init();
 }

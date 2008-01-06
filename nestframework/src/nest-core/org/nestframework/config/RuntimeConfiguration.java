@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nestframework.action.ActionException;
 import org.nestframework.action.IActionHandler;
 import org.nestframework.action.IExceptionHandler;
 import org.nestframework.action.defaults.ActionMethodAfterInterceptHandler;
@@ -17,6 +18,8 @@ import org.nestframework.action.defaults.DefaultActionForwarder;
 import org.nestframework.action.defaults.DefaultActionMethodFinder;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.core.IExternalContext;
+import org.nestframework.core.IInitable;
+import org.nestframework.core.IMultipartHandler;
 import org.nestframework.core.NestContext;
 import org.nestframework.core.Stage;
 import org.nestframework.core.StageHandler;
@@ -35,6 +38,8 @@ public class RuntimeConfiguration implements IConfiguration {
 	private Map<String, String> properties = new HashMap<String, String>();
 	
 	private IExternalContext externalContext;
+	
+	private IMultipartHandler multipartHandler;
 		
 	public static IConfiguration getInstance() {
 		IConfiguration nestConfig = new RuntimeConfiguration();
@@ -115,6 +120,10 @@ public class RuntimeConfiguration implements IConfiguration {
 		return externalContext;
 	}
 
+	public IMultipartHandler getMultipartHandler() {
+		return multipartHandler;
+	}
+
 	public void init() {
 		if (NestUtil.isEmpty(properties.get("base"))) {
 			throw new RuntimeException("Action base must be specified.");
@@ -129,43 +138,51 @@ public class RuntimeConfiguration implements IConfiguration {
 		setPackageBase(properties.get("base"));
 		String ehs = properties.get("exceptionHandlers");
 		if (ehs != null) {
-			String[] ehClasses = ehs.split(",");
-			for (String clazz: ehClasses) {
+			String[] exceptionHandlers = ehs.split(",");
+			for (String eh: exceptionHandlers) {
 				try {
+					String clazz = eh.replaceAll("\\r|\\n", "").trim();
 					Object object = Class.forName(clazz).newInstance();
 					IExceptionHandler exceptionHandler = (IExceptionHandler) object;
 					
-					// 添加异常处理类。
+					// add exception handler
 					addExceptionHandler(exceptionHandler);
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					// init
+					if (object instanceof IInitable) {
+						((IInitable) object).init(this);
+					}
+				} catch (Exception e) {
+					throw new ActionException("Failed to add exception handler, class=" + eh, e);
 				}
 			}
 		}
 		
 		String handlersName = properties.get("actionHandlers");
-		String[] handlers = handlersName.split(",");
-		for (String hName : handlers) {
+		String[] actionHandlers = handlersName.split(",");
+		for (String ah : actionHandlers) {
 			try {
-				Object handler = Class.forName(hName.trim()).newInstance();
+				String clazz = ah.replaceAll("\\r|\\n", "").trim();
+				Object handler = Class.forName(clazz).newInstance();
 				addLifecycleHandler((IActionHandler) handler);
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				if (handler instanceof IInitable) {
+					((IInitable) handler).init(this);
+				}
+			} catch (Exception e) {
+				throw new ActionException("Failed to add action handler, class=" + ah, e);
 			}
+		}
+		
+		// multipart handler
+		String mh = properties.get("multipartHandler");
+		if (NestUtil.isEmpty(mh)) {
+			mh = "org.nestframework.core.CosMultipartHandler";
+		}
+		try {
+			multipartHandler = (IMultipartHandler) Class.forName(mh.trim()).newInstance();
+		} catch (Exception e) {
+			throw new ActionException("Failed to add multipart handler, class=" + mh, e);
 		}
 		
 	}
