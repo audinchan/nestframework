@@ -32,6 +32,7 @@ public class DefaultActionForwarder implements IActionHandler {
 			return false;
 		} else if (!redirect && Pattern.matches("^[a-z]+:\\/\\/.*", forward.toLowerCase())) {
 			redirect = true;
+			isLocal = false;
 		} else if (forward.startsWith("!")) {
 			redirect = true;
 			isLocal = true;
