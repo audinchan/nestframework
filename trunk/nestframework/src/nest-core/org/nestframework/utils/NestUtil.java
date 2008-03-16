@@ -5,13 +5,19 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import ognl.DefaultMemberAccess;
 import ognl.Ognl;
@@ -19,12 +25,41 @@ import ognl.OgnlException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nestframework.core.BeanContext;
+import org.nestframework.core.ExecuteContext;
+import org.nestframework.localization.ActionMessages;
 
 public class NestUtil {
 	/**
 	 * Logger for this class
 	 */
 	private static final Log log = LogFactory.getLog(NestUtil.class);
+	
+	public static Object execMethod(Method m, Object obj, ExecuteContext ctx)
+			throws IllegalArgumentException, IllegalAccessException,
+			InvocationTargetException {
+		Object rt;
+		List<Object> paras = new ArrayList<Object>();
+		Class<?>[] paraTypes = m.getParameterTypes();
+		// 自动猜测Action参数类型
+		for (Class<?> clazz : paraTypes) {
+			if (clazz.equals(HttpServletRequest.class)) {
+				paras.add(ctx.getRequest());
+			} else if (clazz.equals(HttpServletResponse.class)) {
+				paras.add(ctx.getResponse());
+			} else if (clazz.equals(HttpSession.class)) {
+				paras.add(ctx.getRequest().getSession(true));
+			} else if (clazz.equals(BeanContext.class)) {
+				paras.add(ctx.getBeanContext());
+			} else if (clazz.equals(ActionMessages.class)) {
+				paras.add(ctx.getActionErrors());
+			} else if (clazz.equals(ctx)) {
+				paras.add(ctx);
+			}
+		}
+		rt = m.invoke(obj, (Object[]) paras.toArray(new Object[] {}));
+		return rt;
+	}
 
 	/**
 	 * 将方法名转换为BeanName。
