@@ -1,5 +1,8 @@
 package org.nestframework.action.defaults;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.regex.Pattern;
 
 import org.nestframework.action.IActionHandler;
@@ -14,8 +17,17 @@ import org.nestframework.core.Stage;
  */
 @Intercept({Stage.HANDLE_VIEW})
 public class DefaultActionForwarder implements IActionHandler {
+	/**
+	 * Logger for this class
+	 */
+	private static final Log log = LogFactory
+			.getLog(DefaultActionForwarder.class);
 
 	public boolean process(ExecuteContext context) throws Exception {
+		if (log.isDebugEnabled()) {
+			log.debug("process(ExecuteContext) - start");
+		}
+
 		String forward = null;
 		boolean redirect = false;
 		boolean isLocal = true;
@@ -29,6 +41,9 @@ public class DefaultActionForwarder implements IActionHandler {
 		}
 		
 		if (forward == null) {
+			if (log.isDebugEnabled()) {
+				log.debug("process(ExecuteContext) - end");
+			}
 			return false;
 		} else if (!redirect && Pattern.matches("^[a-z]+:\\/\\/.*", forward.toLowerCase())) {
 			redirect = true;
@@ -47,7 +62,11 @@ public class DefaultActionForwarder implements IActionHandler {
 		} else {
 			context.getRequest().getRequestDispatcher(forward).forward(context.getRequest(), context.getResponse());
 		}
-		return true;
+
+		if (log.isDebugEnabled()) {
+			log.debug("process(ExecuteContext) - end");
+		}
+		return false;
 	}
 
 }
