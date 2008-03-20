@@ -199,6 +199,12 @@ public class NestUtil {
 					map.put(f.getName(), Ognl.getValue(f.getName(),
 							ognlContext, bean));
 				} catch (OgnlException e) {
+					if (e.getReason() instanceof NoSuchFieldException) {
+						// maybe is static final field. no need to handle it.
+					} else {
+						log.warn("getPropertiesMap(Object)", e);
+					}
+				} catch (RuntimeException e) {
 					log.warn("getPropertiesMap(Object)", e);
 				}
 			}
