@@ -1,10 +1,8 @@
 package org.nestframework.core;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -12,27 +10,24 @@ import java.util.Set;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.nestframework.action.FileItem;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.localization.ActionMessages;
 import org.nestframework.localization.LocalizationUtil;
 
-
 public class ExecuteContext {
-	
+
 	/**
-	 * Action Path.
-	 * eg: /user/UserAction.a
+	 * Action Path. eg: /user/UserAction.a
 	 */
 	private String path;
-	
+
 	/**
 	 * 执行的目标方法。
 	 */
 	private Method action;
-	
+
 	/**
 	 * 默认执行方法。
 	 */
@@ -42,7 +37,7 @@ public class ExecuteContext {
 	 * 执行对象。
 	 */
 	private Object actionBean;
-	
+
 	/**
 	 * Action类文件。
 	 */
@@ -57,84 +52,58 @@ public class ExecuteContext {
 	 * HttpResponse对象。
 	 */
 	private HttpServletResponse response;
-	
+
 	/**
 	 * 配置信息。
 	 */
 	private IConfiguration config;
-	
+
 	/**
 	 * ServletConfig.
 	 */
 	private ServletConfig servletConfig;
-	
+
 	/**
 	 * forward.
 	 */
 	private Object forward = null;
-	
+
 	private Locale locale = null;
-	
+
 	private Stage stage = null;
-	
+
 	private Stage nextStage = null;
-	
+
 	private ActionMessages messages = new ActionMessages();
-	
+
 	private ActionMessages errors = new ActionMessages();
-	
+
 	private Set<String> readableProperties = new HashSet<String>();
-	
+
 	private Set<String> writableProperties = new HashSet<String>();
-	
+
 	/**
 	 * 提交的参数.
 	 */
 	private Map<String, String[]> params = new HashMap<String, String[]>();
-	
+
 	/**
 	 * 上传的文件.
 	 */
-	private Map<String, FileItem> uploadedFiles = new HashMap<String, FileItem>(); 
+	private Map<String, FileItem> uploadedFiles = new HashMap<String, FileItem>();
 
 	public ExecuteContext() {
 	}
-	
-	public ExecuteContext(HttpServletRequest request, HttpServletResponse response) {
+
+	public ExecuteContext(HttpServletRequest request,
+			HttpServletResponse response) {
 		this.request = request;
 		this.response = response;
 	}
 
 	/**
-	 * 执行Action。
-	 * @return Forward。
-	 * @throws Exception 异常对象。
-	 */
-	public Object execute() throws Exception {
-		List<Object> paras = new ArrayList<Object>();
-		Class<?>[] paraTypes = action.getParameterTypes();
-		// 自动猜测Action参数类型
-		for (Class<?> clazz : paraTypes) {
-			if (clazz.equals(HttpServletRequest.class)) {
-				paras.add(request);
-			} else if (clazz.equals(HttpServletResponse.class)) {
-				paras.add(response);
-			} else if (clazz.equals(HttpSession.class)) {
-				paras.add(request.getSession(true));
-			} else if (clazz.equals(BeanContext.class)) {
-				paras.add(getBeanContext());
-			} else if (clazz.equals(ActionMessages.class)) {
-				paras.add(errors);
-			} else if (clazz.equals(this.getClass())) {
-				paras.add(this);
-			}
-		}
-		forward = action.invoke(actionBean, (Object[])paras.toArray(new Object[] {}));
-		return forward;
-	}
-	
-	/**
 	 * 获取Bean Context。
+	 * 
 	 * @return
 	 */
 	public BeanContext getBeanContext() {
@@ -145,7 +114,7 @@ public class ExecuteContext {
 		bc.servletConfig = servletConfig;
 		bc.forward = forward;
 		bc.locale = locale;
-		
+
 		return bc;
 	}
 
@@ -233,7 +202,7 @@ public class ExecuteContext {
 		return forward;
 	}
 
-	public ExecuteContext setForward(String forward) {
+	public ExecuteContext setForward(Object forward) {
 		this.forward = forward;
 		return this;
 	}
@@ -288,7 +257,7 @@ public class ExecuteContext {
 		this.params = params;
 		return this;
 	}
-	
+
 	public Map<String, FileItem> getUploadedFiles() {
 		return uploadedFiles;
 	}
@@ -302,19 +271,19 @@ public class ExecuteContext {
 		params.put(name, value);
 		return this;
 	}
-	
+
 	public String getMessage(String key) {
 		return LocalizationUtil.getMessage(locale, key);
 	}
-	
+
 	public String getMessage(String key, Object... params) {
 		return LocalizationUtil.getMessage(locale, key, params);
 	}
-	
+
 	public ActionMessages getActionMessages() {
 		return messages;
 	}
-	
+
 	public ActionMessages getActionErrors() {
 		return errors;
 	}
