@@ -1,5 +1,8 @@
 package org.nestframework.action.defaults;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,8 +24,17 @@ import org.nestframework.utils.NestUtil;
  */
 @Intercept({Stage.AFTER_EXECUTION})
 public class DefaultActionBeanGetter implements IActionHandler, Constant {
+	/**
+	 * Logger for this class
+	 */
+	private static final Log log = LogFactory
+			.getLog(DefaultActionBeanGetter.class);
 
 	public boolean process(ExecuteContext context) throws Exception {
+		if (log.isDebugEnabled()) {
+			log.debug("process(ExecuteContext) - start");
+		}
+
 		Object bean = context.getActionBean();
 		Map<?, ?> ognlContext = Ognl.createDefaultContext(bean);
 		DefaultMemberAccess memberAccess = new DefaultMemberAccess(true);
@@ -35,6 +47,9 @@ public class DefaultActionBeanGetter implements IActionHandler, Constant {
 		// export errors.
 		context.getRequest().setAttribute(ERRORS_KEY, context.getActionErrors());
 
+		if (log.isDebugEnabled()) {
+			log.debug("process(ExecuteContext) - end");
+		}
 		return false;
 	}
 

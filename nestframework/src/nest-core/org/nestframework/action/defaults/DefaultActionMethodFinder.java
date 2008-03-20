@@ -1,5 +1,8 @@
 package org.nestframework.action.defaults;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -17,8 +20,17 @@ import org.nestframework.core.Stage;
  */
 @Intercept( { Stage.INITIAL_ACTIONBEAN })
 public class DefaultActionMethodFinder implements IActionHandler {
+	/**
+	 * Logger for this class
+	 */
+	private static final Log log = LogFactory
+			.getLog(DefaultActionMethodFinder.class);
 
 	public boolean process(ExecuteContext context) throws Exception {
+		if (log.isDebugEnabled()) {
+			log.debug("process(ExecuteContext) - start");
+		}
+
 		/*
 		 * 查找规则，子类优先。 
 		 */
@@ -63,6 +75,9 @@ public class DefaultActionMethodFinder implements IActionHandler {
 		context.setAction(actionMethod);
 		context.setDefaultAction(defaultActionMethod);
 
+		if (log.isDebugEnabled()) {
+			log.debug("process(ExecuteContext) - end");
+		}
 		return false;
 	}
 }
