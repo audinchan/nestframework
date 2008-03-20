@@ -158,6 +158,13 @@ public class NestUtil {
 		return !isEmpty(value);
 	}
 	
+	public static String trimAll(String value) {
+		if (value == null) {
+			return value;
+		}
+		return value.replaceAll("\\r\\n", ",").replaceAll("[\\r|\\n]", ",").trim();
+	}
+	
 	public static String implode(String[] strings, String seperator) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < strings.length; i++) {
