@@ -335,4 +335,8 @@ public class FileItem {
     public boolean isUploaded() {
     	return file != null && file.exists() && file.isFile();
     }
+
+	public File getFile() {
+		return file;
+	}
 }
