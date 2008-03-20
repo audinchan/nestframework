@@ -6,10 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nestframework.action.ActionException;
 import org.nestframework.action.IActionHandler;
 import org.nestframework.action.IExceptionHandler;
 import org.nestframework.action.defaults.ActionMethodAfterInterceptHandler;
+import org.nestframework.action.defaults.ActionMethodBeforeInterceptHandler;
 import org.nestframework.action.defaults.DefaultActionBeanCreater;
 import org.nestframework.action.defaults.DefaultActionBeanGetter;
 import org.nestframework.action.defaults.DefaultActionBeanSetter;
@@ -26,53 +29,84 @@ import org.nestframework.core.StageHandler;
 import org.nestframework.localization.LocalizationUtil;
 import org.nestframework.utils.NestUtil;
 
-
 public class RuntimeConfiguration implements IConfiguration {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Log log = LogFactory
+			.getLog(RuntimeConfiguration.class);
+
 	private Map<Stage, StageHandler> handlers = new LinkedHashMap<Stage, StageHandler>();
-	
+
 	private List<IExceptionHandler> exceptionHandlers = new ArrayList<IExceptionHandler>();
 
 	private String packageBase = null;
-	
+
 	private Map<String, String> properties = new HashMap<String, String>();
-	
+
 	private IExternalContext externalContext;
-	
+
 	private IMultipartHandler multipartHandler;
-		
+
 	public static IConfiguration getInstance() {
+		if (log.isDebugEnabled()) {
+			log.debug("getInstance() - start");
+		}
+
 		IConfiguration nestConfig = new RuntimeConfiguration();
-		// after intercept
-		nestConfig.addLifecycleHandler(new ActionMethodAfterInterceptHandler());
-		nestConfig.addLifecycleHandler(new DefaultActionBeanCreater());
-		nestConfig.addLifecycleHandler(new DefaultActionBeanSetter());
-		nestConfig.addLifecycleHandler(new DefaultActionMethodFinder());
-		nestConfig.addLifecycleHandler(new DefaultActionExecutor());
-		nestConfig.addLifecycleHandler(new DefaultActionBeanGetter());
-		nestConfig.addLifecycleHandler(new DefaultActionForwarder());
 		NestContext.setConfig(nestConfig);
+
+		if (log.isDebugEnabled()) {
+			log.debug("getInstance() - end");
+		}
 		return nestConfig;
 	}
-	
-	public IConfiguration addLifecycleHandler(Stage stage, IActionHandler handler) {
+
+	protected void addDefaultHandlers() {
+		addLifecycleHandler(new ActionMethodBeforeInterceptHandler());
+		addLifecycleHandler(new DefaultActionBeanCreater());
+		addLifecycleHandler(new DefaultActionBeanSetter());
+		addLifecycleHandler(new DefaultActionMethodFinder());
+		addLifecycleHandler(new DefaultActionExecutor());
+		addLifecycleHandler(new DefaultActionBeanGetter());
+		addLifecycleHandler(new DefaultActionForwarder());
+		addLifecycleHandler(new ActionMethodAfterInterceptHandler());
+	}
+
+	public IConfiguration addLifecycleHandler(Stage stage,
+			IActionHandler handler) {
+		if (log.isDebugEnabled()) {
+			log.debug("addLifecycleHandler(Stage, IActionHandler) - start");
+		}
+
 		StageHandler s = handlers.get(stage);
 		if (s == null) {
 			s = new StageHandler(stage, true);
 			handlers.put(stage, s);
 		}
 		s.addHandler(handler);
-		
+
+		if (log.isDebugEnabled()) {
+			log.debug("addLifecycleHandler(Stage, IActionHandler) - end");
+		}
 		return this;
 	}
 
 	public IConfiguration addLifecycleHandler(IActionHandler handler) {
+		if (log.isDebugEnabled()) {
+			log.debug("addLifecycleHandler(IActionHandler) - start");
+		}
+
 		Intercept intercept = handler.getClass().getAnnotation(Intercept.class);
 		if (intercept != null) {
 			Stage[] stages = intercept.value();
 			for (Stage stage : stages) {
 				addLifecycleHandler(stage, handler);
 			}
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("addLifecycleHandler(IActionHandler) - end");
 		}
 		return this;
 	}
@@ -125,65 +159,82 @@ public class RuntimeConfiguration implements IConfiguration {
 	}
 
 	public void init() {
+		if (log.isDebugEnabled()) {
+			log.debug("init() - start");
+		}
+
 		if (NestUtil.isEmpty(properties.get("base"))) {
 			throw new RuntimeException("Action base must be specified.");
 		}
-		
+
 		// localization
 		String resourceFile = properties.get("resourceFile");
 		if (!NestUtil.isEmpty(resourceFile)) {
 			LocalizationUtil.setResource(resourceFile);
 		}
-		
+
 		setPackageBase(properties.get("base"));
 		String ehs = properties.get("exceptionHandlers");
-		if (ehs != null) {
-			String[] exceptionHandlers = ehs.split(",");
-			for (String eh: exceptionHandlers) {
+		if (!NestUtil.isEmpty(ehs)) {
+			String[] ehClasses = ehs.replaceAll("\\r\\n", ",").replaceAll(
+					"[\\r|\\n]", ",").split(",");
+			for (String clazz : ehClasses) {
 				try {
-					String clazz = eh.replaceAll("\\r|\\n", "").trim();
 					Object object = Class.forName(clazz).newInstance();
 					IExceptionHandler exceptionHandler = (IExceptionHandler) object;
-					
-					// add exception handler
+
+					// 添加异常处理类。
 					addExceptionHandler(exceptionHandler);
-					
+
 					// init
 					if (object instanceof IInitable) {
 						((IInitable) object).init(this);
 					}
 				} catch (Exception e) {
-					throw new ActionException("Failed to add exception handler, class=" + eh, e);
+					log.error("init()", e);
+					throw new ActionException("Failed to add exception handler, class=" + ehClasses, e);
 				}
 			}
 		}
-		
+
 		String handlersName = properties.get("actionHandlers");
-		String[] actionHandlers = handlersName.split(",");
-		for (String ah : actionHandlers) {
-			try {
-				String clazz = ah.replaceAll("\\r|\\n", "").trim();
-				Object handler = Class.forName(clazz).newInstance();
-				addLifecycleHandler((IActionHandler) handler);
-				
-				if (handler instanceof IInitable) {
-					((IInitable) handler).init(this);
+		if (!NestUtil.isEmpty(handlersName)) {
+			String[] handlers = handlersName.replaceAll("\\r\\n", ",")
+					.replaceAll("[\\r|\\n]", ",").split(",");
+			for (String hName : handlers) {
+				try {
+					Object handler = Class.forName(hName.trim()).newInstance();
+					addLifecycleHandler((IActionHandler) handler);
+
+					// init
+					if (handler instanceof IInitable) {
+						((IInitable) handler).init(this);
+					}
+				} catch (Exception e) {
+					log.error("init()", e);
+					throw new ActionException("Failed to add action handler, class=" + hName, e);
 				}
-			} catch (Exception e) {
-				throw new ActionException("Failed to add action handler, class=" + ah, e);
 			}
 		}
-		
+
 		// multipart handler
 		String mh = properties.get("multipartHandler");
 		if (NestUtil.isEmpty(mh)) {
 			mh = "org.nestframework.core.CosMultipartHandler";
 		}
 		try {
-			multipartHandler = (IMultipartHandler) Class.forName(mh.trim()).newInstance();
+			multipartHandler = (IMultipartHandler) Class.forName(mh.trim())
+					.newInstance();
 		} catch (Exception e) {
-			throw new ActionException("Failed to add multipart handler, class=" + mh, e);
+			throw new ActionException("Failed to add multipart handler, class="
+					+ mh, e);
 		}
-		
+
+		// add default handlers.
+		addDefaultHandlers();
+
+		if (log.isDebugEnabled()) {
+			log.debug("init() - end");
+		}
 	}
 }
