@@ -127,7 +127,7 @@ public class Response implements HttpServletResponse {
 
 	public PrintWriter getWriter() throws IOException {
 		// TODO Auto-generated method stub
-		return null;
+		return new PrintWriter(System.out);
 	}
 
 	public boolean isCommitted() {
