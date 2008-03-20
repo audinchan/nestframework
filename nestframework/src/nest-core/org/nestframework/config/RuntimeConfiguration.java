@@ -176,8 +176,7 @@ public class RuntimeConfiguration implements IConfiguration {
 		setPackageBase(properties.get("base"));
 		String ehs = properties.get("exceptionHandlers");
 		if (!NestUtil.isEmpty(ehs)) {
-			String[] ehClasses = ehs.replaceAll("\\r\\n", ",").replaceAll(
-					"[\\r|\\n]", ",").split(",");
+			String[] ehClasses = NestUtil.trimAll(ehs).split(",");
 			for (String clazz : ehClasses) {
 				try {
 					Object object = Class.forName(clazz).newInstance();
@@ -199,8 +198,7 @@ public class RuntimeConfiguration implements IConfiguration {
 
 		String handlersName = properties.get("actionHandlers");
 		if (!NestUtil.isEmpty(handlersName)) {
-			String[] handlers = handlersName.replaceAll("\\r\\n", ",")
-					.replaceAll("[\\r|\\n]", ",").split(",");
+			String[] handlers = NestUtil.trimAll(handlersName).split(",");
 			for (String hName : handlers) {
 				try {
 					Object handler = Class.forName(hName.trim()).newInstance();
