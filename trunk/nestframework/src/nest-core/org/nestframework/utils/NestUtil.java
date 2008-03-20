@@ -154,6 +154,10 @@ public class NestUtil {
 		return value == null || value.trim().length() == 0;
 	}
 	
+	public static boolean isNotEmpty(String value) {
+		return !isEmpty(value);
+	}
+	
 	public static String implode(String[] strings, String seperator) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < strings.length; i++) {
