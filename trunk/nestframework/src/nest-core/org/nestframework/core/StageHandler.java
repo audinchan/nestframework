@@ -36,7 +36,8 @@ public class StageHandler {
 	}
 	
 	public StageHandler addHandler(IActionHandler handler) {
-		handlers.add(0, handler);
+//		handlers.add(0, handler);
+		handlers.add(handler);
 		return this;
 	}
 	
