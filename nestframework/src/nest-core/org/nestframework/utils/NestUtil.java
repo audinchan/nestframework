@@ -4,6 +4,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,7 +39,7 @@ public class NestUtil {
 	
 	public static Object execMethod(Method m, Object obj, ExecuteContext ctx)
 			throws IllegalArgumentException, IllegalAccessException,
-			InvocationTargetException {
+			InvocationTargetException, IOException {
 		Object rt;
 		List<Object> paras = new ArrayList<Object>();
 		Class<?>[] paraTypes = m.getParameterTypes();
@@ -53,6 +55,8 @@ public class NestUtil {
 				paras.add(ctx.getBeanContext());
 			} else if (clazz.equals(ActionMessages.class)) {
 				paras.add(ctx.getActionErrors());
+			} else if (clazz.equals(PrintWriter.class)) {
+				paras.add(ctx.getResponse().getWriter());
 			} else if (clazz.equals(ctx)) {
 				paras.add(ctx);
 			}
