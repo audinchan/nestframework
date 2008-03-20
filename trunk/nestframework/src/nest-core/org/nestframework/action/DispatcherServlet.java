@@ -16,7 +16,7 @@ import org.nestframework.core.Constant;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.ServletExternalContextImpl;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked"})
 public class DispatcherServlet extends HttpServlet {
 	/**
 	 * Constant identifier for the mulipart content type :
@@ -60,7 +60,6 @@ public class DispatcherServlet extends HttpServlet {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void init(ServletConfig config) throws ServletException {
 		servletConfig = config;
 		nestConfig = RuntimeConfiguration.getInstance();
