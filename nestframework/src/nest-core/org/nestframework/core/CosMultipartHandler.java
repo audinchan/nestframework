@@ -24,6 +24,7 @@ import com.oreilly.servlet.MultipartRequest;
  * @author audin
  *
  */
+@SuppressWarnings("unchecked")
 public class CosMultipartHandler implements IMultipartHandler {
 	
 	/** Pattern used to parse useful info out of the IOException cos throws. */
@@ -33,7 +34,6 @@ public class CosMultipartHandler implements IMultipartHandler {
 	/* (non-Javadoc)
 	 * @see org.nestframework.core.IMultipartHandler#processMultipart(org.nestframework.core.ExecuteContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
-	@SuppressWarnings("unchecked")
 	public void processMultipart(ExecuteContext context,
 			File tempDir, int maxPostSize,
 			HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

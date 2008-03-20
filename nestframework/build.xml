@@ -12,15 +12,14 @@
 	<!-- 项目构建部分 -->
 	<property name="build.dir" value="dist"/>
 	
-    <!-- ================================= 
-          target: build jar              
-         ================================= -->
-    <target name="build" depends="build-test,build-spring,build-validation" description="--> description">
+    <target name="build" depends="build-test,build-spring,build-validation" description="--> build all modules">
     </target>
 	
-	<target name="build-jar" description="--> description">
+	<target name="build-jar">
 		<mkdir dir="${build.dir}/${ant.project.name}-${module}"/>
-	    <javac debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-${module}" destdir="${build.dir}/${ant.project.name}-${module}"/>
+	    <javac deprecation="off" debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-${module}" destdir="${build.dir}/${ant.project.name}-${module}">
+	    	<compilerarg value="-Xlint"/>
+		</javac>
     	<copy todir="${build.dir}/${ant.project.name}-${module}">
     		<fileset dir="src/${ant.project.name}-${module}">
     			<!--<exclude name="**/*.java"/>-->
@@ -33,23 +32,23 @@
 		</jar>
 	</target>
 	
-    <target name="build-core" description="--> description">
+    <target name="build-core" description="--> build core module">
     	<antcall target="build-jar"><param name="module" value="core"/></antcall>
     </target>
 	
-    <target name="build-test" depends="build-core" description="--> description">
+    <target name="build-test" depends="build-core" description="--> build test module">
     	<antcall target="build-jar"><param name="module" value="test"/></antcall>
     </target>
 	
-    <target name="build-spring" depends="build-core" description="--> description">
+    <target name="build-spring" depends="build-core" description="--> build spring module">
     	<antcall target="build-jar"><param name="module" value="spring"/></antcall>
     </target>
 	
-    <target name="build-validation" depends="build-core" description="--> description">
+    <target name="build-validation" depends="build-core" description="--> build validation module">
     	<antcall target="build-jar"><param name="module" value="validation"/></antcall>
     </target>
 
-	<target name="clean">
+	<target name="clean" description="--> clean build stuffs">
 		<delete dir="${build.dir}"></delete>
 	</target>
 
