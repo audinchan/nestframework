@@ -18,6 +18,8 @@ import org.nestframework.core.Stage;
 import org.nestframework.utils.NestUtil;
 
 /**
+ * Handler action result type convertting.
+ * 
  * @author audin
  * 
  */

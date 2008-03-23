@@ -6,6 +6,12 @@ import java.net.URL;
 
 import javax.servlet.ServletConfig;
 
+/**
+ * Implements IExternalContext within servlet environment.
+ * 
+ * @author audin
+ *
+ */
 public class ServletExternalContextImpl implements IExternalContext {
 	protected ServletConfig servletConfig;
 

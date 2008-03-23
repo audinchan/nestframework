@@ -18,7 +18,8 @@ import org.nestframework.core.Stage;
 import org.nestframework.utils.NestUtil;
 
 /**
- * 将ActionBean的属性反射到Request中。
+ * populate all action bean's properties to http servert request, property name is used
+ * as key, value is as attribute in request.
  * 
  * @author audin
  */

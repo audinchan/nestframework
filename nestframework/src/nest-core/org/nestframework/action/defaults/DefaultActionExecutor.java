@@ -10,7 +10,7 @@ import org.nestframework.core.Stage;
 import org.nestframework.utils.NestUtil;
 
 /**
- * 默认的ActionBean执行者。
+ * Execute action.
  * 
  * @author audin
  */
@@ -27,10 +27,8 @@ public class DefaultActionExecutor implements IActionHandler {
 			log.debug("process(ExecuteContext) - start");
 		}
 
-		// 调用Context的执行方法。
 		context.setForward(NestUtil.execMethod(context.getAction(), context
 				.getActionBean(), context));
-		// context.execute();
 
 		if (log.isDebugEnabled()) {
 			log.debug("process(ExecuteContext) - end");

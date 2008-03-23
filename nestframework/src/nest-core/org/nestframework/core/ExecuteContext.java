@@ -16,6 +16,12 @@ import org.nestframework.config.IConfiguration;
 import org.nestframework.localization.ActionMessages;
 import org.nestframework.localization.LocalizationUtil;
 
+/**
+ * Execute context.
+ * 
+ * @author audin
+ *
+ */
 public class ExecuteContext {
 
 	/**
@@ -24,37 +30,37 @@ public class ExecuteContext {
 	private String path;
 
 	/**
-	 * 执行的目标方法。
+	 * Action method.
 	 */
 	private Method action;
 
 	/**
-	 * 默认执行方法。
+	 * Default action method.
 	 */
 	private Method defaultAction;
 
 	/**
-	 * 执行对象。
+	 * Action bean.
 	 */
 	private Object actionBean;
 
 	/**
-	 * Action类文件。
+	 * Action bean class.
 	 */
 	private Class<?> actionClass;
 
 	/**
-	 * HttpRequest对象。
+	 * Http servlet request.
 	 */
 	private HttpServletRequest request;
 
 	/**
-	 * HttpResponse对象。
+	 * Http servlet response.
 	 */
 	private HttpServletResponse response;
 
 	/**
-	 * 配置信息。
+	 * Nest configurations.
 	 */
 	private IConfiguration config;
 
@@ -68,27 +74,48 @@ public class ExecuteContext {
 	 */
 	private Object forward = null;
 
+	/**
+	 * Current locale.
+	 */
 	private Locale locale = null;
 
+	/**
+	 * Current stage.
+	 */
 	private Stage stage = null;
 
+	/**
+	 * Nest stage.
+	 */
 	private Stage nextStage = null;
 
+	/**
+	 * Action messages.
+	 */
 	private ActionMessages messages = new ActionMessages();
 
+	/**
+	 * Action errors.
+	 */
 	private ActionMessages errors = new ActionMessages();
 
+	/**
+	 * Cache readable properties.
+	 */
 	private Set<String> readableProperties = new HashSet<String>();
 
+	/**
+	 * Cache writable properties.
+	 */
 	private Set<String> writableProperties = new HashSet<String>();
 
 	/**
-	 * 提交的参数.
+	 * Parameters from http servlet request.
 	 */
 	private Map<String, String[]> params = new HashMap<String, String[]>();
 
 	/**
-	 * 上传的文件.
+	 * Uploaded files.
 	 */
 	private Map<String, FileItem> uploadedFiles = new HashMap<String, FileItem>();
 
@@ -102,7 +129,7 @@ public class ExecuteContext {
 	}
 
 	/**
-	 * 获取Bean Context。
+	 * Get bean context.
 	 * 
 	 * @return
 	 */

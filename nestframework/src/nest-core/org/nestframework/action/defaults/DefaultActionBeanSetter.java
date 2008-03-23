@@ -17,7 +17,8 @@ import org.nestframework.core.Stage;
 import org.nestframework.utils.RequestParamMapTypeConverter;
 
 /**
- * 从Request中将提交的参数反射到ActionBean中。
+ * populate all request parameters as action bean's properties.
+ * 
  * @author audin
  */
 @Intercept(Stage.INITIAL_ACTIONBEAN)
@@ -58,7 +59,7 @@ public class DefaultActionBeanSetter implements IActionHandler {
 			try {
 				Ognl.setValue(paramName, ognlContext, bean, paramValue);
 			} catch (NoSuchPropertyException e) {
-				// 没有必要记录不需要的属性
+				// pass over not match properties
 				//logger.error("process(ExecuteContext)", e);
 			} catch (Exception e) {
 				logger.error("process(ExecuteContext)", e);
@@ -76,8 +77,6 @@ public class DefaultActionBeanSetter implements IActionHandler {
 				logger.error("process(ExecuteContext)", e);
 			}
 		}
-				
-		// 允许其它Setter继续执行。
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("process(ExecuteContext) - end");

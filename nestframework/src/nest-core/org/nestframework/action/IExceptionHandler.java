@@ -2,15 +2,21 @@ package org.nestframework.action;
 
 import org.nestframework.core.ExecuteContext;
 
-
+/**
+ * Action exception handler interface.
+ * 
+ * @author audin
+ *
+ */
 public interface IExceptionHandler {
 
 	/**
-	 * 异常处理。
-	 * @param e 异常对象。
-	 * @param context 上下文。
-	 * @return 重定向路径。
-	 * @throws ActionException Servlet异常。
+	 * handle action exception.
+	 * 
+	 * @param e Exception.
+	 * @param context Execute context.
+	 * @return if <code>true</code> then stop to execute the left exception handlers. 
+	 * @throws ActionException Exception.
 	 */
 	public boolean execute(Exception e, ExecuteContext context)
 			throws ActionException;

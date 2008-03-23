@@ -5,6 +5,13 @@ import java.util.List;
 
 import org.nestframework.action.IActionHandler;
 
+/**
+ * Stage handler.
+ * Contains a set of action handlers.
+ * 
+ * @author audin
+ *
+ */
 public class StageHandler {
 	
 	private Stage stage;
@@ -36,7 +43,6 @@ public class StageHandler {
 	}
 	
 	public StageHandler addHandler(IActionHandler handler) {
-//		handlers.add(0, handler);
 		handlers.add(handler);
 		return this;
 	}

@@ -13,6 +13,11 @@ import org.nestframework.core.Stage;
 
 /**
  * Default forward handler.
+ * <p>
+ * If forward start with http:// or ftp:// etc. then is a redirection.
+ * If forward start with "!" then is a redirection.
+ * </p>
+ * 
  * @author audin
  */
 @Intercept({Stage.HANDLE_VIEW})

@@ -31,19 +31,36 @@ import org.nestframework.core.BeanContext;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.localization.ActionMessages;
 
+/**
+ * Nest utility class.
+ * 
+ * @author audin
+ *
+ */
 public class NestUtil {
 	/**
 	 * Logger for this class
 	 */
 	private static final Log log = LogFactory.getLog(NestUtil.class);
 	
+	/**
+	 * Execute a method beyond context.
+	 * @param m Method to be executed.
+	 * @param obj The object own this method.
+	 * @param ctx Execute context.
+	 * @return Method result.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws IOException
+	 */
 	public static Object execMethod(Method m, Object obj, ExecuteContext ctx)
 			throws IllegalArgumentException, IllegalAccessException,
 			InvocationTargetException, IOException {
 		Object rt;
 		List<Object> paras = new ArrayList<Object>();
 		Class<?>[] paraTypes = m.getParameterTypes();
-		// 自动猜测Action参数类型
+		// auto parameter type match
 		for (Class<?> clazz : paraTypes) {
 			if (clazz.equals(HttpServletRequest.class)) {
 				paras.add(ctx.getRequest());
@@ -66,9 +83,9 @@ public class NestUtil {
 	}
 
 	/**
-	 * 将方法名转换为BeanName。
+	 * Convert mathod to property name.
 	 * 
-	 * @param m
+	 * @param m Method.
 	 * @return
 	 */
 	public static String methodToPropertyName(Method m) {
@@ -95,6 +112,12 @@ public class NestUtil {
 		}
 	}
 
+	/**
+	 * Get all methods of a class.
+	 * 
+	 * @param clazz The class.
+	 * @return All methods of a class.
+	 */
 	public static Collection<Method> getMethods(Class<?> clazz) {
 		if (log.isDebugEnabled()) {
 			log.debug("getMethods(Class<?>) - start");
@@ -127,6 +150,12 @@ public class NestUtil {
 		return found;
 	}
 
+	/**
+	 * Get all fields of a class.
+	 * 
+	 * @param clazz The class.
+	 * @return All fields of a class.
+	 */
 	public static Collection<Field> getFields(Class<?> clazz) {
 		if (log.isDebugEnabled()) {
 			log.debug("getFields(Class<?>) - start");
@@ -150,14 +179,32 @@ public class NestUtil {
 		return returnCollection;
 	}
 
+	/**
+	 * Check whether is the string is empty.
+	 * 
+	 * @param value String to be checked.
+	 * @return <code>true</code> if the value is null or it's length is 0 or is contains only space characters, else is <code>false</code>.
+	 */
 	public static boolean isEmpty(String value) {
 		return value == null || value.trim().length() == 0;
 	}
 	
+	/**
+	 * Check whether is the string is not empty.
+	 * @param value String to be checked.
+	 * @return
+	 * @see isEmpty.
+	 */
 	public static boolean isNotEmpty(String value) {
 		return !isEmpty(value);
 	}
 	
+	/**
+	 * Replace all \r,\n and trim space at both side.
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public static String trimAll(String value) {
 		if (value == null) {
 			return value;
@@ -165,6 +212,13 @@ public class NestUtil {
 		return value.replaceAll("\\r\\n", ",").replaceAll("[\\r|\\n]", ",").trim();
 	}
 	
+	/**
+	 * Implode strings with seperator.
+	 * 
+	 * @param strings
+	 * @param seperator
+	 * @return
+	 */
 	public static String implode(String[] strings, String seperator) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < strings.length; i++) {
@@ -176,6 +230,13 @@ public class NestUtil {
 		return sb.toString();
 	}
 
+	/**
+	 * Get all properties and values of an object.
+	 * 
+	 * @param bean
+	 * @param clazz
+	 * @return
+	 */
 	public static Map<String, Object> getPropertiesMap(Object bean, Class<?> clazz) {
 		if (log.isDebugEnabled()) {
 			log.debug("getPropertiesMap(Object) - start");
@@ -227,6 +288,13 @@ public class NestUtil {
 		return map;
 	}
 	
+	/**
+	 * Get specified properties and values of an object.
+	 * 
+	 * @param bean
+	 * @param propertyNames Which properties to be feched.
+	 * @return
+	 */
 	public static Map<String, Object> getPropertiesMap(Object bean, String... propertyNames) {
 		if (log.isDebugEnabled()) {
 			log.debug("getPropertiesMap(Object, String) - start");

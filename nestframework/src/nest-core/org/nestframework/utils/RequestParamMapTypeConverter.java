@@ -5,6 +5,12 @@ import java.util.Map;
 
 import ognl.DefaultTypeConverter;
 
+/**
+ * Convert request parameter to specified java type.
+ * 
+ * @author audin
+ *
+ */
 @SuppressWarnings("unchecked")
 public class RequestParamMapTypeConverter extends DefaultTypeConverter {
 
