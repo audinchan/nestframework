@@ -12,12 +12,27 @@ import org.nestframework.core.Stage;
 import org.nestframework.utils.NestUtil;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * This action handler initial spring beans used in action bean.
+ * 
+ * @author audin
+ *
+ */
 @Intercept( { Stage.AFTER_INITIALIZATION })
 public class SpringBeanInitActionHandler implements IActionHandler {
 
 	private ApplicationContext ctx;
 
 	public void setCtx(ApplicationContext ctx) {
+		this.ctx = ctx;
+	}
+	
+	public SpringBeanInitActionHandler() {
+		
+	}
+	
+	public SpringBeanInitActionHandler(ApplicationContext ctx) {
+		super();
 		this.ctx = ctx;
 	}
 
@@ -50,7 +65,7 @@ public class SpringBeanInitActionHandler implements IActionHandler {
 			Spring spring = f.getAnnotation(Spring.class);
 			if (spring != null) {
 				String beanName = spring.value();
-				if ("".equals(beanName)) {
+				if (NestUtil.isEmpty(beanName)) {
 					beanName = f.getName();
 				}
 				if (!Modifier.isPublic(f.getModifiers())) {
@@ -60,7 +75,7 @@ public class SpringBeanInitActionHandler implements IActionHandler {
 
 					}
 				}
-				f.set(context.getActionBean(), ctx != null ? ctx
+				f.set(bean, ctx != null ? ctx
 						.getBean(beanName) : SpringHelper.getBean(context,
 						beanName));
 			}

@@ -14,6 +14,12 @@ import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.Stage;
 import org.nestframework.utils.NestUtil;
 
+/**
+ * A stage handler which is invoked when before some stages.
+ * 
+ * @author audin.
+ *
+ */
 @Intercept( { Stage.CREATE_ACTIONBEAN, Stage.INITIAL_ACTIONBEAN,
 		Stage.AFTER_INITIALIZATION, Stage.EXECUTE_ACTION,
 		Stage.AFTER_EXECUTION, Stage.HANDLE_VIEW })

@@ -8,7 +8,7 @@ import org.nestframework.action.IExceptionHandler;
 import org.nestframework.core.ExecuteContext;
 
 /**
- * 默认的异常处理器。
+ * Default action exception handler.
  * 
  * @author audin
  */

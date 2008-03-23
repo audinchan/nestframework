@@ -73,7 +73,7 @@ public class RuntimeConfiguration implements IConfiguration {
 		addLifecycleHandler(new ActionMethodAfterInterceptHandler());
 	}
 
-	public IConfiguration addLifecycleHandler(Stage stage,
+	protected IConfiguration addLifecycleHandler(Stage stage,
 			IActionHandler handler) {
 		if (log.isDebugEnabled()) {
 			log.debug("addLifecycleHandler(Stage, IActionHandler) - start");
@@ -174,43 +174,40 @@ public class RuntimeConfiguration implements IConfiguration {
 		}
 
 		setPackageBase(properties.get("base"));
-		String ehs = properties.get("exceptionHandlers");
-		if (!NestUtil.isEmpty(ehs)) {
-			String[] ehClasses = NestUtil.trimAll(ehs).split(",");
-			for (String clazz : ehClasses) {
+		String exceptionHandlers = properties.get("exceptionHandlers");
+		if (NestUtil.isNotEmpty(exceptionHandlers)) {
+			String[] handlerClasses = NestUtil.trimAll(exceptionHandlers).split(",");
+			for (String clazz : handlerClasses) {
 				try {
-					Object object = Class.forName(clazz).newInstance();
-					IExceptionHandler exceptionHandler = (IExceptionHandler) object;
-
-					// 添加异常处理类。
-					addExceptionHandler(exceptionHandler);
-
-					// init
-					if (object instanceof IInitable) {
-						((IInitable) object).init(this);
-					}
-				} catch (Exception e) {
-					log.error("init()", e);
-					throw new ActionException("Failed to add exception handler, class=" + ehClasses, e);
-				}
-			}
-		}
-
-		String handlersName = properties.get("actionHandlers");
-		if (!NestUtil.isEmpty(handlersName)) {
-			String[] handlers = NestUtil.trimAll(handlersName).split(",");
-			for (String hName : handlers) {
-				try {
-					Object handler = Class.forName(hName.trim()).newInstance();
-					addLifecycleHandler((IActionHandler) handler);
-
+					Object handler = Class.forName(clazz.trim()).newInstance();
+					// add exception handler.
+					addExceptionHandler((IExceptionHandler) handler);
 					// init
 					if (handler instanceof IInitable) {
 						((IInitable) handler).init(this);
 					}
 				} catch (Exception e) {
 					log.error("init()", e);
-					throw new ActionException("Failed to add action handler, class=" + hName, e);
+					throw new ActionException("Failed to add exception handler, class=" + handlerClasses, e);
+				}
+			}
+		}
+
+		String actionHandlers = properties.get("actionHandlers");
+		if (NestUtil.isNotEmpty(actionHandlers)) {
+			String[] handlerClasses = NestUtil.trimAll(actionHandlers).split(",");
+			for (String clazz : handlerClasses) {
+				try {
+					Object handler = Class.forName(clazz.trim()).newInstance();
+					// add action handler.
+					addLifecycleHandler((IActionHandler) handler);
+					// init
+					if (handler instanceof IInitable) {
+						((IInitable) handler).init(this);
+					}
+				} catch (Exception e) {
+					log.error("init()", e);
+					throw new ActionException("Failed to add action handler, class=" + clazz, e);
 				}
 			}
 		}
@@ -229,6 +226,7 @@ public class RuntimeConfiguration implements IConfiguration {
 		}
 
 		// add default handlers.
+		// default handler is at tail of handler chain.
 		addDefaultHandlers();
 
 		if (log.isDebugEnabled()) {

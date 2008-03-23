@@ -16,32 +16,52 @@ public class Redirect {
 	 * target location.
 	 */
 	private String target;
+	
+	/**
+	 * Indicate redirection whether is in the same application or not.
+	 */
 	private boolean local = true;
 	
+	/**
+	 * Create a redirection forward.
+	 * 
+	 * @param target Redirection location.
+	 */
 	public Redirect(String target) {
 		this.target = target;
 	}
 	
-	public Redirect(String target, Object actionBean) {
-		StringBuffer sb = new StringBuffer(target);
-		if (target.indexOf('?') == -1) {
-			sb.append('?');
-		} else {
-			sb.append('&');
-		}
-		Map<String, Object> propertiesMap = NestUtil.getPropertiesMap(actionBean, actionBean.getClass());
-		for (Entry<String, Object> entry: propertiesMap.entrySet()) {
-			if (entry.getValue() == null) continue;
-			String clazz = entry.getValue().getClass().getName();
-			if (!clazz.startsWith("java.lang.")) continue;
-			if (clazz.equals("java.lang.Class")) continue;
-			sb.append(entry.getKey()).append('=').append(entry.getValue()).append('&');
-		}
-		
-		this.target = sb.toString();
+	/**
+	 * Create a redirection forward.
+	 * 
+	 * @param target Redirection location.
+	 * @param isInSameApplication If <code>true</code> then the redirection is in the same application.
+	 */
+	public Redirect(String target, boolean isInSameApplication) {
+		this.target = target;
+		local = isInSameApplication;
 	}
 	
+	/**
+	 * Create a redirection forward.
+	 * 
+	 * @param target Redirection location.
+	 * @param actionBean Action bean.
+	 * @param propertyNames Which bean properties are populated.
+	 */
 	public Redirect(String target, Object actionBean, String... propertyNames) {
+		 this(target, true, actionBean, propertyNames);
+	}
+	
+	/**
+	 * Create a redirection forward.
+	 * 
+	 * @param target Redirection location.
+	 * @param isInSameApplication If <code>true</code> then the redirection is in the same application.
+	 * @param actionBean Action bean.
+	 * @param propertyNames Which bean properties are populated.
+	 */
+	public Redirect(String target, boolean isInSameApplication, Object actionBean, String... propertyNames) {
 		StringBuffer sb = new StringBuffer(target);
 		if (target.indexOf('?') == -1) {
 			sb.append('?');
@@ -67,15 +87,21 @@ public class Redirect {
 	}
 	
 	/**
-	 * If this is a local redirection. Default is true.
-	 * @param local
-	 * @return
+	 * Set the redirection as the same application or not. 
+	 * 
+	 * @param isInSameApplication If <code>true</code> then the redirection is in the same application.
+	 * @return self.
 	 */
-	public Redirect setLocal(boolean local) {
-		this.local = local;
+	public Redirect setLocal(boolean isInSameApplication) {
+		this.local = isInSameApplication;
 		return this;
 	}
 	
+	/**
+	 * Indicate whether is in the same application or not.
+	 * 
+	 * @return <code>true</code> means is in the same application.
+	 */
 	public boolean isLocal() {
 		return local;
 	}

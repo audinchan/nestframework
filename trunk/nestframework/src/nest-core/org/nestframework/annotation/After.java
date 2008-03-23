@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import org.nestframework.core.Stage;
 
 /**
- * Indicate which stage(s) will the ActionHandler intercept.
+ * Indicate after which stage(s) will the method be executed.
  * Default stage is EXECUTE_ACTION.
  * 
  * @author audin

@@ -21,6 +21,8 @@ import org.nestframework.action.FileUploadLimitExceededException;
 import com.oreilly.servlet.MultipartRequest;
 
 /**
+ * Multipart handler using cos.
+ * 
  * @author audin
  *
  */

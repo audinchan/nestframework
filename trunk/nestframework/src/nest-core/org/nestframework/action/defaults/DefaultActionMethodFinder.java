@@ -32,15 +32,15 @@ public class DefaultActionMethodFinder implements IActionHandler {
 		}
 
 		/*
-		 * 查找规则，子类优先。 
+		 * Descentdant class is early processed.
 		 */
-		// Action方法
+		// Action method.
 		Method actionMethod = null;
 		
-		// 默认的Action方法
+		// Default Action method.
 		Method defaultActionMethod = null;
 		
-		// 参数名字集合
+		// parameters.
 		Set<String> paramNames = context.getParams().keySet();
 		Class<?> clazz = context.getActionClass();
 		while (clazz != null

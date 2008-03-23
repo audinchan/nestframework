@@ -24,10 +24,6 @@ public class DispatcherServlet extends HttpServlet {
 	 */
 	public static final String MULTIPART_CONTENT_TYPE = "multipart/form-data";
 
-//	/** Pattern used to parse useful info out of the IOException cos throws. */
-//	private static Pattern EXCEPTION_PATTERN = Pattern
-//			.compile("Posted content length of (\\d*) exceeds limit of (\\d*)");
-
 	/**
 	 * max post size configuration's key.
 	 */
@@ -38,12 +34,12 @@ public class DispatcherServlet extends HttpServlet {
 	private static ServletConfig servletConfig = null;
 
 	/**
-	 * 上传临时文件目录.
+	 * upload temp dir.
 	 */
 	private File tempDir = null;
 
 	/**
-	 * 上传大小限制. 默认50MB
+	 * upload limit(bytes), default is50MB.
 	 */
 	private int maxPostSize = 1024 * 1024 * 50;
 
@@ -96,7 +92,7 @@ public class DispatcherServlet extends HttpServlet {
 		IConfiguration config = nestConfig;
 		ExecuteContext context = new ExecuteContext(req, res);
 
-		// If we are invoking using <jsp:include/>
+		// If action is invoked using <jsp:include/>
 		String actionPath = (String) req
 				.getAttribute("javax.servlet.include.servlet_path");
 		// else
@@ -104,14 +100,16 @@ public class DispatcherServlet extends HttpServlet {
 			actionPath = req.getServletPath();
 		}
 
-		// 添加配置信息。
-		context.setConfig(config).setServletConfig(servletConfig).setPath(
-				actionPath).setParams(req.getParameterMap());
+		// init context.
+		context.setConfig(config)
+			.setServletConfig(servletConfig)
+			.setPath(actionPath)
+			.setParams(req.getParameterMap());
 
-		// 处理文件上传.
+		// handle upload
 		if (isMultipart(req)) {
-			config.getMultipartHandler().processMultipart(context, tempDir, maxPostSize, req, res);
-//			processMultipart(context, req, res);
+			config.getMultipartHandler().processMultipart(context, tempDir,
+					maxPostSize, req, res);
 		}
 
 		try {
@@ -121,46 +119,6 @@ public class DispatcherServlet extends HttpServlet {
 		}
 
 	}
-
-//	@SuppressWarnings("unchecked")
-//	private void processMultipart(ExecuteContext context,
-//			HttpServletRequest req, HttpServletResponse res)
-//			throws ServletException, IOException {
-//		try {
-//			MultipartRequest mreq = new MultipartRequest(req, tempDir
-//					.getAbsolutePath(), maxPostSize, req.getCharacterEncoding());
-//
-//			// handle parameters
-//			Map<String, String[]> params = new HashMap<String, String[]>();
-//			Enumeration<String> parameterNames = mreq.getParameterNames();
-//			while (parameterNames.hasMoreElements()) {
-//				String paramName = parameterNames.nextElement();
-//				params.put(paramName, mreq.getParameterValues(paramName));
-//			}
-//			context.setParams(params);
-//
-//			// handle files
-//			Map<String, FileItem> fileItems = new HashMap<String, FileItem>();
-//			Enumeration<String> fileNames = mreq.getFileNames();
-//			while (fileNames.hasMoreElements()) {
-//				String fileName = fileNames.nextElement();
-//				fileItems.put(fileName, new FileItem(mreq.getFile(fileName),
-//						mreq.getContentType(fileName), mreq
-//								.getOriginalFileName(fileName)));
-//			}
-//			context.setUploadedFiles(fileItems);
-//		} catch (IOException e) {
-//			Matcher matcher = EXCEPTION_PATTERN.matcher(e.getMessage());
-//
-//			if (matcher.matches()) {
-//				throw new FileUploadLimitExceededException(Long
-//						.parseLong(matcher.group(2)), Long.parseLong(matcher
-//						.group(1)));
-//			} else {
-//				throw e;
-//			}
-//		}
-//	}
 
 	public static boolean isMultipart(HttpServletRequest request) {
 		return request.getContentType() != null

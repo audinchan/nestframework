@@ -9,23 +9,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.nestframework.localization.LocalizationUtil;
 
 /**
- * ActionBean的上下文。
+ * ActionBean context.
  * 
  * @author audin
  */
 public class BeanContext {
 	/**
-	 * 执行对象。
+	 * Action bean.
 	 */
 	protected Object actionBean;
 
 	/**
-	 * HttpRequest对象。
+	 * Http servlet request.
 	 */
 	protected HttpServletRequest request;
 
 	/**
-	 * HttpResponse对象。
+	 * Http servlet response.
 	 */
 	protected HttpServletResponse response;
 	
@@ -34,6 +34,9 @@ public class BeanContext {
 	 */
 	protected ServletConfig servletConfig;
 	
+	/**
+	 * Current locale.
+	 */
 	protected Locale locale = null;
 	
 	/**

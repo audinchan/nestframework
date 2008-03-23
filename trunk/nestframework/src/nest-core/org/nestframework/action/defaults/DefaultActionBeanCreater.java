@@ -31,8 +31,6 @@ public class DefaultActionBeanCreater implements IActionHandler {
 
 		context.setActionBean(ActionResolver.resolveAction(className));
 		context.setActionClass(context.getActionBean().getClass());
-		
-		// action bean is created, so break this stage's process.
 
 		if (log.isDebugEnabled()) {
 			log.debug("process(ExecuteContext) - end");

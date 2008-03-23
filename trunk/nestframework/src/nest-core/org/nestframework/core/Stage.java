@@ -1,5 +1,11 @@
 package org.nestframework.core;
 
+/**
+ * Life cycle stage.
+ * 
+ * @author audin
+ *
+ */
 public enum Stage {
 	/**
 	 * Create action bean.

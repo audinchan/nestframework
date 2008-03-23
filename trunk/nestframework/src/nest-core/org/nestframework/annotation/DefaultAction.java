@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Default action method.
+ * Indicate the method is default action method.
  * 
  * @author audin
  */

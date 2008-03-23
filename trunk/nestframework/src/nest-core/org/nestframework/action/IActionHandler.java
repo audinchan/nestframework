@@ -4,14 +4,17 @@ import org.nestframework.core.ExecuteContext;
 
 
 /**
- * Action 处理器。
+ * Action Handler interface.
+ * 
  * @author audin
  */
 public interface IActionHandler {
+	
 	/**
-	 * Action处理器.
-	 * @param context 上下文。
-	 * @return 是否停止后继操作(当上下文支持)。
+	 * Process action chain.
+	 * 
+	 * @param context Execute context.
+	 * @return if return true then the stage will stop to be handled(when stage supported to be stopped).
 	 */
 	public boolean process(ExecuteContext context) throws Exception;
 }
