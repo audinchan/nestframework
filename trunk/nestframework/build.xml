@@ -2,14 +2,14 @@
 
 <project default="build" name="nest" basedir=".">
 	
-	<!-- 工具类路径 -->
+	<!-- tools classpath -->
 	<path id="classpath">
 		<fileset dir="lib/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
-	<!-- 项目构建部分 -->
+	<!-- build -->
 	<property name="build.dir" value="dist"/>
 	
     <target name="build" depends="build-test,build-spring,build-validation" description="--> build all modules">
