@@ -2,14 +2,14 @@
 
 <project default="build" name="nest-commons" basedir=".">
 	
-	<!-- 工具类路径 -->
+	<!-- tools classpath -->
 	<path id="classpath">
 		<fileset dir="lib/">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
-	<!-- 项目构建部分 -->
+	<!-- build -->
 	<property name="build.dir" value="dist"/>
 	
     <!-- ================================= 
@@ -34,7 +34,7 @@
     	</jar-->
     </target>
 
-	<target name="clean">
+	<target name="clean" description="clean build dir">
 		<delete dir="${build.dir}"></delete>
 	</target>
 
