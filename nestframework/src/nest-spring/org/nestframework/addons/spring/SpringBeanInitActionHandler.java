@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
  * @author audin
  *
  */
-@Intercept( { Stage.AFTER_INITIALIZATION })
+@Intercept( { Stage.INITIAL_ACTIONBEAN })
 public class SpringBeanInitActionHandler implements IActionHandler {
 
 	private ApplicationContext ctx;

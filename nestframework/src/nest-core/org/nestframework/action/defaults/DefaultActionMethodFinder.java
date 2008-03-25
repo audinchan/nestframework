@@ -18,7 +18,7 @@ import org.nestframework.core.Stage;
  * 
  * @author audin
  */
-@Intercept( { Stage.INITIAL_ACTIONBEAN })
+@Intercept( { Stage.AFTER_INITIALIZATION })
 public class DefaultActionMethodFinder implements IActionHandler {
 	/**
 	 * Logger for this class
