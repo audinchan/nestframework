@@ -10,7 +10,7 @@ import org.nestframework.core.Stage;
 import org.nestframework.localization.ActionMessages;
 import org.nestframework.utils.NestUtil;
 
-@Intercept({Stage.AFTER_INITIALIZATION})
+@Intercept({Stage.BEFORE_EXECUTION})
 public class ValidationActionHandler implements IActionHandler, Constant {
 	
 	public static final String VALIDATE_FROM_KEY = "__nestframework_errors_from";

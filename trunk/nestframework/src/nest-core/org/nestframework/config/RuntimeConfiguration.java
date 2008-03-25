@@ -96,6 +96,11 @@ public class RuntimeConfiguration implements IConfiguration {
 		if (log.isDebugEnabled()) {
 			log.debug("addLifecycleHandler(IActionHandler) - start");
 		}
+		
+		// init
+		if (handler instanceof IInitable) {
+			((IInitable) handler).init(this);
+		}
 
 		Intercept intercept = handler.getClass().getAnnotation(Intercept.class);
 		if (intercept != null) {
@@ -120,6 +125,11 @@ public class RuntimeConfiguration implements IConfiguration {
 	}
 
 	public IConfiguration addExceptionHandler(IExceptionHandler handler) {
+		// init
+		if (handler instanceof IInitable) {
+			((IInitable) handler).init(this);
+		}
+		
 		this.exceptionHandlers.add(handler);
 		return this;
 	}
@@ -182,10 +192,6 @@ public class RuntimeConfiguration implements IConfiguration {
 					Object handler = Class.forName(clazz.trim()).newInstance();
 					// add exception handler.
 					addExceptionHandler((IExceptionHandler) handler);
-					// init
-					if (handler instanceof IInitable) {
-						((IInitable) handler).init(this);
-					}
 				} catch (Exception e) {
 					log.error("init()", e);
 					throw new ActionException("Failed to add exception handler, class=" + handlerClasses, e);
@@ -201,10 +207,6 @@ public class RuntimeConfiguration implements IConfiguration {
 					Object handler = Class.forName(clazz.trim()).newInstance();
 					// add action handler.
 					addLifecycleHandler((IActionHandler) handler);
-					// init
-					if (handler instanceof IInitable) {
-						((IInitable) handler).init(this);
-					}
 				} catch (Exception e) {
 					log.error("init()", e);
 					throw new ActionException("Failed to add action handler, class=" + clazz, e);

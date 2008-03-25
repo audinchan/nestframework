@@ -25,6 +25,8 @@ public enum Stage {
 	 */
 	AFTER_INITIALIZATION,
 	
+	BEFORE_EXECUTION,
+	
 	/**
 	 * Invoke action method. These method parameters should be bound automatically:
 	 * HttpServletRequest, HttpServletResponse, HttpSession, ServletContext, BeanContext.
