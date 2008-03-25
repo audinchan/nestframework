@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.bytecode.use_reflection_optimizer">true</property>
+        <property name="hibernate.connection.driver_class">@db.driver@</property>
+        <property name="hibernate.connection.url">@db.url@</property>
+        <property name="hibernate.connection.username">@db.username@</property>
+        <property name="hibernate.connection.password">@db.password@</property>
+        <property name="hibernate.dialect">@hibernate.dialect@</property>
+    </session-factory>
+</hibernate-configuration>
