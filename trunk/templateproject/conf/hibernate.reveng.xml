@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+
+	<type-mapping>
+		<sql-type jdbc-type="INTEGER" hibernate-type="integer" />
+		<sql-type jdbc-type="INTEGER" precision='1'
+			hibernate-type="boolean" />
+		<sql-type jdbc-type="NUMERIC" precision='1'
+			hibernate-type="boolean" />
+		<sql-type jdbc-type="SMALLINT" precision='1'
+			hibernate-type="boolean" />
+		<sql-type jdbc-type="TINYINT" precision='1'
+			hibernate-type="boolean" />
+	</type-mapping>
+
+	<!-- BIN$ is recycle bin tables in Oracle -->
+	<table-filter match-name="BIN$.*" exclude="true" />
+	<!-- Exclude DoNotWantIt from all catalogs/schemas -->
+	<table-filter match-name="DoNotWantIt" exclude="true" />
+	<!-- exclude all tables from the schema SCHEMA in catalog BAD. -->
+	<table-filter match-catalog="BAD" match-schema="SCHEMA"
+		match-name=".*" exclude="true" />
+
+	<!-- 可用的主键生成方式
+		hilo 高低位算法 :  使用时要建成一个单行单列的表，利用列的值根据算法来生成
+		increment:  只用于测试用，此操作只能限于一个线程操作
+		sequence: 针对oracle 数据库来生成的ID规则
+		seqhilo: 利用 sequence 当作种子来生成
+		uuid:  利用IP和时间来生成唯一的
+		identity:  针对 mysql db2 sysbase 等不同的底层数据库方言来生成
+		native: 跨数据库平台的生成规则， 让自己去判断数据库来生成(identity ,  sequence , hilo 三种选)
+		assigned： 自定义的,意思就是自己要在程序中手动的指定值
+		foreign:借用别的表的主键来生成ID
+		descriminator:  继承关系映射时使用,整个层次一张表的建模时使用
+	 -->
+	<!-- example for define customer key -->
+	<!-- 
+	<table name="user">
+		<primary-key>
+			<generator class="native"></generator>
+			<key-column name="id"/>
+		</primary-key>
+	</table>
+	 -->
+</hibernate-reverse-engineering>
