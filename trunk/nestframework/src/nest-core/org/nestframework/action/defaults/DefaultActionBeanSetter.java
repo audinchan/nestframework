@@ -24,7 +24,7 @@ import org.nestframework.utils.RequestParamMapTypeConverter;
  * Configuration parameters:
  * get.encoding.source: source encoding(iso-8859-1);
  * get.encoding.default: default encoding(GBK);
- * get.encoding.doDecode: whether to do decode(false);
+ * get.encoding.doDecode: whether to do decode(true);
  * get.encoding.forceDefault: whether to force encoding to default encoding(false);
  * 
  * @author audin
@@ -39,7 +39,7 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 	
 	private String sourceEnc = "ISO-8859-1";
 	private String defaultDestEnc = "GBK";
-	private boolean doDecode = false;
+	private boolean doDecode = true;
 	private boolean forceDefault = false;
 
 	public void init(IConfiguration config) {
