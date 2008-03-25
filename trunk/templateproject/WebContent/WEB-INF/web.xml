@@ -171,10 +171,6 @@
 			<param-value>zh_CN</param-value>
 		</init-param>
 		<init-param>
-			<param-name>get.encoding.doDecode</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
 			<param-name>validateResources</param-name>
 			<param-value>/WEB-INF/validator-rules.xml</param-value>
 		</init-param>
