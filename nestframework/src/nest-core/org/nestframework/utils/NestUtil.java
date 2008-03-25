@@ -209,7 +209,7 @@ public class NestUtil {
 		if (value == null) {
 			return value;
 		}
-		return value.replaceAll("\\r\\n", ",").replaceAll("[\\r|\\n]", ",").trim();
+		return value.replaceAll("\\r\\n", "").replaceAll("[\\r|\\n]", "").trim();
 	}
 	
 	/**
