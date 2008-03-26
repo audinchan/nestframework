@@ -1,5 +1,5 @@
 package ${hss_base_package}.webapp.form;
-// Generated ${date} by Hibernate Tools ${version} with mintgen
+// Generated ${date} by Hibernate Tools ${version} with nest-tools
 
 import org.apache.struts.action.ActionForm;
 

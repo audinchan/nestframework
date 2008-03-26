@@ -1,5 +1,5 @@
 package com.becom.demo.webapp.action;
-// Generated ${date} by Hibernate Tools ${version} with mintgen
+// Generated ${date} by Hibernate Tools ${version} with nest-tools
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
