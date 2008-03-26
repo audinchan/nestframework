@@ -1,5 +1,5 @@
 package ${hss_service_package}.impl;
-// Generated ${date} by Hibernate Tools ${version} with mintgen
+// Generated ${date} by Hibernate Tools ${version} with nest-tools
 
 <#if merge_dao>
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
