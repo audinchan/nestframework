@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-Hello.<br>
+Hello.<br/>
 <a href="demo/DemoAction.a">Demo Action.</a>
 </body>
 </html>
