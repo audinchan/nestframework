@@ -1,5 +1,5 @@
 package ${hss_dao_package}.hibernate;
-// Generated ${date} by Hibernate Tools ${version} with mintgen
+// Generated ${date} by Hibernate Tools ${version} with nest-tools
 
 <#assign classbody>
 <#if hss_jdk5>

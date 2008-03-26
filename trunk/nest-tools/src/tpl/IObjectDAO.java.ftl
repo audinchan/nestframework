@@ -1,5 +1,5 @@
 package ${hss_dao_package};
-// Generated ${date} by Hibernate Tools ${version} with mintgen
+// Generated ${date} by Hibernate Tools ${version} with nest-tools
  
 <#assign classbody>
 <#assign declarationName = pojo.importType(pojo.getDeclarationName())>
