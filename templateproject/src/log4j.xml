@@ -19,7 +19,7 @@
 		</layout>
 	</appender>
 
-	<category name="org.mintgen.tools">
+	<category name="org.nestframework.tools">
 		<priority value="INFO" />
 		<appender-ref ref="A1" />
 	</category>
