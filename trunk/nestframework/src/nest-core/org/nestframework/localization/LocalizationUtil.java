@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalizationUtil {
-	private static String resource = "NestResource";
+	private static String resource = "resource/messages";
 	private static Map<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
 
 	public static String getResource() {
