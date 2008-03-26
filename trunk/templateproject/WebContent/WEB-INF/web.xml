@@ -21,9 +21,7 @@
 	<!-- Encoding filter -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
-		<filter-class>
-			org.springframework.web.filter.CharacterEncodingFilter
-		</filter-class>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>GBK</param-value>
@@ -47,9 +45,7 @@
 	<!-- Hibernate opensession in view filter(OSI) -->
 	<filter>
 		<filter-name>hibernateFilter</filter-name>
-		<filter-class>
-			org.springframework.orm.hibernate3.support.OpenSessionInViewFilter
-		</filter-class>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
 	</filter>
 	<!-- Hibernate osi filter for jsp page -->
 	<filter-mapping>
@@ -115,9 +111,7 @@
 
 	<!-- Clean up cache to prevent memory leaking. -->
 	<listener>
-		<listener-class>
-			org.springframework.web.util.IntrospectorCleanupListener
-		</listener-class>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
 	</listener>
 	
 	
@@ -144,10 +138,12 @@
 		<servlet-name>nest-action</servlet-name>
 		<servlet-class>org.nestframework.action.DispatcherServlet</servlet-class>
 		<init-param>
+			<!-- action base package -->
 			<param-name>base</param-name>
 			<param-value>demopackage.templateproject.webapp.action</param-value>
 		</init-param>
 		<init-param>
+			<!-- additional action handlers -->
 			<param-name>actionHandlers</param-name>
 			<param-value>
 				org.nestframework.addons.spring.SpringBeanInitActionHandler,
@@ -162,18 +158,6 @@
 			</param-value>
 		</init-param>
 		 -->
-		<init-param>
-			<param-name>resourceFile</param-name>
-			<param-value>resource/messages</param-value>
-		</init-param>
-		<init-param>
-			<param-name>defaultLocale</param-name>
-			<param-value>zh_CN</param-value>
-		</init-param>
-		<init-param>
-			<param-name>validateResources</param-name>
-			<param-value>/WEB-INF/validator-rules.xml</param-value>
-		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
     <servlet-mapping>
@@ -184,12 +168,9 @@
 	<!-- jcaptcha
 	<servlet>
 		<servlet-name>jcaptcha</servlet-name>
-		<servlet-class>
-			demopackage.templateproject.webapp.util.ImageCaptchaServlet
-		</servlet-class>
+		<servlet-class>demopackage.templateproject.webapp.util.ImageCaptchaServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>jcaptcha</servlet-name>
 		<url-pattern>/captcha.jpg</url-pattern>
