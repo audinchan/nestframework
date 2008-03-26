@@ -60,8 +60,11 @@ public class CommonsValidator {
 		}
 		IConfiguration conf = NestContext.getConfig();
 		IExternalContext ec = conf.getExternalContext();
-		String validateResources = conf.getProperties()
-				.get("validateResources");
+		String validateResources = NestUtil.trimAll(conf.getProperties()
+				.get("validateResources"));
+		if (NestUtil.isEmpty(validateResources)) {
+			validateResources = "/WEB-INF/validator-rules.xml";
+		}
 		String[] vrArray = validateResources.split(",");
 		URL[] vrUrls = new URL[vrArray.length];
 		for (int i = 0; i < vrArray.length; i++) {
