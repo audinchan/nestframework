@@ -147,7 +147,8 @@
 			<param-name>actionHandlers</param-name>
 			<param-value>
 				org.nestframework.addons.spring.SpringBeanInitActionHandler,
-				org.nestframework.validation.ValidationActionHandler
+				org.nestframework.validation.ValidationActionHandler,
+				org.nestframework.data.XStreamActionHandler
 			</param-value>
 		</init-param>
 		<!-- 
