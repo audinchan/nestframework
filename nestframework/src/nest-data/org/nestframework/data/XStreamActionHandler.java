@@ -22,11 +22,14 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 /**
  * @author audin
- *
+ * config parameters:
+ * xstream.drivers
+ * xstream.aliases
  */
 @Intercept(Stage.AFTER_EXECUTION)
 public class XStreamActionHandler implements IInitable, IActionHandler {
 	private Map<String, HierarchicalStreamDriver> drivers = new HashMap<String, HierarchicalStreamDriver>();
+	private Map<String, Class<?>> aliases = new HashMap<String, Class<?>>();
 	/* (non-Javadoc)
 	 * @see org.nestframework.core.IInitable#init(org.nestframework.config.IConfiguration)
 	 */
@@ -38,7 +41,16 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 				String[] ds = xdrivers.split(",");
 				for (String d : ds) {
 					String[] dd = d.split("=");
-					drivers.put(dd[0], (HierarchicalStreamDriver)Class.forName(dd[1]).newInstance());
+					drivers.put(dd[0].trim(), (HierarchicalStreamDriver)Class.forName(dd[1].trim()).newInstance());
+				}
+			}
+			
+			String xaliases = NestUtil.trimAll(config.getProperties().get("xstream.aliases"));
+			if (NestUtil.isNotEmpty(xaliases)) {
+				String[] as = xaliases.split(",");
+				for (String a : as) {
+					String[] aa = a.split("=");
+					aliases.put(aa[0].trim(), Class.forName(aa[1].trim()));
 				}
 			}
 		} catch (Exception e) {
@@ -88,6 +100,10 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 				xs = new XStream(driver);
 			}
 			
+			for (String name: aliases.keySet()) {
+				xs.alias(name, aliases.get(name));
+			}
+			
 			Alias alias = context.getAction().getAnnotation(Alias.class);
 			if (alias != null && alias.value() != null) {
 				for (String aliasStr : alias.value()) {
@@ -95,6 +111,9 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 					xs.alias(as[0], Class.forName(as[1]));
 				}
 			}
+			
+			// handle hibernate collections
+			xs.registerConverter(new HibernateCollectionConverter(xs.getConverterLookup()));
 			
 			context.getResponse().setContentType(contentType);
 //			String result = xs.toXML(context.getForward());
