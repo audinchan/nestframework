@@ -5,6 +5,7 @@ package ${hss_service_package};
  * @author austin
  *
  */
+ <#if hss_jdk5>@SuppressWarnings("unchecked")</#if>
 public interface IDemoManager extends IRootManager {
 	public String getMsg();
 }

@@ -13,7 +13,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 </#if>
 </#if>
-
+<#if hss_jdk5>@SuppressWarnings("unchecked")</#if>
 public abstract class RootManager<#if hss_jdk5><T, K extends Serializable></#if><#if merge_dao> extends HibernateDaoSupport</#if> implements IRootManager<#if hss_jdk5><T, K></#if> {
 <#if merge_dao>
 <#if hss_jdk5>
