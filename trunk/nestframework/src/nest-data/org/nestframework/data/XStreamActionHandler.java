@@ -30,6 +30,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 public class XStreamActionHandler implements IInitable, IActionHandler {
 	private Map<String, HierarchicalStreamDriver> drivers = new HashMap<String, HierarchicalStreamDriver>();
 	private Map<String, Class<?>> aliases = new HashMap<String, Class<?>>();
+	private boolean defaultConvertHibernate = true;
 	/* (non-Javadoc)
 	 * @see org.nestframework.core.IInitable#init(org.nestframework.config.IConfiguration)
 	 */
@@ -53,6 +54,8 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 					aliases.put(aa[0].trim(), Class.forName(aa[1].trim()));
 				}
 			}
+			
+			defaultConvertHibernate = "true".equalsIgnoreCase(NestUtil.trimAll(config.getProperties().get("xstream.convertHibernate")));
 		} catch (Exception e) {
 			throw new ActionException("Failed to init XStreamActionHandler", e);
 		}
@@ -112,8 +115,19 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 				}
 			}
 			
-			// handle hibernate collections
-			xs.registerConverter(new HibernateCollectionConverter(xs.getConverterLookup()));
+			Hibernate hibernate = context.getAction().getAnnotation(Hibernate.class);
+			
+			boolean convertHibernate = false;
+			if (defaultConvertHibernate && (null == hibernate || hibernate.value())) {
+				convertHibernate = true;
+			} else if (!defaultConvertHibernate && (null != hibernate && hibernate.value())) {
+				convertHibernate = true;
+			}
+			
+			if (convertHibernate) {
+				// handle hibernate collections
+				xs.registerConverter(new HibernateCollectionConverter(xs.getConverterLookup()));
+			}
 			
 			context.getResponse().setContentType(contentType);
 //			String result = xs.toXML(context.getForward());
