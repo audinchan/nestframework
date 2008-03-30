@@ -49,7 +49,7 @@ public class JdbcPage<E> extends AbstractPage<E> {
 	
 	protected void getElementsFromResultSet(ResultSet rs, IRowHandler<E> rh) throws SQLException {
 		computePage();
-		int offset = (currPageNumber - startPage) * pageSize;
+		int offset = (currPageNumber - firstPageNumber) * pageSize;
 		if (offset <= 1) {
 			rs.beforeFirst();
 		} else {
