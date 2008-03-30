@@ -103,6 +103,11 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 				xs = new XStream(driver);
 			}
 			
+			RootElement rootElement = context.getAction().getAnnotation(RootElement.class);
+			if (rootElement != null && rootElement.value().trim().length() > 0) {
+				xs.alias(rootElement.value().trim(), context.getForward().getClass());
+			}
+			
 			for (String name: aliases.keySet()) {
 				xs.alias(name, aliases.get(name));
 			}
