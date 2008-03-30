@@ -6,7 +6,8 @@ import ${hss_service_package}.IDemoManager;
 /**
  * @author austin
  *
- */
+ */<#if hss_jdk5>
+ @SuppressWarnings("unchecked")</#if>
 public class DemoManager extends RootManager implements IDemoManager {
 
 	/* (non-Javadoc)
