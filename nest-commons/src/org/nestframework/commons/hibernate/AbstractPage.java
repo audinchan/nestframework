@@ -5,14 +5,20 @@ import java.util.List;
 
 public abstract class AbstractPage<E> implements IPage<E> {
 	protected List<E> pageElements = new ArrayList<E>();
-
+	
 	protected int pageSize = 10;
 
 	protected int totalCount = 0;
 
 	protected int currPageNumber = 0;
 
-	protected int startPage = 1;
+	protected int firstPageNumber = 1;
+	
+	protected int lastPageNumber = 1;
+	
+	protected int previousPageNumber = 1;
+	
+	protected int nextPageNumber = 1;
 
 	public AbstractPage(int pageNumber, int pageSize) {
 		this.pageSize = pageSize;
@@ -23,34 +29,43 @@ public abstract class AbstractPage<E> implements IPage<E> {
 		if (pageSize < 1) {
 			pageSize = 1;
 		}
-        int lastPageNumber = getLastPageNumber();
+		double lastPage = (double) totalCount / pageSize;
+        lastPageNumber = (int) Math.ceil(lastPage);
 		if (currPageNumber > lastPageNumber) {
 			currPageNumber = lastPageNumber;
 		}
-		if (currPageNumber < startPage) {
-			currPageNumber = startPage;
+		if (currPageNumber < firstPageNumber) {
+			currPageNumber = firstPageNumber;
 		}
+		currPageNumber = (lastPageNumber == firstPageNumber) ? firstPageNumber : currPageNumber;
+		nextPageNumber = hasNextPage() ? currPageNumber + 1 : currPageNumber;
+		previousPageNumber = hasPreviousPage() ? currPageNumber - 1 : currPageNumber;
+		
 	}
 
 	public int getFirstPageNumber() {
-		return startPage;
+		return firstPageNumber;
 	}
 
 	public int getLastPageNumber() {
-		double lastPage = (double) totalCount / pageSize;
-		return (int) Math.ceil(lastPage);
+		return lastPageNumber;
 	}
 
 	public int getNextPageNumber() {
-		return hasNextPage() ? currPageNumber + 1 : currPageNumber;
+		return nextPageNumber;
 	}
 
 	public List<E> getPageElements() {
-		return hasNextPage() ? pageElements.subList(0, pageSize) : pageElements;
+		return pageElements;
+	}
+	
+	public IPage<E> setPageElements(List<E> pageElements) {
+		this.pageElements = pageElements;
+		return this;
 	}
 
 	public int getPreviousPageNumber() {
-		return hasPreviousPage() ? currPageNumber - 1 : currPageNumber;
+		return previousPageNumber;
 	}
 
 	public int getTotalCount() {
@@ -58,23 +73,23 @@ public abstract class AbstractPage<E> implements IPage<E> {
 	}
 
 	public boolean hasNextPage() {
-		return pageElements.size() > pageSize;
+		return currPageNumber < lastPageNumber;
 	}
 
 	public boolean hasPreviousPage() {
-		return currPageNumber > startPage;
+		return currPageNumber > firstPageNumber;
 	}
 
 	public boolean isFirstPage() {
-		return currPageNumber == startPage;
+		return currPageNumber == firstPageNumber;
 	}
 
 	public boolean isLastPage() {
-		return currPageNumber >= getLastPageNumber();
+		return currPageNumber >= lastPageNumber;
 	}
 
 	public int getCurrPageNumber() {
-		return (getLastPageNumber() == 0) ? 0 : currPageNumber;
+		return currPageNumber;
 	}
 
 	public int getPageSize() {

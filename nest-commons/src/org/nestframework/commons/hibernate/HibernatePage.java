@@ -19,7 +19,8 @@ public class HibernatePage<E> extends AbstractPage<E> {
 	public HibernatePage(Query query, int pageNumber, int pageSize) {
 		super(pageNumber, pageSize);
 		computePage(query.scroll());
-		this.pageElements = query.setFirstResult((currPageNumber - startPage) * pageSize).setMaxResults(pageSize + 1).list();
+		//setPageElements(query.setFirstResult((currPageNumber - firstPageNumber) * pageSize).setMaxResults(pageSize + 1).list());
+		setPageElements(query.setFirstResult((currPageNumber - firstPageNumber) * pageSize).setMaxResults(pageSize).list());
 	}
 
 	/**
@@ -37,7 +38,8 @@ public class HibernatePage<E> extends AbstractPage<E> {
 		super(pageNumber, pageSize);
 		this.totalCount = ((Long) countQuery.uniqueResult()).intValue();
 		computePage();
-		this.pageElements = query.setFirstResult((currPageNumber - startPage) * pageSize).setMaxResults(pageSize + 1).list();
+		//setPageElements(query.setFirstResult((currPageNumber - firstPageNumber) * pageSize).setMaxResults(pageSize + 1).list());
+		setPageElements(query.setFirstResult((currPageNumber - firstPageNumber) * pageSize).setMaxResults(pageSize).list());
 	}
 
 	/**
@@ -52,7 +54,8 @@ public class HibernatePage<E> extends AbstractPage<E> {
 	public HibernatePage(Criteria criteria, int pageNumber, int pageSize) {
 		super(pageNumber, pageSize);
 		computePage(criteria.scroll());
-		this.pageElements = criteria.setFirstResult((currPageNumber - startPage) * pageSize).setMaxResults(pageSize + 1).list();
+		//setPageElements(criteria.setFirstResult((currPageNumber - firstPageNumber) * pageSize).setMaxResults(pageSize + 1).list());
+		setPageElements(criteria.setFirstResult((currPageNumber - firstPageNumber) * pageSize).setMaxResults(pageSize).list());
 	}
 	
 	protected void computePage(ScrollableResults sc) {
