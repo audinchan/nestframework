@@ -1,6 +1,6 @@
-#Mon Mar 31 00:23:37 CST 2008
+#Mon Mar 31 11:25:13 CST 2008
 eclipse.preferences.version=1
-encoding//WebContent/js/ext_app.js=UTF-8
+encoding//WebContent/js/ext-app.js=UTF-8
 encoding//conf/db-conf.properties=GBK
 encoding//conf/i18n/messages_zh_CN.properties=GBK
 encoding//src/sys-conf.properties=UTF-8
