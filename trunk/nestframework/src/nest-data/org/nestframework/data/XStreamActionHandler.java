@@ -31,6 +31,10 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 	private Map<String, HierarchicalStreamDriver> drivers = new HashMap<String, HierarchicalStreamDriver>();
 	private Map<String, Class<?>> aliases = new HashMap<String, Class<?>>();
 	private boolean defaultConvertHibernate = true;
+	private boolean detectByRequestParamName = false;
+	private String paraNameOfType = "dataType";
+	private Map<String, String> contentTypes = new HashMap<String, String>();
+	
 	/* (non-Javadoc)
 	 * @see org.nestframework.core.IInitable#init(org.nestframework.config.IConfiguration)
 	 */
@@ -55,7 +59,23 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 				}
 			}
 			
-			defaultConvertHibernate = "true".equalsIgnoreCase(NestUtil.trimAll(config.getProperties().get("xstream.convertHibernate")));
+			if (config.getProperties().get("xstream.convertHibernate") != null) {
+				defaultConvertHibernate = "true".equalsIgnoreCase(NestUtil.trimAll(config.getProperties().get("xstream.convertHibernate")));
+			}
+			
+			if (config.getProperties().get("xstream.detectByRequestParamName") != null) {
+				detectByRequestParamName = "true".equalsIgnoreCase(NestUtil.trimAll(config.getProperties().get("xstream.detectByRequestParamName")));
+			}
+			contentTypes.put("xml", "text/xml; charset=UTF-8");
+			contentTypes.put("json", "application/json; charset=UTF-8");
+			String cts = NestUtil.trimAll(config.getProperties().get("xstream.contentTypes"));
+			if (NestUtil.isNotEmpty(cts)) {
+				String[] ct = xaliases.split(",");
+				for (String c : ct) {
+					String[] cc = c.split("=");
+					contentTypes.put(cc[0].trim(), cc[1].trim());
+				}
+			}
 		} catch (Exception e) {
 			throw new ActionException("Failed to init XStreamActionHandler", e);
 		}
@@ -92,6 +112,18 @@ public class XStreamActionHandler implements IInitable, IActionHandler {
 				}
 			}
 			doHandle = true;
+		} else if (detectByRequestParamName) {
+			String returnType = context.getRequest().getParameter(paraNameOfType);
+			if (NestUtil.isNotEmpty(returnType)) {
+				String[] cts = returnType.split(":");
+				dataType = cts[0];
+				if (cts.length > 1) {
+					contentType = cts[1];
+				} else {
+					contentType = contentTypes.get(dataType);
+				}
+				doHandle = true;
+			}
 		}
 		
 		if (doHandle) {
