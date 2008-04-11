@@ -36,6 +36,13 @@ public class RequestParamMapTypeConverter extends DefaultTypeConverter {
             return result;
 		}
 		
+		// need to fix ognl 2.6.9
+		if (toType == Boolean.class || toType == Boolean.TYPE) {
+			if (value.getClass() == String.class) {
+				return Boolean.valueOf((String) value);
+			}
+		}
+		
 		return super.convertValue(context, value, toType);
 	}
 
