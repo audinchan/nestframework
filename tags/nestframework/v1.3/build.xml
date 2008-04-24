@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build-all" name="nest" basedir=".">
+
+	<!-- tools classpath -->
+	<path id="classpath">
+		<fileset dir="lib/">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- build -->
+	<property name="build.dir" value="dist"/>
+
+	<target name="build" depends="build-test,build-spring,build-validation,build-data" description="--> build all modules">
+	</target>
+
+	<target name="build-jar">
+		<mkdir dir="${build.dir}/${ant.project.name}-${module}"/>
+		<javac deprecation="off" debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-${module}" destdir="${build.dir}/${ant.project.name}-${module}">
+			<compilerarg value="-Xlint"/>
+		</javac>
+		<copy todir="${build.dir}/${ant.project.name}-${module}">
+			<fileset dir="src/${ant.project.name}-${module}">
+				<!--<exclude name="**/*.java"/>-->
+				<exclude name="**/harvest.sig"/>
+			</fileset>
+		</copy>
+		<jar destfile="${build.dir}/${ant.project.name}-${module}.jar" manifest="${module}-MANIFEST.MF">
+			<fileset dir="${build.dir}/${ant.project.name}-${module}">
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build-core" description="--> build core module">
+		<antcall target="build-jar">
+			<param name="module" value="core"/>
+		</antcall>
+	</target>
+
+	<target name="build-test" depends="build-core" description="--> build test module">
+		<antcall target="build-jar">
+			<param name="module" value="test"/>
+		</antcall>
+	</target>
+
+	<target name="build-spring" depends="build-core" description="--> build spring module">
+		<antcall target="build-jar">
+			<param name="module" value="spring"/>
+		</antcall>
+	</target>
+
+	<target name="build-validation" depends="build-core" description="--> build validation module">
+		<antcall target="build-jar">
+			<param name="module" value="validation"/>
+		</antcall>
+	</target>
+	
+	<target name="build-data" depends="build-core" description="--> build validation module">
+		<antcall target="build-jar">
+			<param name="module" value="data"/>
+		</antcall>
+	</target>
+
+	<!-- ================================= 
+          target: build-all              
+         ================================= -->
+	<target name="build-all" depends="build" description="--> description">
+		<mkdir dir="${build.dir}/${ant.project.name}"/>
+		<copy todir="${build.dir}/${ant.project.name}">
+			<fileset dir="${build.dir}/${ant.project.name}-core">
+			</fileset>
+			<fileset dir="${build.dir}/${ant.project.name}-spring">
+			</fileset>
+			<fileset dir="${build.dir}/${ant.project.name}-test">
+			</fileset>
+			<fileset dir="${build.dir}/${ant.project.name}-validation">
+			</fileset>
+			<fileset dir="${build.dir}/${ant.project.name}-data">
+			</fileset>
+		</copy>
+		<jar destfile="${build.dir}/${ant.project.name}.jar" manifest="core-MANIFEST.MF">
+			<fileset dir="${build.dir}/${ant.project.name}">
+			</fileset>
+		</jar>
+	</target>
+
+
+	<target name="clean" description="--> clean build stuffs">
+		<delete dir="${build.dir}">
+		</delete>
+	</target>
+
+</project>
