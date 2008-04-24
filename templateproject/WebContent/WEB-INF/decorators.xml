@@ -1,8 +1,0 @@
-<decorators defaultdir="/_decorators">
-	<excludes>
-		<pattern>/login.jsp*</pattern>
-    </excludes>
-    <decorator name="main" page="main.jsp" >
-        <pattern>/demo/DemoAction.a*</pattern>
-    </decorator>
-</decorators>

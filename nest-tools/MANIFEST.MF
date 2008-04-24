@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: org.nestframework.tools.ProjectInitTool
-nest-tools-version: 2.1
