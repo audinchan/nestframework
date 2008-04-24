@@ -1,1 +1,0 @@
-java -jar lib\nest-tools.jar demopackage=%1 templateproject=%2 %3 %4 %5 %6 %7
