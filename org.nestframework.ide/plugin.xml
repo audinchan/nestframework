@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            class="org.nestframework.ide.editors.hyperlink.NestActionHyperlinkDetector"
+            id="org.nestframework.ide.editor.hyperlinkDetector"
+            name="nestActionHyperLinkDetector"
+            targetId="org.eclipse.jdt.ui.javaCode">
+      </hyperlinkDetector>
+      <hyperlinkDetector
+			class="org.nestframework.ide.editors.hyperlink.JSPActionHyperlinkDetector"
+			id="org.nestframework.ide.editors.hyperlink.JSPActionHyperlinkDetector"
+			name="nestActionJSPHyperLinkDetector"
+			targetId="org.eclipse.jst.jsp.core.jspsource">
+		</hyperlinkDetector>
+   </extension>
+
+</plugin>
