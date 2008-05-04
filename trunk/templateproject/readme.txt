@@ -33,3 +33,5 @@
 1. 将applicationContext-service.xml中的hibernate.show_sql改为false。
 2. 去掉p6spy调试sql（如果使用了）。
 3. 运行稳定后，关闭调试。
+
+v1.0.1
