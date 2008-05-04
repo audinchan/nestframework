@@ -10,6 +10,7 @@
 
 4. 编辑build.properties文件
 	修改数据库配置（db.*和hibernate.dialect属性需要修改）
+	如果不是Mysql数据库，则需要将相应的jdbc驱动拷贝到WebContent/WEB-INF/lib目录中，原有的mysql-connector-java-*.jar文件可以删除。
 
 5. 打开Eclipse的Ant视图(Window->Show View->Ant)，将build.xml拖拽到Ant视图中。
 	展开Ant任务，执行genall生成各种配置和代码
