@@ -440,5 +440,12 @@
     <target name="clean" description="--> 清理构建目录">
         <delete dir="${build.dir}"></delete>
     </target>
+    
+    <target name="zip" description="打包项目模板">
+    	<zip destfile="templateproject.zip"
+    		basedir="."
+    		excludes="**/.svn,templateproject.zip">
+    	</zip>
+    </target>
 
 </project>
