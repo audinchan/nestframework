@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.nestframework.action.IActionHandler;
+import org.nestframework.annotation.ContentType;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.Stage;
@@ -25,6 +26,12 @@ public class DefaultActionExecutor implements IActionHandler {
 	public boolean process(ExecuteContext context) throws Exception {
 		if (log.isDebugEnabled()) {
 			log.debug("process(ExecuteContext) - start");
+		}
+		
+		// handle content-type
+		ContentType ct = context.getAction().getAnnotation(ContentType.class);
+		if (ct != null) {
+			context.getResponse().setContentType(ct.value());
 		}
 
 		context.setForward(NestUtil.execMethod(context.getAction(), context
