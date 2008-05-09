@@ -10,6 +10,6 @@
 		</create>
 		 -->
 
-		<convert converter="hibernate" match="demopackage.templateproject.model.*" />
+		<convert converter="hibernate3" match="demopackage.templateproject.model.*" />
 	</allow>
 </dwr>
