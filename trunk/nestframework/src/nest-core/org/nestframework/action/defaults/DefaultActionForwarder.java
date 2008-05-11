@@ -1,11 +1,14 @@
 package org.nestframework.action.defaults;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +18,7 @@ import org.nestframework.action.Redirect;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.Stage;
+import org.nestframework.utils.NestUtil;
 
 /**
  * Default forward handler.
@@ -42,7 +46,10 @@ public class DefaultActionForwarder implements IActionHandler {
 		String forward = null;
 		boolean redirect = false;
 		boolean isLocal = true;
-		boolean sizeSet = false;
+		long streamLen = 0;
+		long startPos = 0;
+		String filename = null;
+		
 		if (rs instanceof String) {
 			forward = (String) context.getForward();
 		} else if (rs instanceof Redirect) {
@@ -61,60 +68,90 @@ public class DefaultActionForwarder implements IActionHandler {
 			} else if (dt.getData() != null) {
 				rs = dt.getData();
 			}
-			if (dt.getSize() != -1) {
-				context.getResponse().setContentLength((int)dt.getSize());
-				sizeSet = true;
-			}
+			streamLen = dt.getContentLength();
 			if (dt.getContentType() != null) {
 				context.getResponse().setContentType("application/octet-stream");
 			}
+			
+			filename = dt.getFilename();
 		}
-		// handle download
-		if (rs instanceof InputStream
-				|| rs instanceof byte[]
-				|| rs instanceof File) {
+		
+		InputStream is = null;
+			
+		if (rs instanceof InputStream) {
+			is = (InputStream) rs;
+		} else if (rs instanceof File) {
+			File file = (File) rs;
+			streamLen = file.length();
+			is = new FileInputStream(file);
+			if (filename == null) {
+				filename = NestUtil.getFilename(file.getName());
+			}
+		} else if (rs instanceof byte[]) {
+			byte[] data = (byte[]) context.getForward();
+			is = new ByteArrayInputStream(data);
+			streamLen = data.length;
+		}
+
+		if (is != null) {
 			String ct = context.getResponse().getContentType();
 			if (ct == null) {
-				context.getResponse().setContentType("application/octet-stream");
+				context.getResponse()
+						.setContentType("application/octet-stream");
+			}
+			
+			if (filename != null) {
+				String ua = context.getRequest().getHeader("User-Agent");
+				if (ua != null && ua.indexOf("MSIE") != -1) {
+					filename = URLEncoder.encode(filename, "UTF-8");
+				} else {
+					filename = new String(filename.getBytes(), "ISO8859-1");
+				}
+				context.getResponse().setHeader("Content-Disposition", "attachment; filename=" + filename);
 			}
 			
 			ServletOutputStream os = context.getResponse().getOutputStream();
-
-			if (rs instanceof InputStream
-					|| rs instanceof File) {
-				InputStream is = null;
-				if (rs instanceof InputStream) {
-					is = (InputStream) rs;
-				} else {
-					File file = (File) rs;
-					if (!sizeSet) {
-						context.getResponse().setContentLength((int) file.length());
-						sizeSet = true;
-					}
-					is = new FileInputStream(file);
+			
+			if (streamLen != 0 && context.getRequest().getHeader("Range") != null) {
+				context.getResponse().setStatus(
+						HttpServletResponse.SC_PARTIAL_CONTENT);
+				startPos = Long.parseLong(context.getRequest().getHeader(
+						"Range").toLowerCase().replaceAll("bytes=", "")
+						.replaceAll("-", ""));
+				if (startPos != 0) {
+					String contentRange = new StringBuffer("bytes ")
+						.append(new Long(startPos).toString())
+						.append("-")
+						.append(new Long(streamLen - 1).toString())
+						.append("/")
+						.append(new Long(streamLen).toString())
+						.toString();
+					context.getResponse().setHeader("Content-Range", contentRange);
+					is.skip(startPos);
 				}
-				if (is != null) {
-					byte[] buf = new byte[1024];
-					int readLen = 0;
-					while ((readLen = is.read(buf)) != -1) {
-						os.write(buf, 0, readLen);
-					}
-					is.close();
-				}
-			} else if (rs instanceof byte[]) {
-				byte[] data = (byte[]) context.getForward();
-				if (!sizeSet) {
-					context.getResponse().setContentLength(data.length);
-					sizeSet = true;
-				}
-				os.write(data);
 			}
 			
-			os.flush();
-			os.close();
+			if (streamLen != 0) {
+				context.getResponse().setHeader("Accept-Ranges", "bytes");
+				context.getResponse().setHeader("Content-Length", new Long(streamLen - startPos).toString());
+			}
+			
+			byte[] buf = new byte[1024];
+			int readLen = 0;
+			try {
+				while ((readLen = is.read(buf)) != -1) {
+					os.write(buf, 0, readLen);
+				}
+				os.flush();
+				os.close();
+			} catch (Exception e) {
+			} finally {
+				is.close();
+			}
 
 			return true;
 		}
+			
 		
 		if (forward == null) {
 			if (log.isDebugEnabled()) {
