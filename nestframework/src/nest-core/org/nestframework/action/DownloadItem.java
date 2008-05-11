@@ -3,6 +3,8 @@ package org.nestframework.action;
 import java.io.File;
 import java.io.InputStream;
 
+import org.nestframework.utils.NestUtil;
+
 public class DownloadItem {
 	private File file;
 
@@ -10,7 +12,7 @@ public class DownloadItem {
 
 	private String contentType;
 
-	private long size;
+	private long contentLength = 0;
 
 	private InputStream inputStream;
 
@@ -18,18 +20,22 @@ public class DownloadItem {
 
 	public DownloadItem(File file) {
 		this.file = file;
-		String name = file.getName();
-		int pos = name.lastIndexOf(File.separatorChar);
-		setFilename(name.substring(pos + 1));
-		setSize(file.length());
+		setFilename(NestUtil.getFilename(file.getName()));
+		setContentLength(file.length());
 	}
 
 	public DownloadItem(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
+	
+	public DownloadItem(InputStream inputStream, long contentLength) {
+		this.inputStream = inputStream;
+		setContentLength(contentLength);
+	}
 
 	public DownloadItem(byte[] data) {
 		this.data = data;
+		setContentLength(data.length);
 	}
 
 
@@ -55,12 +61,12 @@ public class DownloadItem {
 		return this;
 	}
 
-	public long getSize() {
-		return size;
+	public long getContentLength() {
+		return contentLength;
 	}
 
-	public DownloadItem setSize(long size) {
-		this.size = size;
+	public DownloadItem setContentLength(long size) {
+		this.contentLength = size;
 		return this;
 	}
 

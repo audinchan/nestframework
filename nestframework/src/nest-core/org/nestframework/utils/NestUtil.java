@@ -4,6 +4,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -317,5 +318,19 @@ public class NestUtil {
 			log.debug("getPropertiesMap(Object, String) - end");
 		}
 		return map;
+	}
+	
+	/**
+	 * Extract filename from full path.
+	 * 
+	 * @param filename Filename with path.
+	 * @return Filename.
+	 */
+	public static String getFilename(String filename) {
+		if (filename == null) {
+			return null;
+		}
+		int pos = filename.lastIndexOf(File.separatorChar);
+		return filename.substring(pos + 1);
 	}
 }
