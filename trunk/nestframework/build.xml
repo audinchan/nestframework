@@ -17,8 +17,11 @@
 
 	<target name="build-jar">
 		<mkdir dir="${build.dir}/${ant.project.name}-${module}"/>
-		<javac deprecation="off" debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-${module}" destdir="${build.dir}/${ant.project.name}-${module}">
-			<compilerarg value="-Xlint"/>
+		<javac source="1.5" target="1.5" deprecation="off" debug="true" encoding="UTF-8" classpath="${build.dir}/${ant.project.name}-core/" classpathref="classpath" srcdir="src/${ant.project.name}-${module}" destdir="${build.dir}/${ant.project.name}-${module}">
+			<compilerarg value="-Xlint:unchecked"/>
+			<!-- 
+			<compilerarg value="-Xlint:deprecation"/>
+			 -->
 		</javac>
 		<copy todir="${build.dir}/${ant.project.name}-${module}">
 			<fileset dir="src/${ant.project.name}-${module}">
