@@ -81,6 +81,10 @@ public class TestCaseUtil {
 	}
 	
 	public static void setPackageBase(String packageBase) {
-		config.getProperties().put("base", packageBase);
+		setConfig("base", packageBase);
+	}
+	
+	public static void setConfig(String name, String value) {
+		config.getProperties().put(name, value);
 	}
 }
