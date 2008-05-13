@@ -12,10 +12,12 @@ import org.nestframework.utils.NestUtil;
 public class TestCaseUtil {
 	private static IConfiguration config;
 	
+	static {
+		config = TestCaseConfiguration.getInstance();
+	}
+	
 	public static void init() {
-		if (config == null) {
-			config = TestCaseConfiguration.getInstance();
-		}
+		config.init();
 	}
 	
 	public static IConfiguration getConfiguration() {
@@ -79,6 +81,6 @@ public class TestCaseUtil {
 	}
 	
 	public static void setPackageBase(String packageBase) {
-		config.setPackageBase(packageBase);
+		config.getProperties().put("base", packageBase);
 	}
 }

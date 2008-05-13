@@ -6,9 +6,17 @@ import org.nestframework.action.defaults.DefaultActionBeanCreater;
 import org.nestframework.action.defaults.DefaultActionBeanSetter;
 import org.nestframework.action.defaults.DefaultActionExecutor;
 import org.nestframework.action.defaults.DefaultActionMethodFinder;
+import org.nestframework.config.IConfiguration;
 import org.nestframework.config.RuntimeConfiguration;
+import org.nestframework.core.NestContext;
 
 public class TestCaseConfiguration extends RuntimeConfiguration {
+	
+	public static IConfiguration getInstance() {
+		IConfiguration nestConfig = new TestCaseConfiguration();
+		NestContext.setConfig(nestConfig);
+		return nestConfig;
+	}
 	
 	@Override
 	protected void addDefaultHandlers() {
