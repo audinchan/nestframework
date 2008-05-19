@@ -18,12 +18,19 @@ public class ActionResolver {
 	 */
 	public static Object resolveAction(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		int pos = className.lastIndexOf('.');
-		Class<?> class1;
+		Class<?> clazz;
+		// com.company.project.webapp.action.classname
+		String cn = className.substring(0, pos);
 		try {
-			class1 = Class.forName(className.substring(0, pos));
+			clazz = Class.forName(cn);
 		} catch (ClassNotFoundException e) {
-			class1 = Class.forName(className.substring(0, 1).toUpperCase() + className.substring(1, pos));
+			int p2 = cn.lastIndexOf('.');
+			// classname
+			String shortName = cn.substring(p2 + 1);
+			// com.company.project.webapp.action + . + C + lassname
+			cn = cn.substring(0, p2) + '.' + shortName.substring(0, 1).toUpperCase() + shortName.substring(1);
+			clazz = Class.forName(cn);
 		}
-		return class1.newInstance();
+		return clazz.newInstance();
 	}
 }
