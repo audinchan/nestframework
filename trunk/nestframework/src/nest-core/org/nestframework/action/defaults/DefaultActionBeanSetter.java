@@ -1,5 +1,9 @@
 package org.nestframework.action.defaults;
 
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import ognl.DefaultMemberAccess;
@@ -10,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nestframework.action.FileItem;
 import org.nestframework.action.IActionHandler;
+import org.nestframework.annotation.DateFormat;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.core.ExecuteContext;
@@ -65,6 +70,19 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 		}
 		
 		Object bean = context.getActionBean();
+        // handle dateformat
+        Map<String, String> dfMap = new HashMap<String, String>();
+        Collection<Field> fields = NestUtil.getFields(context.getActionClass());
+        for (Field f : fields) {
+			DateFormat df = f.getAnnotation(DateFormat.class);
+			if (df != null) {
+				if (NestUtil.isEmpty(df.property())) {
+					dfMap.put(f.getName(), df.value());
+				} else {
+					dfMap.put(f.getName() + '.' + df.property(), df.value());
+				}
+			}
+		}
 		Map<?, ?> ognlContext = Ognl.createDefaultContext(bean);
 		DefaultMemberAccess memberAccess = new DefaultMemberAccess(true);
 		Ognl.setMemberAccess(ognlContext, memberAccess);
@@ -72,6 +90,7 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 		Map<String, String[]> params = context.getParams();
         boolean ifDecode = doDecode && "GET".equalsIgnoreCase(context.getRequest().getMethod());
         String encoding = null;
+
         if (ifDecode) {
         	if (forceDefault) {
         		encoding = defaultDestEnc;
@@ -91,13 +110,18 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
                 }
             }
 			
-			String p = paramName;
-			int pos = p.indexOf('.');
-			if (pos != -1) {
-				p = p.substring(0, pos);
-			}
+//			String p = paramName;
+//			int pos = p.indexOf('.');
+//			if (pos != -1) {
+//				p = p.substring(0, pos);
+//			}
+            Object value = paramValue;
 			try {
-				Ognl.setValue(paramName, ognlContext, bean, paramValue);
+				String df = dfMap.get(paramName);
+				if (df != null) {
+					value = new SimpleDateFormat(df).parse(paramValue[0]);
+				}
+				Ognl.setValue(paramName, ognlContext, bean, value);
 			} catch (NoSuchPropertyException e) {
 				// pass over not match properties
 				//logger.error("process(ExecuteContext)", e);
