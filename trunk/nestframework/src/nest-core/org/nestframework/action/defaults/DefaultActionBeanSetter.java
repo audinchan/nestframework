@@ -132,7 +132,7 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 		
 		// handle files
 		for (String fileName: context.getUploadedFiles().keySet()) {
-			FileItem fileItem = context.getUploadedFiles().get(fileName);
+			FileItem[] fileItem = context.getUploadedFiles().get(fileName);
 			try {
 				Ognl.setValue(fileName, ognlContext, bean, fileItem);
 			} catch (NoSuchPropertyException e) {

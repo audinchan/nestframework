@@ -5,8 +5,10 @@ package org.nestframework.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,8 @@ public class CosMultipartHandler implements IMultipartHandler {
 	private static Pattern EXCEPTION_PATTERN = Pattern
 			.compile("Posted content length of (\\d*) exceeds limit of (\\d*)");
 	
+	private static final String FILENAME_SEPERATOR = "\\$";
+	
 	/* (non-Javadoc)
 	 * @see org.nestframework.core.IMultipartHandler#processMultipart(org.nestframework.core.ExecuteContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -53,14 +57,29 @@ public class CosMultipartHandler implements IMultipartHandler {
 			context.setParams(params);
 
 			// handle files
-			Map<String, FileItem> fileItems = new HashMap<String, FileItem>();
+			Map<String, List<FileItem>> files = new HashMap<String, List<FileItem>>();
+			Map<String, FileItem[]> fileItems = new HashMap<String, FileItem[]>();
 			Enumeration<String> fileNames = mreq.getFileNames();
 			while (fileNames.hasMoreElements()) {
 				String fileName = fileNames.nextElement();
-				fileItems.put(fileName, new FileItem(mreq.getFile(fileName),
+				String[] fNames = fileName.split(FILENAME_SEPERATOR);
+				List<FileItem> fList = files.get(fNames[0]);
+				if (fList == null) {
+					fList = new ArrayList<FileItem>();
+					files.put(fNames[0], fList);
+				}
+				fList.add(new FileItem(mreq.getFile(fileName),
 						mreq.getContentType(fileName), mreq
 								.getOriginalFileName(fileName)));
+				
+//				fileItems.put(fileName, new FileItem(mreq.getFile(fileName),
+//						mreq.getContentType(fileName), mreq
+//								.getOriginalFileName(fileName)));
 			}
+			for (String fileName : files.keySet()) {
+				fileItems.put(fileName, files.get(fileName).toArray(new FileItem[0]));
+			}
+			
 			context.setUploadedFiles(fileItems);
 		} catch (IOException e) {
 			Matcher matcher = EXCEPTION_PATTERN.matcher(e.getMessage());

@@ -117,7 +117,7 @@ public class ExecuteContext {
 	/**
 	 * Uploaded files.
 	 */
-	private Map<String, FileItem> uploadedFiles = new HashMap<String, FileItem>();
+	private Map<String, FileItem[]> uploadedFiles = new HashMap<String, FileItem[]>();
 
 	public ExecuteContext() {
 	}
@@ -285,11 +285,11 @@ public class ExecuteContext {
 		return this;
 	}
 
-	public Map<String, FileItem> getUploadedFiles() {
+	public Map<String, FileItem[]> getUploadedFiles() {
 		return uploadedFiles;
 	}
 
-	public ExecuteContext setUploadedFiles(Map<String, FileItem> uploadedFiles) {
+	public ExecuteContext setUploadedFiles(Map<String, FileItem[]> uploadedFiles) {
 		this.uploadedFiles = uploadedFiles;
 		return this;
 	}
