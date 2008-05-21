@@ -217,11 +217,26 @@ public class RuntimeConfiguration implements IConfiguration {
 		// multipart handler
 		String mh = properties.get("multipartHandler");
 		if (NestUtil.isEmpty(mh)) {
-			mh = "org.nestframework.core.CosMultipartHandler";
+			try {
+				Class.forName("com.oreilly.servlet.MultipartRequest");
+				mh = "org.nestframework.core.CosMultipartHandler";
+			} catch (ClassNotFoundException e) {
+				try {
+					Class.forName("org.apache.commons.fileupload.servlet.ServletFileUpload");
+					mh = "org.nestframework.core.CommonsMultipartHandler";
+				} catch (ClassNotFoundException e1) {
+					throw new ActionException("Not any multipart handler found.");
+				}
+			}
+			
 		}
+		
 		try {
 			multipartHandler = (IMultipartHandler) Class.forName(mh.trim())
 					.newInstance();
+			if (multipartHandler instanceof IInitable) {
+				((IInitable) multipartHandler).init(this);
+			}
 		} catch (Exception e) {
 			throw new ActionException("Failed to add multipart handler, class="
 					+ mh, e);

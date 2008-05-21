@@ -336,6 +336,7 @@ public class FileItem {
     	return file != null && file.exists() && file.isFile();
     }
 
+    @Deprecated
 	public File getFile() {
 		return file;
 	}
