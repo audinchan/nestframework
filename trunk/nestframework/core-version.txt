@@ -1,6 +1,7 @@
 1.3.3
 增加DateFormat注释，支持日期格式的自动转换
 支持使用FileItem数组一次上传多个文件
+支持Commons-Fileupload组件，支持上传进度
 
 1.3.2
 fix: ActionResolver自动校正Action首字母的大小写问题
