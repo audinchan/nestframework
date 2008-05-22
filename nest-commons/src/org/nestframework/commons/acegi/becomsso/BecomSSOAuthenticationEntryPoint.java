@@ -26,7 +26,7 @@ public class BecomSSOAuthenticationEntryPoint implements
 		AuthenticationEntryPoint, InitializingBean {
 	
 	/**
-	 * Becom SSO ��֤URL.
+	 * Becom SSO auth url.
 	 */
 	private String authUrl;
 
