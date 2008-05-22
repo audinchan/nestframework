@@ -35,14 +35,14 @@
 	</bean>
 
 	<bean id="ssoAuthenticationEntryPoint"
-		class="org.nestframework.commons.becomsso.acegi.BecomSSOAuthenticationEntryPoint">
+		class="org.nestframework.commons.acegi.becomsso.BecomSSOAuthenticationEntryPoint">
 		<property name="authUrl">
 			<value>http://sso.edures.bjedu.cn/auth/authAction.do</value>
 		</property>
 	</bean>
 	
 	<bean id="ssoAuthenticationProvider"
-		class="org.nestframework.commons.becomsso.acegi.BecomSSOAuthenticationProvider">
+		class="org.nestframework.commons.acegi.becomsso.BecomSSOAuthenticationProvider">
 		<property name="userDetailsService"
 			ref="userDetailsServiceJdbc" />
 		<property name="becomSSOUserCreateService" ref="ssoUserCreateService" />
