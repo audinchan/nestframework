@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/hibernate-tools.jar"/>
 	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="lib/acegi-security.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
