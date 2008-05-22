@@ -1,0 +1,57 @@
+<beans>
+	<!-- BecomSSO -->
+	<!-- 
+		将一下内容复制到ACEGI的配置文件中，并根据以下方法操作。
+		
+		1. 继承BecomSSOProcessingFilter，在afterAuth方法中处理本应用的登录用户对象（放到Session中），注册为ssoAuthenticationProcessingFilter。
+		2. 使用ssoAuthenticationProcessingFilter替换filterChainProxy中的formAuthenticationProcessingFilter
+		3. 使用ssoAuthenticationEntryPoint替换exceptionTranslationFilter中对应的属性。
+		4. 将ssoAuthenticationProvider添加到authenticationManager的providers属性的最前面。
+		5. 继承AbstractBecomSSOUserCreateService实现createUser方法（创建用户，并赋予默认角色），注册为ssoUserCreateService。
+	 -->
+	
+	<bean id="ssoAuthenticationProcessingFilter"
+		class="com.becom.rock.webapp.util.SsoAuthenticationProcessingFilter">
+		<property name="filterProcessesUrl">
+			<value>/j_acegi_security_check</value>
+		</property>
+		<property name="authenticationFailureUrl">
+			<value>/login.jsp?error=user_psw_error</value>
+		</property>
+		<property name="defaultTargetUrl">
+			<value>/admin/</value>
+		</property>
+		<property name="authenticationManager"
+			ref="authenticationManager" />
+		<property name="authenticationEntryPoint" ref="ssoAuthenticationEntryPoint"/>
+		<property name="exceptionMappings">
+			<value>
+				org.acegisecurity.AuthenticationException=/login.jsp?error=user_psw_error
+				org.acegisecurity.concurrent.ConcurrentLoginException=/login.jsp?error=too_many_user_error
+				org.springframework.jdbc.CannotGetJdbcConnectionException=/login.jsp?error=db_error
+			</value>
+		</property>
+		<property name="userManager" ref="userManager"/>
+	</bean>
+
+	<bean id="ssoAuthenticationEntryPoint"
+		class="org.nestframework.commons.becomsso.acegi.BecomSSOAuthenticationEntryPoint">
+		<property name="authUrl">
+			<value>http://sso.edures.bjedu.cn/auth/authAction.do</value>
+		</property>
+	</bean>
+	
+	<bean id="ssoAuthenticationProvider"
+		class="org.nestframework.commons.becomsso.acegi.BecomSSOAuthenticationProvider">
+		<property name="userDetailsService"
+			ref="userDetailsServiceJdbc" />
+		<property name="becomSSOUserCreateService" ref="ssoUserCreateService" />
+	</bean>
+	
+	<bean id="ssoUserCreateService" class="com.becom.rock.webapp.util.SsoUserCreateService">
+		<property name="userManager" ref="userManager"/>
+		<property name="roleManager" ref="roleManager"/>
+		<property name="userDetailsService"
+			ref="userDetailsServiceJdbc" />
+	</bean>
+</beans>
