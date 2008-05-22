@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nestframework.action.FileItem;
 import org.nestframework.action.IActionHandler;
 import org.nestframework.annotation.DateFormat;
+import org.nestframework.annotation.DateFormatGroup;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.core.ExecuteContext;
@@ -75,11 +76,11 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
         Collection<Field> fields = NestUtil.getFields(context.getActionClass());
         for (Field f : fields) {
 			DateFormat df = f.getAnnotation(DateFormat.class);
-			if (df != null) {
-				if (NestUtil.isEmpty(df.property())) {
-					dfMap.put(f.getName(), df.value());
-				} else {
-					dfMap.put(f.getName() + '.' + df.property(), df.value());
+			putDateFormatMap(dfMap, f, df);
+			DateFormatGroup dfg = f.getAnnotation(DateFormatGroup.class);
+			if (dfg != null) {
+				for (DateFormat df2: dfg.value()) {
+					putDateFormatMap(dfMap, f, df2);
 				}
 			}
 		}
@@ -146,6 +147,22 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 			logger.debug("process(ExecuteContext) - end");
 		}
 		return false;
+	}
+
+	/**
+	 * @param dfMap
+	 * @param f
+	 * @param df
+	 */
+	private void putDateFormatMap(Map<String, String> dfMap, Field f,
+			DateFormat df) {
+		if (df != null) {
+			if (NestUtil.isEmpty(df.property())) {
+				dfMap.put(f.getName(), df.value());
+			} else {
+				dfMap.put(f.getName() + '.' + df.property(), df.value());
+			}
+		}
 	}
 
 }

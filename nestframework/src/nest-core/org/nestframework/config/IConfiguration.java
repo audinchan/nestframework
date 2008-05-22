@@ -7,6 +7,7 @@ import org.nestframework.action.IActionHandler;
 import org.nestframework.action.IExceptionHandler;
 import org.nestframework.core.IExternalContext;
 import org.nestframework.core.IMultipartHandler;
+import org.nestframework.core.IParamAdvisor;
 import org.nestframework.core.Stage;
 import org.nestframework.core.StageHandler;
 
@@ -93,4 +94,8 @@ public interface IConfiguration {
 	 * Initial configuration.
 	 */
 	public void init();
+	
+	public IConfiguration addParamAdvisor(IParamAdvisor advisor);
+	
+	public List<IParamAdvisor> getParamAdvisors();
 }

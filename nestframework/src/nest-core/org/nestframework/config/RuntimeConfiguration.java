@@ -20,9 +20,11 @@ import org.nestframework.action.defaults.DefaultActionExecutor;
 import org.nestframework.action.defaults.DefaultActionForwarder;
 import org.nestframework.action.defaults.DefaultActionMethodFinder;
 import org.nestframework.annotation.Intercept;
+import org.nestframework.core.DefaultParamAdvisor;
 import org.nestframework.core.IExternalContext;
 import org.nestframework.core.IInitable;
 import org.nestframework.core.IMultipartHandler;
+import org.nestframework.core.IParamAdvisor;
 import org.nestframework.core.NestContext;
 import org.nestframework.core.Stage;
 import org.nestframework.core.StageHandler;
@@ -47,6 +49,8 @@ public class RuntimeConfiguration implements IConfiguration {
 	private IExternalContext externalContext;
 
 	private IMultipartHandler multipartHandler;
+	
+	private List<IParamAdvisor> paramAdvisors = new ArrayList<IParamAdvisor>();
 
 	public static IConfiguration getInstance() {
 		if (log.isDebugEnabled()) {
@@ -241,6 +245,21 @@ public class RuntimeConfiguration implements IConfiguration {
 			throw new ActionException("Failed to add multipart handler, class="
 					+ mh, e);
 		}
+		
+		String pas = properties.get("paramAdvisors");
+		if (NestUtil.isNotEmpty(pas)) {
+			String[] handlerClasses = NestUtil.trimAll(pas).split(",");
+			for (String clazz : handlerClasses) {
+				try {
+					Object handler = Class.forName(clazz.trim()).newInstance();
+					addParamAdvisor((IParamAdvisor) handler);
+				} catch (Exception e) {
+					log.error("init()", e);
+					throw new ActionException("Failed to add param advisor, class=" + clazz, e);
+				}
+			}
+		}
+		addParamAdvisor(new DefaultParamAdvisor());
 
 		// add default handlers.
 		// default handler is at tail of handler chain.
@@ -250,4 +269,15 @@ public class RuntimeConfiguration implements IConfiguration {
 			log.debug("init() - end");
 		}
 	}
+
+	public IConfiguration addParamAdvisor(IParamAdvisor advisor) {
+		paramAdvisors.add(advisor);
+		return this;
+	}
+
+	public List<IParamAdvisor> getParamAdvisors() {
+		return paramAdvisors;
+	}
+	
+	
 }
