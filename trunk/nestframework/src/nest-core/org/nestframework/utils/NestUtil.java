@@ -6,7 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,19 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import ognl.DefaultMemberAccess;
 import ognl.Ognl;
 import ognl.OgnlException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nestframework.core.BeanContext;
 import org.nestframework.core.ExecuteContext;
-import org.nestframework.localization.ActionMessages;
+import org.nestframework.core.IParamAdvisor;
 
 /**
  * Nest utility class.
@@ -61,22 +56,16 @@ public class NestUtil {
 		Object rt;
 		List<Object> paras = new ArrayList<Object>();
 		Class<?>[] paraTypes = m.getParameterTypes();
-		// auto parameter type match
-		for (Class<?> clazz : paraTypes) {
-			if (clazz.equals(HttpServletRequest.class)) {
-				paras.add(ctx.getRequest());
-			} else if (clazz.equals(HttpServletResponse.class)) {
-				paras.add(ctx.getResponse());
-			} else if (clazz.equals(HttpSession.class)) {
-				paras.add(ctx.getRequest().getSession(true));
-			} else if (clazz.equals(BeanContext.class)) {
-				paras.add(ctx.getBeanContext());
-			} else if (clazz.equals(ActionMessages.class)) {
-				paras.add(ctx.getActionErrors());
-			} else if (clazz.equals(PrintWriter.class)) {
-				paras.add(ctx.getResponse().getWriter());
-			} else if (clazz.equals(ctx)) {
-				paras.add(ctx);
+		Annotation[][] pas = m.getParameterAnnotations();
+		// automatic parameters
+		for (int i = 0; i < paraTypes.length; i++) {
+			List<IParamAdvisor> advisors = ctx.getConfig().getParamAdvisors();
+			for (IParamAdvisor advisor : advisors) {
+				Object p = advisor.parseParam(paraTypes[i], pas[i], ctx);
+				if (p != null) {
+					paras.add(p);
+					break;
+				}
 			}
 		}
 		rt = m.invoke(obj, (Object[]) paras.toArray(new Object[] {}));
