@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.nestframework.commons.becomsso.acegi;
+package org.nestframework.commons.acegi.becomsso;
 
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
@@ -18,7 +18,7 @@ public abstract class AbstractBecomSSOUserCreateService implements
 	private UserDetailsService userDetailsService;
 
 	/* (non-Javadoc)
-	 * @see org.nestframework.commons.becomsso.acegi.IBecomSSOUserCreateService#createAndGet(java.lang.String)
+	 * @see org.nestframework.commons.acegi.becomsso.IBecomSSOUserCreateService#createAndGet(java.lang.String)
 	 */
 	public UserDetails createAndGet(String loginName) {
 		createUser(loginName);

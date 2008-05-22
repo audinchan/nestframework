@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.nestframework.commons.becomsso.acegi;
+package org.nestframework.commons.acegi.becomsso;
 
 import org.acegisecurity.userdetails.UserDetails;
 
