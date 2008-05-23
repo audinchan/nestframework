@@ -23,6 +23,7 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 		InitializingBean {
 	private UserDetailsService userDetailsService;
 	private IBecomSSOUserCreateService becomSSOUserCreateService;
+	private boolean autoCreateUser = false;
 
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
@@ -35,7 +36,11 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 			try {
 				user = getUserDetailsService().loadUserByUsername(auth.getLoginName());
 			} catch (UsernameNotFoundException e) {
-				user = getBecomSSOUserCreateService().createAndGet(auth.getLoginName());
+				if (autoCreateUser) {
+					user = getBecomSSOUserCreateService().createAndGet(auth.getLoginName());
+				} else {
+					throw new NoSuchUserException("No such user.", e);
+				}
 			}
 			
 			Assert.notNull(user, "Can't get userdetails - a violation of the interface contract");
@@ -53,7 +58,6 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.userDetailsService, "userDetailsService must be set");
-		Assert.notNull(this.becomSSOUserCreateService, "becomSSOUserCreateService must be set");
 	}
 
 	public UserDetailsService getUserDetailsService() {
@@ -71,6 +75,10 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 	public void setBecomSSOUserCreateService(
 			IBecomSSOUserCreateService becomSSOUserCreateService) {
 		this.becomSSOUserCreateService = becomSSOUserCreateService;
+	}
+
+	public void setAutoCreateUser(boolean autoCreateUser) {
+		this.autoCreateUser = autoCreateUser;
 	}
 
 }

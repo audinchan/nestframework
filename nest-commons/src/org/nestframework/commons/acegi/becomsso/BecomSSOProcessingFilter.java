@@ -87,16 +87,6 @@ public class BecomSSOProcessingFilter extends AbstractProcessingFilter {
 		return null != request.getParameter("becom_auth_key");
 	}
 
-	@Override
-	protected void sendRedirect(HttpServletRequest request,
-			HttpServletResponse response, String failureUrl) throws IOException {
-		try {
-			authenticationEntryPoint.commence(request, response, null);
-		} catch (ServletException e) {
-			throw new IOException("Auth redirect failed.", e);
-		}
-	}
-
 	public void setAuthenticationEntryPoint(
 			AuthenticationEntryPoint authenticationEntryPoint) {
 		this.authenticationEntryPoint = authenticationEntryPoint;
