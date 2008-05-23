@@ -8,6 +8,7 @@
 		3. 使用ssoAuthenticationEntryPoint替换exceptionTranslationFilter中对应的属性。
 		4. 将ssoAuthenticationProvider添加到authenticationManager的providers属性的最前面。
 		5. 继承AbstractBecomSSOUserCreateService实现createUser方法（创建用户，并赋予默认角色），注册为ssoUserCreateService。
+		6. 使用ssoLogoutFilter替换filterChainProxy中的logoutFilter
 	 -->
 	
 	<bean id="ssoAuthenticationProcessingFilter"
@@ -16,7 +17,7 @@
 			<value>/j_acegi_security_check</value>
 		</property>
 		<property name="authenticationFailureUrl">
-			<value>/login.jsp?error=user_psw_error</value>
+			<value>/?error=sso_login_error</value>
 		</property>
 		<property name="defaultTargetUrl">
 			<value>/admin/</value>
@@ -26,12 +27,30 @@
 		<property name="authenticationEntryPoint" ref="ssoAuthenticationEntryPoint"/>
 		<property name="exceptionMappings">
 			<value>
-				org.acegisecurity.AuthenticationException=/login.jsp?error=user_psw_error
-				org.acegisecurity.concurrent.ConcurrentLoginException=/login.jsp?error=too_many_user_error
-				org.springframework.jdbc.CannotGetJdbcConnectionException=/login.jsp?error=db_error
+				org.acegisecurity.AuthenticationException=/?error=sso_login_error
+				org.acegisecurity.concurrent.ConcurrentLoginException=/?error=too_many_user_error
+				org.springframework.jdbc.CannotGetJdbcConnectionException=/?error=db_error
 			</value>
 		</property>
 		<property name="userManager" ref="userManager"/>
+	</bean>
+	
+	<bean id="ssoLogoutFilter"
+		class="org.nestframework.commons.acegi.becomsso.BecomSSOLogoutFilter">
+		<!-- 退出后指向的 URL -->
+		<constructor-arg value="/" />
+		<constructor-arg>
+			<list>
+				<bean
+					class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler" />
+				<!-- 解决退出后再登录出现ClassCastException异常 -->
+				<bean
+					class="org.nestframework.commons.acegi.SessionlogoutHandler" />
+			</list>
+		</constructor-arg>
+		<property name="logoutUrl">
+			<value>http://sso.edures.bjedu.cn/auth/authLogoutAction.do</value>
+		</property>
 	</bean>
 
 	<bean id="ssoAuthenticationEntryPoint"
