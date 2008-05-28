@@ -17,7 +17,9 @@
          ================================= -->
     <target name="build" description="--> description">
     	<mkdir dir="${build.dir}/classes"/>
-        <javac debug="true" classpathref="classpath" srcdir="src" destdir="${build.dir}/classes"/>
+        <javac source="1.5" target="1.5" deprecation="off" debug="true" classpathref="classpath" srcdir="src" destdir="${build.dir}/classes">
+        	<compilerarg value="-Xlint:unchecked"/>
+        </javac>
     	<copy todir="${build.dir}/classes">
     		<fileset dir="src">
     			<!--exclude name="**/*.java"/-->
