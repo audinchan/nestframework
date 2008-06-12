@@ -4,8 +4,12 @@ package ${hss_service_package};
 <#assign declarationName = pojo.importType(pojo.getDeclarationName())>
 <#if hss_jdk5>
 import ${pojo.getPackageName()}.${declarationName};
+<#if pojo.identifierProperty.composite>
+import ${pojo.getPackageName()}.${declarationName}Id;
+</#if>
 </#if>
 
 
 public interface I${declarationName}Manager extends IBase<#if hss_jdk5 = false>${declarationName}</#if>Manager<#if hss_jdk5><${declarationName}, ${pojo.getJavaTypeName(clazz.identifierProperty, false)}></#if> {
 }
+

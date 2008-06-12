@@ -108,6 +108,9 @@ public class MyExporter extends GenericExporter {
 	}
 
 	protected void exportPOJO(Map additionalContext, POJOClass element) {
+	    if (element.isComponent()) {
+	        return;
+	    }
 		if (includeModels != null) {
 			boolean handleIt = false;
 			for (int i = 0; i < includeModels.length; i++) {
