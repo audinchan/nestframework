@@ -442,9 +442,9 @@
     </target>
     
     <target name="zip" description="打包项目模板">
-    	<zip destfile="templateproject.zip"
+    	<zip destfile="${app.name}.zip"
     		basedir="."
-    		excludes="**/.svn,templateproject.zip">
+    		excludes="**/.svn,${app.name}.zip">
     	</zip>
     </target>
 
