@@ -353,6 +353,14 @@
         	</fileset>
         </war>
     </target>
+    
+    <target name="war-nolib" depends="build,copy-resource" description="--> 构建用于部署的war(不含lib下面的jar文件)文件">
+        <war destfile="${build.dir}/${app.name}.war" webxml="${build.dir}/${app.name}/WEB-INF/web.xml" compress="true">
+        	<fileset dir="${build.dir}/${app.name}">
+        		<exclude name="**/WEB-INF/lib/*.jar"/>
+        	</fileset>
+        </war>
+    </target>
 
 
     <!-- - - - - - - - - - - - - - - - - -
