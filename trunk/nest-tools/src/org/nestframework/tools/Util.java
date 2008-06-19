@@ -76,12 +76,16 @@ public class Util {
 
 		String name = element.getClassName();
 		name = name.substring(name.lastIndexOf('.') + 1);
-		String returnString = name.substring(0, 1).toLowerCase()
+		if (name.length() > 1 && name.charAt(1) <= 'Z') {
+		    // no need to change first char's case.
+		} else {
+		    name = name.substring(0, 1).toLowerCase()
 				+ name.substring(1);
+		}
 		if (log.isDebugEnabled()) {
 			log.debug("toBeanName(PersistentClass) - end");
 		}
-		return returnString;
+		return name;
 	}
 
 	public String getDeclarationName(PersistentClass element) {
