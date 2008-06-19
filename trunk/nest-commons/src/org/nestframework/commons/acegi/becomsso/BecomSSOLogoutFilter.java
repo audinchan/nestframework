@@ -38,26 +38,26 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         if (requiresLogout(req, res)) {
-        	String ssoLogoutTag = req.getParameter("becom_sso_logout");
+        	String ssoLogoutTag = req.getParameter("sso_logout");
     		if (null == ssoLogoutTag) {
     			String thisUrl = req.getRequestURL().toString();
     			
     			if (thisUrl.indexOf('?') != -1) {
-    				thisUrl += "&becom_sso_logout=1";
+    				thisUrl += "&sso_logout=1";
     			} else {
-    				thisUrl += "?becom_sso_logout=1";
+    				thisUrl += "?sso_logout=1";
     			}
     			try {
     				thisUrl = URLEncoder.encode(thisUrl, "UTF-8");
     			} catch (UnsupportedEncodingException e) {}
     			String key = req.getSession().getId();
     			
-    			String redirectUrl = logoutUrl + "?becom_authlogout_url=" + thisUrl + "&becom_authlogout_key=" + key;
+    			String redirectUrl = logoutUrl + "?authlogout_url=" + thisUrl + "&authlogout_key=" + key;
     			
     			res.sendRedirect(redirectUrl);
     			return;
     		} else {
-    			String remoteKey = req.getParameter("becom_authlogout_key");
+    			String remoteKey = req.getParameter("authlogout_key");
     			if (EncodeUtil.md5(req.getSession().getId()).toUpperCase().equals(remoteKey)) {
     				// successfull logout
     				super.doFilter(request, response, chain);

@@ -22,7 +22,7 @@ import org.springframework.util.Assert;
  */
 public class BecomSSOProcessingFilter extends AbstractProcessingFilter {
 
-	public static final String BECOM_SSO_LAST_USERNAME_KEY = "BECOM_SSO_LAST_USERNAME_KEY";
+	public static final String SSO_LAST_USERNAME_KEY = "SSO_LAST_USERNAME_KEY";
 
 	private AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -34,9 +34,9 @@ public class BecomSSOProcessingFilter extends AbstractProcessingFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request)
 			throws AuthenticationException {
-		String loginName = request.getParameter("becom_auth_username");
-		String testName = request.getParameter("becom_authtest_username");
-		String remoteKey = request.getParameter("becom_auth_key");
+		String loginName = request.getParameter("auth_username");
+		String testName = request.getParameter("authtest_username");
+		String remoteKey = request.getParameter("auth_key");
 		String clientKey = request.getSession().getId();
 
 		BecomSSOAuthenticationToken authRequest = new BecomSSOAuthenticationToken(
@@ -48,7 +48,7 @@ public class BecomSSOProcessingFilter extends AbstractProcessingFilter {
 		Authentication authentication = getAuthenticationManager()
 				.authenticate(authRequest);
 
-		request.getSession().setAttribute(BECOM_SSO_LAST_USERNAME_KEY,
+		request.getSession().setAttribute(SSO_LAST_USERNAME_KEY,
 				loginName);
 		
 		afterAuth(request, loginName);
@@ -84,7 +84,7 @@ public class BecomSSOProcessingFilter extends AbstractProcessingFilter {
 	@Override
 	protected boolean requiresAuthentication(HttpServletRequest request,
 			HttpServletResponse response) {
-		return null != request.getParameter("becom_auth_key");
+		return null != request.getParameter("auth_key");
 	}
 
 	public void setAuthenticationEntryPoint(
