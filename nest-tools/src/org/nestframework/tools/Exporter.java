@@ -6,6 +6,8 @@ package org.nestframework.tools;
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -422,7 +424,14 @@ public class Exporter extends AbstractExporter {
 					logger.debug("produce extra template - start: " + tpls[i]);
 				}
 				String[] tpl = tpls[i].split(":");
-				configureExporter(tpl[0], tpl[1]).start();
+				String destPath = tpl[1].trim();
+				Pattern pattern = Pattern.compile ("(\\$\\[([a-zA-Z0-9._]+)\\])");
+				Matcher m = pattern.matcher (destPath);
+		        while (m.find()) {
+		            destPath = destPath.replace(m.group(1), getConfPath(m.group(2)));
+		        }
+		        
+				configureExporter(tpl[0].trim(), destPath).start();
 				if (logger.isDebugEnabled()) {
 					logger.debug("produce extra template - end");
 				}
