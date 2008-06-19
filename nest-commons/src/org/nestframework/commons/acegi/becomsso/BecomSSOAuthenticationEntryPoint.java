@@ -46,7 +46,7 @@ public class BecomSSOAuthenticationEntryPoint implements
 		thisUrl = URLEncoder.encode(thisUrl, "UTF-8");
 		String key = req.getSession().getId();
 		
-		String redirectUrl = authUrl + "?becom_auth_url=" + thisUrl + "&becom_auth_key=" + key;
+		String redirectUrl = authUrl + "?auth_url=" + thisUrl + "&auth_key=" + key;
 		
 		res.sendRedirect(redirectUrl);
 	}
