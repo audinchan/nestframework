@@ -320,7 +320,7 @@ public class FileItem {
 			logger.debug("toString() - start");
 		}
 
-		String returnString = "FileBean{" + "contentType='" + contentType + "'"
+		String returnString = "FileItem{" + "contentType='" + contentType + "'"
 				+ ", fileName='" + fileName + "'" + "}";
 		if (logger.isDebugEnabled()) {
 			logger.debug("toString() - end");
