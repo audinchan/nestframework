@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 </#if>
 </#if>
@@ -67,17 +68,7 @@ public abstract class RootManager<#if hss_jdk5><T, K extends Serializable></#if>
         return queryProvider.getQuery(name);
     }
     
-    /**
-     * 根据动态Hql查询分页对象.
-     * 
-     * @param dqQuery 查询用的动态Hql名称.
-     * @param dqCount 计算查询结果集记录数的动态Hql名称.
-     * @param paras 查询参数.
-     * @param pageNumber 第几页.
-     * @param pageSize 每页显示记录数.
-     * @return
-     */
-    protected IPage<T> findByDynamicQuery(final String dqQuery,
+    public IPage<T> findByDynamicQuery(final String dqQuery,
 			final String dqCount, final Map<String, Object> paras,
 			final int pageNumber, final int pageSize) {
 		return (IPage<T>) getHibernateTemplate().execute(
@@ -98,5 +89,19 @@ public abstract class RootManager<#if hss_jdk5><T, K extends Serializable></#if>
 
 				});
 	}
+    
+    public List<T> findByProperty(String propertyName, Object propertyValue) {
+    	List list = getHibernateTemplate().find("from " + getGenericClass(getClass()).getSimpleName() + " where " + propertyName + "=?", propertyValue);
+    	return list;
+    }
+    
+    public T getByProperty(String propertyName, Object propertyValue) {
+    	List<T> list = findByProperty(propertyName, propertyValue);
+    	if (list != null && list.size() > 0) {
+    		return list.get(0);
+    	} else {
+    		return null;
+    	}
+    }
 </#if>
 }
