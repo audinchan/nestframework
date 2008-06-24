@@ -43,6 +43,11 @@ public class RequestParamMapTypeConverter extends DefaultTypeConverter {
 			}
 		}
 		
+		// is the same type, just return it.
+		if (value.getClass().equals(toType)) {
+			return value;
+		}
+		
 		return super.convertValue(context, value, toType);
 	}
 
