@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/spring.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload.jar"/>
 	<classpathentry kind="lib" path="lib/acegi-security.jar" sourcepath="D:/store/develop/java/acegi-security-1.0.1-src.zip"/>
+	<classpathentry kind="lib" path="lib/nest.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
