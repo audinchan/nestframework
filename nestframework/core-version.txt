@@ -1,3 +1,10 @@
+1.3.5
+修正异常处理流程
+
+1.3.4
+增加Action方法参数从Request直接获取参数的方式
+如public Object test4(PrintWriter w, @WebParam(name="values") Integer[] values)
+
 1.3.3
 增加DateFormat注释，支持日期格式的自动转换
 支持使用FileItem数组一次上传多个文件

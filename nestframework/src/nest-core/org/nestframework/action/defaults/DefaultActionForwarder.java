@@ -107,7 +107,7 @@ public class DefaultActionForwarder implements IActionHandler {
 				} else {
 					filename = new String(filename.getBytes(), "ISO8859-1");
 				}
-				context.getResponse().setHeader("Content-Disposition", "attachment; filename=" + filename);
+				context.getResponse().setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 			}
 			
 			ServletOutputStream os = context.getResponse().getOutputStream();

@@ -2,8 +2,10 @@ package org.nestframework.action.defaults;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ognl.DefaultMemberAccess;
@@ -16,6 +18,7 @@ import org.nestframework.action.FileItem;
 import org.nestframework.action.IActionHandler;
 import org.nestframework.annotation.DateFormat;
 import org.nestframework.annotation.DateFormatGroup;
+import org.nestframework.annotation.HTML;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.core.ExecuteContext;
@@ -47,6 +50,7 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 	private String defaultDestEnc = "GBK";
 	private boolean doDecode = true;
 	private boolean forceDefault = false;
+	private boolean escapeHTML = false;
 
 	public void init(IConfiguration config) {
 		String ges = config.getProperties().get("get.encoding.source");
@@ -63,6 +67,9 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 		if ("true".equalsIgnoreCase(config.getProperties().get("get.encoding.forceDefault"))) {
 			forceDefault = true;
 		}
+		if ("true".equalsIgnoreCase(config.getProperties().get("escapeHTML"))) {
+			escapeHTML = true;
+		}
 	}
 
 	public boolean process(ExecuteContext context) throws Exception {
@@ -73,6 +80,7 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 		Object bean = context.getActionBean();
         // handle dateformat
         Map<String, String> dfMap = new HashMap<String, String>();
+        List<String> htmlList = new ArrayList<String>();
         Collection<Field> fields = NestUtil.getFields(context.getActionClass());
         for (Field f : fields) {
 			DateFormat df = f.getAnnotation(DateFormat.class);
@@ -83,11 +91,25 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 					putDateFormatMap(dfMap, f, df2);
 				}
 			}
+			
+			if (escapeHTML) {
+				HTML html = f.getAnnotation(HTML.class);
+				if (html != null) {
+					if (NestUtil.isEmpty(html.property())) {
+						htmlList.add(f.getName());
+					} else {
+						htmlList.add(f.getName() + '.' + df.property());
+					}
+				}
+			}
 		}
 		Map<?, ?> ognlContext = Ognl.createDefaultContext(bean);
 		DefaultMemberAccess memberAccess = new DefaultMemberAccess(true);
 		Ognl.setMemberAccess(ognlContext, memberAccess);
-		Ognl.setTypeConverter(ognlContext, new RequestParamMapTypeConverter());
+		RequestParamMapTypeConverter converter = new RequestParamMapTypeConverter();
+		converter.setConfig("escapeHTML", escapeHTML ? "true" : "false");
+		converter.setConfig("htmlList", htmlList);
+		Ognl.setTypeConverter(ognlContext, converter);
 		Map<String, String[]> params = context.getParams();
         boolean ifDecode = doDecode && "GET".equalsIgnoreCase(context.getRequest().getMethod());
         String encoding = null;
@@ -122,12 +144,13 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 				if (df != null) {
 					value = new SimpleDateFormat(df).parse(paramValue[0]);
 				}
+				converter.setCurrentParam(paramName);
 				Ognl.setValue(paramName, ognlContext, bean, value);
 			} catch (NoSuchPropertyException e) {
 				// pass over not match properties
 				//logger.error("process(ExecuteContext)", e);
 			} catch (Exception e) {
-				logger.error("process(ExecuteContext)", e);
+//				logger.error("process(ExecuteContext)", e);
 			}
 		}
 		
@@ -164,5 +187,4 @@ public class DefaultActionBeanSetter implements IActionHandler, IInitable {
 			}
 		}
 	}
-
 }

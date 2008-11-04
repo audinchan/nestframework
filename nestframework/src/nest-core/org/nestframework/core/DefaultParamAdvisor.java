@@ -6,13 +6,19 @@ package org.nestframework.core;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import ognl.Ognl;
+
 import org.nestframework.action.ActionException;
+import org.nestframework.annotation.WebParam;
 import org.nestframework.localization.ActionMessages;
+import org.nestframework.utils.NestUtil;
+import org.nestframework.utils.RequestParamMapTypeConverter;
 
 /**
  * @author audin
@@ -45,6 +51,22 @@ public class DefaultParamAdvisor implements IParamAdvisor {
 			}
 		} else if (clazz.equals(ExecuteContext.class)) {
 			rt = ctx;
+		} else {
+			if (annotation != null) {
+				for (Annotation an: annotation) {
+					if (an.annotationType().isAssignableFrom(WebParam.class)) {
+						WebParam param = (WebParam)an;
+						String pn = param.name();
+						if (NestUtil.isNotEmpty(pn)) {
+							String[] value = ctx.getParams().get(pn);
+							Map<?, ?> ognlContext = Ognl.createDefaultContext(null);
+							RequestParamMapTypeConverter converter = new RequestParamMapTypeConverter();
+							rt = converter.convertValue(ognlContext, value, clazz);
+							break;
+						}
+					}
+				}
+			}
 		}
 		return rt;
 	}

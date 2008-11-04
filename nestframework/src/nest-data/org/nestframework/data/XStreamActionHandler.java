@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  * xstream.drivers
  * xstream.aliases
  */
-@Intercept(Stage.AFTER_EXECUTION)
+@Intercept(Stage.HANDLE_VIEW)
 public class XStreamActionHandler implements IInitable, IActionHandler {
 	private Map<String, HierarchicalStreamDriver> drivers = new HashMap<String, HierarchicalStreamDriver>();
 	private Map<String, Class<?>> aliases = new HashMap<String, Class<?>>();

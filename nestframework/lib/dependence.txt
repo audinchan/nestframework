@@ -13,6 +13,9 @@ Only provide required,fileupload,validation jars.
 4. data convertion
  xstream-xxx.jar
  hibernate3.jar(only need if you want to convert hibernate orm object)
+ 
+ another jason support using json-lib:
+ json-lib-2.2.1-jdk15.jar
 
 5. spring
  spring.jar(only need if you want to use Nest with Spring framework)
