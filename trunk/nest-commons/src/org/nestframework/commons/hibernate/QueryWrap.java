@@ -2,6 +2,7 @@ package org.nestframework.commons.hibernate;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +24,7 @@ import freemarker.template.Template;
  * 
  * @author audin
  */
+@SuppressWarnings("unchecked")
 public class QueryWrap {
 	protected static Configuration freeMarkerEngine;
 	private static Map<String, NullableType> hibernateTypeMapping = new HashMap<String, NullableType>();
@@ -246,7 +248,15 @@ public class QueryWrap {
                 NullableType ht = hbMap.get(name);
                 Object cv = convertedValue.get(name);
                 if (ht == null || cv == null) {
-                	qry.setParameter(name, value);
+                	if (value == null) {
+                		qry.setParameter(name, value);
+                	} else if (Collection.class.isAssignableFrom(value.getClass())) {
+                		qry.setParameterList(name, (Collection)value);
+                	} else if (value.getClass().isArray()) {
+                		qry.setParameterList(name, (Object[])value);
+                	} else {
+                		qry.setParameter(name, value);
+                	}
                 } else {
                 	qry.setParameter(name, cv, ht);
                 }
