@@ -18,6 +18,17 @@
 
 	<!-- **** filters **** -->
 	
+	<!-- P3P filter 
+	<filter>
+		<filter-name>p3pFilter</filter-name>
+		<filter-class>org.nestframework.commons.p3p.P3pDisableFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>p3pFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	-->
+	
 	<!-- Encoding filter -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
@@ -148,6 +159,7 @@
 			<param-value>
 				org.nestframework.addons.spring.SpringBeanInitActionHandler,
 				org.nestframework.validation.ValidationActionHandler,
+				org.nestframework.data.JsonHandler,
 				org.nestframework.data.XStreamActionHandler
 			</param-value>
 		</init-param>

@@ -94,6 +94,10 @@
 			<filterset refid="${runfilter}"/>
 		</copy>
 	</target>
+	
+	<target name="renamefiles">
+		<move file="WebContent/WEB-INF/normal-security.xml.rename_to_dot_xml" tofile="WebContent/WEB-INF/normal-security.xml"/>
+	</target>
 
 	<!-- =================================
 			target: gencode
@@ -144,7 +148,8 @@
 			<!-- 扩展的导出工具 -->
 			<hbmtemplate exporterclass="org.nestframework.tools.Exporter" templatepath="." />
 		</htool>
-
+		
+		<antcall target="renamefiles"/>
 	</target>
 
 	<!-- =================================
@@ -196,6 +201,7 @@
 			<hbmtemplate exporterclass="org.nestframework.tools.Exporter" templatepath="." />
 		</htool>
 
+		<antcall target="renamefiles"/>
 	</target>
 
     <!-- =================================

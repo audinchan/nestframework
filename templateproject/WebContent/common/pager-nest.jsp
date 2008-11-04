@@ -41,7 +41,7 @@
 	</c:choose>
 	
 	<c:if test="${param.toPage == 1}">
-	<input id="toPage" class="toPageBtn" type="submit" name="${act}" onclick="this.form.pageNo.value=this.form._toPageNo.value;" value='<fmt:message key="pager.pageNo"/>'/><input type="text" size="2" name="_toPageNo" value="${pageObj.currPageNumber }" onkeydown="if (event.keyCode==13) toPage.click();" />
+	<input id="toPage" class="toPageBtn" type="submit" name="${act}" onclick="this.form.pageNo.value=this.form._toPageNo.value;" value='<fmt:message key="pager.pageNo"/>'/><input type="text" size="2" name="_toPageNo" value="${pageObj.currPageNumber }" onkeydown="if (event.keyCode==13) {toPage.click(); return false;}" />
 	</c:if>
 	
 	<p/>

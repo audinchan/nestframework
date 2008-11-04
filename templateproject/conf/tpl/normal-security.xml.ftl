@@ -13,8 +13,8 @@
 		class="org.acegisecurity.util.FilterChainProxy">
 		<property name="filterInvocationDefinitionSource">
 			<value>
-				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-				PATTERN_TYPE_APACHE_ANT
+				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON 
+				PATTERN_TYPE_APACHE_ANT 
 				/**=httpSessionContextIntegrationFilter,logoutFilter,formAuthenticationProcessingFilter,exceptionTranslationFilter,filterSecurityInterceptor
 			</value>
 			<!--  -->
