@@ -27,4 +27,6 @@ public interface IUploadStatus {
 	 * @return
 	 */
 	public int getItems();
+	
+	public void cancelUpload();
 }

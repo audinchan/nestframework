@@ -36,12 +36,14 @@ public class DispatcherServlet extends HttpServlet {
 	/**
 	 * upload temp dir.
 	 */
-	private File tempDir = null;
+	private static File tempDir = null;
 
 	/**
 	 * upload limit(bytes), default is50MB.
 	 */
-	private int maxPostSize = 1024 * 1024 * 50;
+	private static int maxPostSize = 1024 * 1024 * 50;
+	
+	private static volatile boolean initFinished = false;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -84,11 +86,17 @@ public class DispatcherServlet extends HttpServlet {
 		if (maxPostSizeValue != null && maxPostSizeValue.trim().length() > 0) {
 			maxPostSize = Integer.parseInt(maxPostSizeValue.trim());
 		}
+		
+		initFinished = true;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void process(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
+		if (!initFinished) {
+			throw new ServletException("Initilization not finished. Refresh later.");
+		}
+		
 		IConfiguration config = nestConfig;
 		ExecuteContext context = new ExecuteContext(req, res);
 
@@ -108,8 +116,12 @@ public class DispatcherServlet extends HttpServlet {
 
 		// handle upload
 		if (isMultipart(req)) {
-			config.getMultipartHandler().processMultipart(context, tempDir,
+			try {
+				config.getMultipartHandler().processMultipart(context, tempDir,
 					maxPostSize, req, res);
+			} catch (Exception e) {
+				context.handleException(e);
+			}
 		}
 
 		try {

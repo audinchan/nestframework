@@ -1,6 +1,8 @@
 package org.nestframework.utils;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ognl.DefaultTypeConverter;
@@ -13,7 +15,17 @@ import ognl.DefaultTypeConverter;
  */
 @SuppressWarnings("unchecked")
 public class RequestParamMapTypeConverter extends DefaultTypeConverter {
+	private String currentParam;
+	private Map<String, Object> config = new HashMap<String, Object>();
 	
+	public void setCurrentParam(String currentParam) {
+		this.currentParam = currentParam;
+	}
+	
+	public void setConfig(String name, Object value) {
+		config.put(name, value);
+	}
+
 	@Override
 	public Object convertValue(Map context, Object value, Class toType) {
 
@@ -43,12 +55,27 @@ public class RequestParamMapTypeConverter extends DefaultTypeConverter {
 			}
 		}
 		
+		// escape html
+		if (toType == String.class && "true".equalsIgnoreCase((String)config.get("escapeHTML"))) {
+			if (!((List)config.get("htmlList")).contains(currentParam)) {
+				return escapeHtml((String) value);
+			}
+		}
+		
 		// is the same type, just return it.
 		if (value.getClass().equals(toType)) {
 			return value;
 		}
 		
 		return super.convertValue(context, value, toType);
+	}
+	
+	private String escapeHtml(String html) {
+		return (html == null) ? null : html
+				.replaceAll("&", "&amp;")
+				.replaceAll("\"", "&quot;")
+				.replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;");
 	}
 
 }

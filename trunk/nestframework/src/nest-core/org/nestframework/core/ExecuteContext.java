@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nestframework.action.FileItem;
+import org.nestframework.action.IExceptionHandler;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.localization.ActionMessages;
 import org.nestframework.localization.LocalizationUtil;
@@ -313,5 +314,17 @@ public class ExecuteContext {
 
 	public ActionMessages getActionErrors() {
 		return errors;
+	}
+	
+	public boolean handleException(Exception e) {
+		boolean handled = false;
+		for (IExceptionHandler handler: config.getExceptionHandlers()) {
+			if (handler.execute(e, this)) {
+				handled = true;
+				break;
+			}
+		}
+		
+		return handled;
 	}
 }

@@ -74,30 +74,16 @@ public class ActionProcessHelper implements Constant {
 				try {
 					processHandlers(context, s.getHandlers(), s.isSupportStop());
 				} catch (Exception e) {
-					// This is first time exception handle
-					int c = 0;
-					for (IExceptionHandler handler: config.getExceptionHandlers()) {
-						c++;
-						if (handler.execute(e, context)) {
-							break;
-						}
-					}
-					if (c == 0) {
+					// handle stage exception
+					if (!context.handleException(e)) {
 						throw e;
 					}
 				}
 			}
 
 		} catch (Exception e) {
-			// This is second time exception handle
-			int c = 0;
-			for (IExceptionHandler handler: config.getExceptionHandlers()) {
-				c++;
-				if (handler.execute(e, context)) {
-					break;
-				}
-			}
-			if (c == 0) {
+			// handle process exception
+			if (!context.handleException(e)) {
 				throw e;
 			}
 		}

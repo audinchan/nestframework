@@ -133,6 +133,17 @@ public class CommonsMultipartHandler implements IMultipartHandler, IInitable {
 						@Override
 						public void save(File toFile) throws IOException {
 							try {
+								File parent = toFile.getAbsoluteFile().getParentFile();
+						        if (toFile.exists() && !toFile.canWrite()) {
+						            throw new IOException("Cannot overwrite existing file at "+ toFile.getAbsolutePath());
+						        }
+						        else if (!parent.exists() && !parent.mkdirs()) {
+						            throw new IOException("Parent directory of specified file does not exist and cannot " +
+						                " be created. File location supplied: " + toFile.getAbsolutePath());
+						        }
+						        else if (!toFile.exists() && !parent.canWrite()) {
+						            throw new IOException("Cannot create new file at location: " + toFile.getAbsolutePath());
+						        }
 								it.write(toFile);
 							} catch (Exception e) {
 								if (e instanceof IOException) {
