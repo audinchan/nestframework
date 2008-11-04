@@ -26,6 +26,7 @@ import org.nestframework.commons.utils.EncodeUtil;
 public class BecomSSOLogoutFilter extends LogoutFilter {
 
 	protected String logoutUrl;
+	protected boolean deleteSession = true;
 	
 	public BecomSSOLogoutFilter(String logoutSuccessUrl,
 			LogoutHandler[] handlers) {
@@ -60,6 +61,9 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
     			String remoteKey = req.getParameter("authlogout_key");
     			if (EncodeUtil.md5(req.getSession().getId()).toUpperCase().equals(remoteKey)) {
     				// successfull logout
+    				if (deleteSession) {
+    					req.getSession().invalidate();
+    				}
     				super.doFilter(request, response, chain);
     				return;
     			} else {
@@ -75,6 +79,10 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
 
 	public void setLogoutUrl(String logoutUrl) {
 		this.logoutUrl = logoutUrl;
+	}
+
+	public void setDeleteSession(boolean deleteSession) {
+		this.deleteSession = deleteSession;
 	}
 
 }

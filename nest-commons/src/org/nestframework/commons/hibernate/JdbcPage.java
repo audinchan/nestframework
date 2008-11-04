@@ -50,13 +50,13 @@ public class JdbcPage<E> extends AbstractPage<E> {
 	protected void getElementsFromResultSet(ResultSet rs, IRowHandler<E> rh) throws SQLException {
 		computePage();
 		int offset = (currPageNumber - firstPageNumber) * pageSize;
-		if (offset <= 1) {
+		if (offset < 1) {
 			rs.beforeFirst();
 		} else {
 			rs.absolute(offset);
 		}
 		int count = 0;
-		while (rs.next() && count <= pageSize) {
+		while (rs.next() && count < pageSize) {
 			pageElements.add(rh.handleRow(rs));
 			count++;
 		}
