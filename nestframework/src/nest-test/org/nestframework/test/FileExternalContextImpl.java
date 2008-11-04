@@ -20,11 +20,11 @@ public class FileExternalContextImpl implements IExternalContext {
 		try {
 			File f = new File(path);
 			if (f.exists() && f.isFile()) {
-				return f.toURL();
+				return f.toURI().toURL();
 			}
 			f = new File(base, path);
 			if (f.exists() && f.isFile()) {
-				return f.toURL();
+				return f.toURI().toURL();
 			}
 			return Thread.currentThread().getContextClassLoader().getResource(path);
 		} catch (MalformedURLException e) {
