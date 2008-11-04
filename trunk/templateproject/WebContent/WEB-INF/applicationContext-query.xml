@@ -7,9 +7,19 @@
 	default-autowire="byName" default-lazy-init="true">
 	
 	<!-- query provider wrapper -->
+	<bean id="queryProvider" class="org.nestframework.commons.hibernate.ListMapQueryProvider" autowire="byName">
+		<property name="providers">
+			<list>
+				<ref bean="queryProviderMapping"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!--  
 	<bean id="queryProvider" class="org.nestframework.commons.hibernate.QueryProviderWrap" autowire="byName">
 		<property name="queryProvider" ref="queryProviderMapping"></property>
 	</bean>
+	-->
 	
 	<!-- query provider mapping implement -->
 	<bean id="queryProviderMapping" class="org.nestframework.commons.hibernate.QueryProviderMappingImpl">
