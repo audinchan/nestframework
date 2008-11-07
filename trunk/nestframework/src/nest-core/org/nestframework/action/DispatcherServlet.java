@@ -115,17 +115,20 @@ public class DispatcherServlet extends HttpServlet {
 			.setParams(req.getParameterMap());
 
 		// handle upload
+		boolean exceptionHandled = false;
 		if (isMultipart(req)) {
 			try {
 				config.getMultipartHandler().processMultipart(context, tempDir,
 					maxPostSize, req, res);
 			} catch (Exception e) {
-				context.handleException(e);
+				exceptionHandled = context.handleException(e);
 			}
 		}
 
 		try {
-			ActionProcessHelper.process(context, config);
+			if (!exceptionHandled) {
+				ActionProcessHelper.process(context, config);
+			}
 		} catch (Exception e) {
 			throw new ServletException("Action dispatch error.", e);
 		}
