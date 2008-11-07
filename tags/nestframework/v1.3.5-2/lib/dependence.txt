@@ -1,0 +1,21 @@
+Only provide required,fileupload,validation jars.
+
+1. required
+ ognl-xxx.jar
+ commons-logging-xxx.jar
+
+2. fileupload
+ cos.jar(or commons-upload.jar and commons-io.jar)
+
+3. validation
+ commons-validator-1.3.x.jar or newer
+
+4. data convertion
+ xstream-xxx.jar
+ hibernate3.jar(only need if you want to convert hibernate orm object)
+ 
+ another jason support using json-lib:
+ json-lib-2.2.1-jdk15.jar
+
+5. spring
+ spring.jar(only need if you want to use Nest with Spring framework)
