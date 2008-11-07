@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<project default="help" name="templateproject" basedir=".">
+
+	<!-- build config -->
+	<property file="build.properties" />
+	
+	<!-- java source directory -->
+	<mkdir dir="${export_dir}/${src.dir}"/>
+	<mkdir dir="${build.dir}/classes"/>
+
+	<!-- tool's classpath -->
+	<path id="classpath">
+		<dirset dir="${conf.dir}">
+			<include name="**"/>
+		</dirset>
+		<dirset dir="${export_dir}/${src.dir}">
+			<include name="**" />
+		</dirset>
+		<fileset dir="lib/">
+			<include name="*.jar" />
+		</fileset>
+		<dirset dir="${build.dir}">
+			<include name="**" />
+		</dirset>
+		<fileset dir="${web.dir}/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+
+	<!-- hibernate tool -->
+	<taskdef name="htool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="classpath" />
+
+	<!-- db tool -->
+	<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="classpath"/>
+
+	<!-- =================================
+          target: help
+         ================================= -->
+	<target name="help" description="--> print help">
+		<echo>构建帮助.</echo>
+		<echo>-----------------</echo>
+		<echo>代码生成帮助，“/”表示同样功能的两种选择。</echo>
+		<echo>-----------------</echo>
+		<echo>ant genall/genall2: 生成完整的基础代码(orm,dao,service,spring配置,hibernate配置等)/使用annotation.</echo>
+		<echo>1. ant genconf: 生成hibernate配置.</echo>
+		<echo>2. ant genmapping: 生成hibernate映射文件（使用annotation无需此步骤）.</echo>
+		<echo>3. ant genpojo/genpojo2: 生成POJO类/使用annotation.</echo>
+		<echo>4. ant gencode/gencode2: 生成dao,service,spring配置,范例等/使用annotation.</echo>
+		<echo>-----------------</echo>
+		<echo>构建帮助</echo>
+		<echo>-----------------</echo>
+		<echo>ant war: 构建用于部署的war文件.</echo>
+		<echo>ant test: 执行单元测试.</echo>
+		<echo>ant clean: 清理构建目录.</echo>
+		<echo></echo>
+	</target>
+
+	<!-- Code Generation -->
+
+
+	<!-- 如果在参数中指定para为true，则使用filterpara，否则使用filternormal过滤hibernate配置文件的生成 -->
+	<filterset id="filterpara">
+		<filter token="db.driver" value="${db.driver}"/>
+		<filter token="db.url" value="${db.url}"/>
+		<filter token="db.username" value="${db.username}"/>
+		<filter token="db.password" value="${db.password}"/>
+		<filter token="hibernate.dialect" value="${hibernate.dialect}"/>
+	</filterset>
+	<filterset id="filternormal">
+		<filtersfile file="build.properties"/>
+	</filterset>
+	<condition property="runfilter" value="filterpara">
+		<istrue value="${para}"/>
+	</condition>
+	<condition property="runfilter" value="filternormal">
+		<not><istrue value="${para}"/></not>
+	</condition>
+
+	<!-- =================================
+	          	target: genconf
+	           	生成项目配置文件框架（不包含映射文件的配置）
+	           	hibernate.cfg.xml
+	         ================================= -->
+	<target name="genconf" depends="gendbconf" description="--> 创建hibernate配置文件,1">
+		<copy  overwrite="${override_conf}" file="${conf.dir}/hibernate.cfg.xml" todir="${export_dir}/${src.dir}">
+			<filterset refid="${runfilter}"/>
+		</copy>
+	</target>
+	
+	<target name="gendbconf">
+		<copy  overwrite="${override_conf}" file="${conf.dir}/db-conf.properties" todir="${export_dir}/${src.dir}">
+			<filterset refid="${runfilter}"/>
+		</copy>
+	</target>
+	
+	<target name="renamefiles">
+		<move file="WebContent/WEB-INF/normal-security.xml.rename_to_dot_xml" tofile="WebContent/WEB-INF/normal-security.xml"/>
+	</target>
+
+	<!-- =================================
+			target: gencode
+			生成项目基础文件
+			service，spring配置文件等
+	     ================================= -->
+	<target name="gencode" description="--> 生成dao,service,spring配置,范例等, 4">
+		<htool destdir="${export_dir}">
+			<configuration configurationfile="${export_dir}/${src.dir}/hibernate.cfg.xml" />
+			<property key="hibernatetool.hssutil.toolclass" value="org.nestframework.tools.Util" />
+			<property key="hss_src_dir" value="${src.dir}" />
+			<property key="hss_test_dir" value="${test.dir}" />
+			<property key="hss_web_dir" value="${web.dir}" />
+			<property key="hss_appname" value="${app.name}" />
+			<property key="hss_dao_package" value="${package.dao}" />
+			<property key="hss_service_package" value="${package.service}" />
+			<property key="hss_base_package" value="${package.base}" />
+			<property key="hss_conf_transactionManager" value="${spring.transactionManager}"/>
+
+			<!-- 导出项设置 -->
+			<property key="include_models" value="${include_models}" />
+			<property key="exclude_models" value="${exclude_models}" />
+			<property key="hss_jdk5" value="${hss_jdk5}" />
+			<property key="hss_ejb3" value="false" />
+			<property key="merge_dao" value="${merge_dao}" />
+			<property key="hss_overwrite_exists" value="${hss_overwrite_exists}" />
+			<property key="hss_create_another_file" value="${hss_create_another_file}" />
+			<property key="hss_another_fileext" value="${hss_another_fileext}" />
+			<property key="hss_export_rootdao_interface" value="${hss_export_rootdao_interface}" />
+			<property key="hss_export_basedao_interface" value="${hss_export_basedao_interface}" />
+			<property key="hss_export_dao_interface" value="${hss_export_dao_interface}" />
+			<property key="hss_export_rootdao" value="${hss_export_rootdao}" />
+			<property key="hss_export_basedao" value="${hss_export_basedao}" />
+			<property key="hss_export_dao" value="${hss_export_dao}" />
+			<property key="hss_export_rootservice_interface" value="${hss_export_rootservice_interface}" />
+			<property key="hss_export_baseservice_interface" value="${hss_export_baseservice_interface}" />
+			<property key="hss_export_service_interface" value="${hss_export_service_interface}" />
+			<property key="hss_export_rootservice" value="${hss_export_rootservice}" />
+			<property key="hss_export_baseservice" value="${hss_export_baseservice}" />
+			<property key="hss_export_service" value="${hss_export_service}" />
+			<property key="hss_export_dao_context" value="${hss_export_dao_context}" />
+			<property key="hss_export_service_context" value="${hss_export_service_context}" />
+			<property key="hss_export_action_context" value="${hss_export_action_context}" />
+			<property key="hss_export_demo" value="${hss_export_demo}" />
+			<property key="hss_export_base_testcase" value="${hss_export_base_testcase}" />
+			<property key="hss_extra_template" value="${hss_extra_template}" />
+
+			<!-- 扩展的导出工具 -->
+			<hbmtemplate exporterclass="org.nestframework.tools.Exporter" templatepath="." />
+		</htool>
+		
+		<antcall target="renamefiles"/>
+	</target>
+
+	<!-- =================================
+			target: gencode
+			生成dao,service,spring配置,范例等(使用annotation)
+	     ================================= -->
+	<target name="gencode2" depends="build" description="--> 生成dao,service,spring配置,范例等(annotation), 4">
+		<htool destdir="${export_dir}">
+			<annotationconfiguration configurationfile="${export_dir}/${src.dir}/hibernate.cfg.xml" />
+			<property key="hibernatetool.hssutil.toolclass" value="org.nestframework.tools.Util" />
+			<property key="hss_src_dir" value="${src.dir}" />
+			<property key="hss_test_dir" value="${test.dir}" />
+			<property key="hss_web_dir" value="${web.dir}" />
+			<property key="hss_appname" value="${app.name}" />
+			<property key="hss_dao_package" value="${package.dao}" />
+			<property key="hss_service_package" value="${package.service}" />
+			<property key="hss_base_package" value="${package.base}" />
+			<property key="hss_conf_transactionManager" value="${spring.transactionManager}"/>
+
+			<!-- 导出项设置 -->
+			<property key="include_models" value="${include_models}" />
+			<property key="exclude_models" value="${exclude_models}" />
+			<property key="hss_jdk5" value="${hss_jdk5}" />
+			<property key="hss_ejb3" value="true" />
+			<property key="merge_dao" value="${merge_dao}" />
+			<property key="hss_overwrite_exists" value="${hss_overwrite_exists}" />
+			<property key="hss_create_another_file" value="${hss_create_another_file}" />
+			<property key="hss_another_fileext" value="${hss_another_fileext}" />
+			<property key="hss_export_rootdao_interface" value="${hss_export_rootdao_interface}" />
+			<property key="hss_export_basedao_interface" value="${hss_export_basedao_interface}" />
+			<property key="hss_export_dao_interface" value="${hss_export_dao_interface}" />
+			<property key="hss_export_rootdao" value="${hss_export_rootdao}" />
+			<property key="hss_export_basedao" value="${hss_export_basedao}" />
+			<property key="hss_export_dao" value="${hss_export_dao}" />
+			<property key="hss_export_rootservice_interface" value="${hss_export_rootservice_interface}" />
+			<property key="hss_export_baseservice_interface" value="${hss_export_baseservice_interface}" />
+			<property key="hss_export_service_interface" value="${hss_export_service_interface}" />
+			<property key="hss_export_rootservice" value="${hss_export_rootservice}" />
+			<property key="hss_export_baseservice" value="${hss_export_baseservice}" />
+			<property key="hss_export_service" value="${hss_export_service}" />
+			<property key="hss_export_dao_context" value="${hss_export_dao_context}" />
+			<property key="hss_export_service_context" value="${hss_export_service_context}" />
+			<property key="hss_export_action_context" value="${hss_export_action_context}" />
+			<property key="hss_export_demo" value="${hss_export_demo}" />
+			<property key="hss_export_base_testcase" value="${hss_export_base_testcase}" />
+			<property key="hss_extra_template" value="${hss_extra_template}" />
+
+			<!-- 扩展的导出工具 -->
+			<hbmtemplate exporterclass="org.nestframework.tools.Exporter" templatepath="." />
+		</htool>
+
+		<antcall target="renamefiles"/>
+	</target>
+
+    <!-- =================================
+          	target: genmapping
+          	生成hibernate配置文件和映射文件
+         ================================= -->
+    <target name="genmapping" description="--> 生成hibernate映射文件(使用annotation则无需此步骤), 2">
+    	<htool destdir="${export_dir}/${src.dir}">
+    		<jdbcconfiguration
+    			configurationfile="${export_dir}/${src.dir}/hibernate.cfg.xml"
+    			packagename="${package.model}"
+    			revengfile="${conf.dir}/hibernate.reveng.xml"
+    			detectManytoMany="true"
+    			detectOptimisticLock="true"
+    		/>
+    		<hbm2hbmxml/>
+    		<hbm2cfgxml/>
+    	</htool>
+    	
+    	<!-- 删除catalog属性 -->
+    	<replaceregexp  match=' catalog="(.*)">' replace=">" byline="true">
+    		<fileset dir="${export_dir}/${src.dir}" includes="**/*.hbm.xml"/>
+    	</replaceregexp >
+    </target>
+
+    <!-- =================================
+          	target: genddl
+          	生成数据库表
+         ================================= -->	
+    <target name="genddl" description="--> 生成数据库表">
+    	<htool destdir="${export_dir}/${src.dir}">
+    		<annotationconfiguration configurationfile="${export_dir}/${src.dir}/hibernate.cfg.xml" />
+    		<hbm2ddl destdir="." drop="true"/>
+    	</htool>
+    </target>
+
+    <!-- =================================
+          	target: genpojo
+          	生成POJO文件（可以在这里定制更复杂的源文件生成方式）
+         ================================= -->
+    <target name="genpojo" description="--> 生成POJO类, 3">
+    	<htool destdir="${export_dir}/${src.dir}">
+    		<!-- <configuration configurationfile="${export_dir}/${src.dir}/hibernate.cfg.xml" /> -->
+    		<configuration>
+    			<fileset dir="${src.dir}">
+				    <include name="**/*.hbm.xml"/>
+    				<exclude name="**/Copy*.hbm.xml"/>
+				</fileset>
+    		</configuration>
+    		<hbm2java jdk5="${hss_jdk5}" ejb3="false"/>
+    	</htool>
+    </target>
+
+	<!-- 
+		generate annotation version pojos, current is in test stage. 
+		生成POJO类(annotation)
+	-->
+	<target name="genpojo2" description="--> 生成POJO类(annotation), 3">
+	    	<htool destdir="${export_dir}/${src.dir}">
+	    		<jdbcconfiguration
+	    			configurationfile="${export_dir}/${src.dir}/hibernate.cfg.xml"
+	    			packagename="${package.model}"
+	    			revengfile="${conf.dir}/hibernate.reveng.xml"
+	    			detectManytoMany="true"
+	    			detectOptimisticLock="true"
+	    		/>
+	    		<hbm2java jdk5="${hss_jdk5}" ejb3="true"/>
+	    		<hbm2cfgxml ejb3="true"/>
+	    	</htool>
+		
+    	<!-- 删除catalog属性 -->
+    	<replaceregexp  match=',catalog="(.*)"' replace=" " byline="true">
+    		<fileset dir="${export_dir}/${src.dir}" includes="**/*.java"/>
+    	</replaceregexp >
+
+	    </target>
+
+    <!-- =================================
+          	target: genall
+          	生成项目全部基础文件
+         ================================= -->
+    <target name="genall" depends="genconf,genmapping,genpojo,gencode" description="--> 生成完整的基础代码(orm,dao,service,spring配置,hibernate配置等)">
+
+    </target>
+	
+	<!--
+		生成完整的基础代码(orm,dao,service,spring配置,hibernate配置等)(annotation)
+	 -->
+    <target name="genall2" depends="genconf,genpojo2" description="--> 生成完整的基础代码(orm,dao,service,spring配置,hibernate配置等)(annotation)">
+		<antcall target="gencode2"></antcall>
+    	<antcall target="clean"></antcall>
+    </target>
+
+
+	<!-- 项目构建部分 -->
+
+    <!-- - - - - - - - - - - - - - - - - -
+          target: build_prepare
+         - - - - - - - - - - - - - - - - - -->
+    <target name="build_prepare">
+    	<mkdir dir="${build.dir}/classes"/>
+   		<mkdir dir="${build.dir}/${app.name}/WEB-INF/classes"/>
+    </target>
+
+
+    <!-- =================================
+          target: build
+         ================================= -->
+    <target name="build" depends="build_prepare">
+        <javac encoding="GBK" classpathref="classpath" srcdir="${src.dir}" destdir="${build.dir}/classes"></javac>
+    	<copy todir="${build.dir}/classes">
+    		<fileset dir="${src.dir}">
+    			<exclude name="**/*.java"/>
+    			<exclude name="**/harvest.sig"/>
+    		</fileset>
+    	</copy>
+    	<javac encoding="GBK" classpathref="classpath" srcdir="${test.src.dir}" destdir="${build.dir}/classes"></javac>
+    </target>
+
+	<!-- =================================
+          target:  encoding
+         ================================= -->
+    <target name="encoding" description="--> 转换资源文件编码">
+        <native2ascii encoding="${i18n.src.encoding}" src="${i18n.src.dir}" dest="${i18n.dst.dir}">
+        	<include name="**/*.properties"/>
+        </native2ascii>
+    </target>
+
+
+
+    <!-- =================================
+          target: copy-resource
+         ================================= -->
+    <target name="copy-resource" depends="build_prepare">
+        <copy todir="${build.dir}/${app.name}/WEB-INF/classes">
+        	<fileset dir="${build.dir}/classes">
+        		<exclude name="**/*Test.class"/>
+        		<exclude name="**/*TestCase.class"/>
+        	</fileset>
+    	</copy>
+    	<copy todir="${build.dir}/${app.name}">
+    		<fileset dir="${web.dir}">
+    			<exclude name="harvest.sig"/>
+    		</fileset>
+    	</copy>
+    </target>
+
+
+    <!-- =================================
+          target: war
+         ================================= -->
+    <target name="war" depends="build,copy-resource" description="--> 构建用于部署的war文件">
+        <war destfile="${build.dir}/${app.name}.war" webxml="${build.dir}/${app.name}/WEB-INF/web.xml" compress="true">
+        	<fileset dir="${build.dir}/${app.name}">
+        	</fileset>
+        </war>
+    </target>
+    
+    <target name="war-nolib" depends="build,copy-resource" description="--> 构建用于部署的war(不含lib下面的jar文件)文件">
+        <war destfile="${build.dir}/${app.name}.war" webxml="${build.dir}/${app.name}/WEB-INF/web.xml" compress="true">
+        	<fileset dir="${build.dir}/${app.name}">
+        		<exclude name="**/WEB-INF/lib/*.jar"/>
+        	</fileset>
+        </war>
+    </target>
+
+
+    <!-- - - - - - - - - - - - - - - - - -
+          target: load-testdata
+          加载测试数据
+         - - - - - - - - - - - - - - - - - -->
+    <target name="load-testdata">
+        <dbunit driver="${db.driver}"
+            supportBatchStatement="true"
+            url="${db.url}"
+            userid="${db.username}"
+            password="${db.password}">
+            <operation type="INSERT" src="${test.data.file}" format="xml"/>
+        </dbunit>
+    </target>
+
+
+    <!-- - - - - - - - - - - - - - - - - -
+          target: remove-testdata
+          删除测试数据
+         - - - - - - - - - - - - - - - - - -->
+    <target name="remove-testdata">
+        <dbunit driver="${db.driver}"
+            supportBatchStatement="true"
+            url="${db.url}"
+            userid="${db.username}"
+            password="${db.password}">
+            <operation type="DELETE" src="${test.data.file}" format="xml"/>
+        </dbunit>
+    </target>
+
+    <target name="dotest">
+        <mkdir dir="${build.dir}/testdata"/>
+    	<junit printsummary="yes">
+    		<classpath>
+    			<path refid="classpath"/>
+    			<pathelement path="${build.dir}/classes"/>
+    		</classpath>
+    		<formatter type="xml"/>
+    		<formatter type="brief" usefile="false"/>
+    		<batchtest todir="${build.dir}/testdata">
+    			<fileset dir="${build.dir}/classes">
+					<include name="**/*Test.class"/>
+    				<exclude name="**/BaseTestCase.class"/>
+    			</fileset>
+    		</batchtest>
+    	</junit>
+    </target>
+
+
+    <!-- =================================
+          target: test
+          depends="build,load-testdata,dotest,remove-testdata"
+         ================================= -->
+    <target name="test" depends="build,dotest" description="--> 执行单元测试">
+		<antcall target="test-report"></antcall>
+    </target>
+
+
+    <!-- =================================
+          target: test-report
+          generate test report
+         ================================= -->
+    <target name="test-report">
+        <mkdir dir="${build.dir}/testreports"/>
+    	<junitreport todir="${build.dir}/testreports">
+    		<fileset dir="${build.dir}/testdata">
+    			<include name="TEST-*.xml"/>
+    		</fileset>
+    		<report format="frames" todir="${build.dir}/testreports"/>
+		</junitreport>
+    	<echo level="info">
+    		测试报告保存在 ${build.dir}\testreports 目录中
+    	</echo>
+    	<exec executable="cmd.exe">
+    		<arg line="/C start ${build.dir}\testreports\index.html"/>
+    	</exec>
+    </target>
+
+
+
+    <!-- =================================
+          target: clean
+         ================================= -->
+    <target name="clean" description="--> 清理构建目录">
+        <delete dir="${build.dir}"></delete>
+    </target>
+    
+    <target name="zip" description="打包项目模板">
+    	<zip destfile="${app.name}.zip"
+    		basedir="."
+    		excludes="**/.svn,${app.name}.zip">
+    	</zip>
+    </target>
+
+</project>
