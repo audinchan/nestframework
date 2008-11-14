@@ -1,3 +1,7 @@
+1.3.6
+增加PropertiesLoadActionHandler，在Action中访问Properties文件。
+增加PropertiesRuntimeConfiguration，将配置文件写入Properties文件。
+
 1.3.5
 修正异常处理流程
 
