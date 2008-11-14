@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nestframework.config.IConfiguration;
-import org.nestframework.config.RuntimeConfiguration;
 import org.nestframework.core.Constant;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.ServletExternalContextImpl;
+import org.nestframework.utils.NestUtil;
 
 @SuppressWarnings({"serial", "unchecked"})
 public class DispatcherServlet extends HttpServlet {
@@ -60,7 +60,18 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		servletConfig = config;
-		nestConfig = RuntimeConfiguration.getInstance();
+		String configClass = config.getInitParameter("configClass");
+		if (NestUtil.isEmpty(configClass)) {
+			configClass = "org.nestframework.config.RuntimeConfiguration";
+		} else {
+			configClass = NestUtil.trimAll(configClass);
+		}
+		
+		try {
+			nestConfig = (IConfiguration)Class.forName(configClass).newInstance();
+		} catch (Exception e) {
+			throw new ServletException("Failed to init class: " + configClass, e);
+		}
 		// Load parameters to NestConfig.
 		Enumeration<String> parameterNames = config.getInitParameterNames();
 		while (parameterNames.hasMoreElements()) {

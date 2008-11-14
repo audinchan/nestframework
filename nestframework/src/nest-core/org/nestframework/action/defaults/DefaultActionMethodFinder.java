@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import org.nestframework.action.IActionHandler;
+import org.nestframework.annotation.ActionMethodByValue;
 import org.nestframework.annotation.DefaultAction;
 import org.nestframework.annotation.Intercept;
 import org.nestframework.core.ExecuteContext;
@@ -43,6 +44,9 @@ public class DefaultActionMethodFinder implements IActionHandler {
 		// parameters.
 		Set<String> paramNames = context.getParams().keySet();
 		Class<?> clazz = context.getActionClass();
+		
+		ActionMethodByValue ambv = context.getActionBean().getClass().getAnnotation(ActionMethodByValue.class);
+		
 		while (clazz != null
 				&& (defaultActionMethod == null || actionMethod == null)) {
 			for (Method m1 : clazz.getDeclaredMethods()) {
@@ -59,7 +63,12 @@ public class DefaultActionMethodFinder implements IActionHandler {
 				}
 
 				if (actionMethod == null) {
-					if (paramNames.contains(m1.getName())) {
+					if (ambv != null) {
+						if (m1.getName().equals(ambv.value())) {
+							actionMethod = m1;
+						}
+					}
+					else if (paramNames.contains(m1.getName())) {
 						actionMethod = m1;
 					}
 				}
