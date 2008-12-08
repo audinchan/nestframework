@@ -1,3 +1,6 @@
+1.3.7
+修正了NestContext的引用，该类已经不推荐使用了。
+
 1.3.6
 增加PropertiesLoadActionHandler，在Action中访问Properties文件。
 增加PropertiesRuntimeConfiguration，将配置文件写入Properties文件。

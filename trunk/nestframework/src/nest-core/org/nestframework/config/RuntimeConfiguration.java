@@ -53,13 +53,16 @@ public class RuntimeConfiguration implements IConfiguration {
 	
 	private List<IParamAdvisor> paramAdvisors = new ArrayList<IParamAdvisor>();
 
+	@Deprecated
 	public static IConfiguration getInstance() {
 		if (log.isDebugEnabled()) {
 			log.debug("getInstance() - start");
 		}
 
 		IConfiguration nestConfig = new RuntimeConfiguration();
-		NestContext.setConfig(nestConfig);
+		
+		// move to init()
+		//NestContext.setConfig(nestConfig);
 
 		if (log.isDebugEnabled()) {
 			log.debug("getInstance() - end");
@@ -180,6 +183,9 @@ public class RuntimeConfiguration implements IConfiguration {
 		if (log.isDebugEnabled()) {
 			log.debug("init() - start");
 		}
+		
+		// 20081208, this is deprecated but still here for some time
+		NestContext.setConfig(this);
 
 		if (NestUtil.isEmpty(properties.get("base"))) {
 			throw new RuntimeException("Action base must be specified.");

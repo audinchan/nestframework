@@ -8,13 +8,13 @@ import org.nestframework.action.defaults.DefaultActionExecutor;
 import org.nestframework.action.defaults.DefaultActionMethodFinder;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.config.RuntimeConfiguration;
-import org.nestframework.core.NestContext;
 
 public class TestCaseConfiguration extends RuntimeConfiguration {
 	
+	@Deprecated
 	public static IConfiguration getInstance() {
 		IConfiguration nestConfig = new TestCaseConfiguration();
-		NestContext.setConfig(nestConfig);
+//		NestContext.setConfig(nestConfig);
 		return nestConfig;
 	}
 	

@@ -13,7 +13,7 @@ public class TestCaseUtil {
 	private static IConfiguration config;
 	
 	static {
-		config = TestCaseConfiguration.getInstance();
+		config = new TestCaseConfiguration();
 	}
 	
 	public static void init() {

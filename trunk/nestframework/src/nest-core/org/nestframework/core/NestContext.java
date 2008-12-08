@@ -8,6 +8,7 @@ import org.nestframework.config.IConfiguration;
  * @author audin
  *
  */
+@Deprecated
 public class NestContext {
 	
 	/**
