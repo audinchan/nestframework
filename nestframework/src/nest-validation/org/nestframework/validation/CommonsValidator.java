@@ -21,7 +21,6 @@ import org.apache.commons.validator.ValidatorResources;
 import org.nestframework.config.IConfiguration;
 import org.nestframework.core.ExecuteContext;
 import org.nestframework.core.IExternalContext;
-import org.nestframework.core.NestContext;
 import org.nestframework.utils.NestUtil;
 import org.xml.sax.SAXException;
 
@@ -54,11 +53,11 @@ public class CommonsValidator {
 	// filed's name is short style. eg. user.name, selectedId.
 	protected static Map<String, List<String>> fieldsCache = new HashMap<String, List<String>>();
 
-	public synchronized static ValidatorResources getValidatorResources() {
+	public synchronized static ValidatorResources getValidatorResources(IConfiguration conf) {
 		if (resources != null) {
 			return resources;
 		}
-		IConfiguration conf = NestContext.getConfig();
+//		IConfiguration conf = NestContext.getConfig();
 		IExternalContext ec = conf.getExternalContext();
 		String validateResources = NestUtil.trimAll(conf.getProperties()
 				.get("validateResources"));
@@ -185,7 +184,7 @@ public class CommonsValidator {
 			boolean msgFormResource, Param[] params, String value,
 			String validateType) throws ValidateFailedException {
 		try {
-			ValidatorAction validatorAction = getValidatorResources()
+			ValidatorAction validatorAction = getValidatorResources(context.getConfig())
 					.getValidatorAction(validateType);
 			String dependsString = validatorAction.getDepends();
 			if (!NestUtil.isEmpty(dependsString)) {

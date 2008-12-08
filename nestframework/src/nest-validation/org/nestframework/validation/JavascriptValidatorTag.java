@@ -75,7 +75,8 @@ public class JavascriptValidatorTag extends BodyTagSupport implements Constant {
 	
 	protected String renderJavascript() throws JspException {
 		StringBuffer results = new StringBuffer();
-		ValidatorResources validatorResources = CommonsValidator.getValidatorResources();
+		IConfiguration config = (IConfiguration) pageContext.getServletContext().getAttribute(CONFIG_KEY);
+		ValidatorResources validatorResources = CommonsValidator.getValidatorResources(config);
 		
 		if (validatorResources == null) {
 			throw new JspException("No validator resources found.");
