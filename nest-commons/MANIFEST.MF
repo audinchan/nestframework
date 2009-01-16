@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Ant-Version: 1.6.2
 Created-By: 1.5.0_04
-Version: 1.1
+Nest-Commons-Version: 1.2

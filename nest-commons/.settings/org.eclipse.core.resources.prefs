@@ -1,5 +1,7 @@
-#Mon Aug 25 13:33:50 CST 2008
+#Mon Jan 12 15:03:53 CST 2009
 eclipse.preferences.version=1
 encoding//src/org/nestframework/commons/hibernate/HibernateManagerSupport.java=GBK
+encoding//src/org/nestframework/commons/hibernate/IHibernateManager.java=GBK
+encoding//src/org/nestframework/commons/hibernate/IJdbcManager.java=GBK
 encoding//src/org/nestframework/commons/hibernate/JdbcManagerSupport.java=GBK
 encoding/<project>=UTF-8

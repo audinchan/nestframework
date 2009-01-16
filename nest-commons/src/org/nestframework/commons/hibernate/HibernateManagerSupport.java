@@ -27,7 +27,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  */
 @SuppressWarnings("unchecked")
 public abstract class HibernateManagerSupport<T, K extends Serializable>
-		extends HibernateDaoSupport {
+		extends HibernateDaoSupport implements IHibernateManager<T, K> {
 	
 	/**
 	 * Logger for this class
@@ -123,17 +123,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnString;
 	}
 
-    /**
-     * 根据动态Hql查询分页对象.
-     * 
-     * @param dqQuery 查询用的动态Hql名称.
-     * @param dqCount 计算查询结果集记录数的动态Hql名称，如果为null，则自动使用dqQuery并在之前添加“select count(*) ”.
-     * @param paras 查询参数，如果是null，则作为没有参数处理.
-     * @param pageNumber 第几页.
-     * @param pageSize 每页显示记录数.
-     * @return 分页对象.
-     */
-	protected IPage<T> findByDynamicQuery(final String dqQuery,
+    /* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findByDynamicQuery(java.lang.String, java.lang.String, java.util.Map, int, int)
+	 */
+	public IPage<T> findByDynamicQuery(final String dqQuery,
 			final String dqCount, final Map<String, Object> paras,
 			final int pageNumber, final int pageSize) {
 		if (logger.isDebugEnabled()) {
@@ -184,18 +177,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnIPage;
 	}
 
-	/**
-	 * 根据动态Hql查询分页对象(单个参数).
-     * 
-	 * @param dqQuery 查询用的动态Hql名称.
-	 * @param dqCount 计算查询结果集记录数的动态Hql名称.
-	 * @param paraName 参数名.
-	 * @param paraValue 参数值.
-	 * @param pageNumber 第几页.
-	 * @param pageSize 每页显示记录数.
-	 * @return 分页对象.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findByDynamicQuery(java.lang.String, java.lang.String, java.lang.String, java.lang.Object, int, int)
 	 */
-	protected IPage<T> findByDynamicQuery(final String dqQuery,
+	public IPage<T> findByDynamicQuery(final String dqQuery,
 			final String dqCount, String paraName, Object paraValue,
 			final int pageNumber, final int pageSize) {
 		if (logger.isDebugEnabled()) {
@@ -214,16 +199,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnIPage;
 	}
 	
-	/**
-	 * 根据动态Hql查询分页对象(没有参数).
-     * 
-	 * @param dqQuery 查询用的动态Hql名称.
-	 * @param dqCount 计算查询结果集记录数的动态Hql名称.
-	 * @param pageNumber 第几页.
-	 * @param pageSize 每页显示记录数.
-	 * @return 分页对象.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findByDynamicQuery(java.lang.String, java.lang.String, int, int)
 	 */
-	protected IPage<T> findByDynamicQuery(final String dqQuery,
+	public IPage<T> findByDynamicQuery(final String dqQuery,
 			final String dqCount,
 			final int pageNumber, final int pageSize) {
 		if (logger.isDebugEnabled()) {
@@ -239,18 +218,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnIPage;
 	}
 
-    /**
-	 * 根据动态Hql查询分页对象.
-     * 
-	 * @param dqQuery 查询用的动态Hql名称.
-	 * @param dqCount 计算查询结果集记录数的动态Hql名称.
-	 * @param paraName 参数名.
-	 * @param paraValue 参数值.
-	 * @param pageNumber 第几页.
-	 * @param pageSize 每页显示记录数.
-	 * @return 分页对象.
-     */
-	protected IPage<T> findByDynamicQuery(final String dqQuery,
+    /* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findByDynamicQuery(java.lang.String, java.lang.String, java.lang.String[], java.lang.Object[], int, int)
+	 */
+	public IPage<T> findByDynamicQuery(final String dqQuery,
 			final String dqCount, String[] paraName, Object[] paraValue,
 			final int pageNumber, final int pageSize) {
 		if (logger.isDebugEnabled()) {
@@ -271,15 +242,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnIPage;
 	}
 
-    /**
-     * 根据动态Hql查询对象列表.
-	 * 
-     * @param dqQuery 查询用的动态Hql名称.
-     * @param paraName 参数名.
-     * @param paraValue 参数值.
-     * @return 对象列表.
-     */
-	protected List<T> findListByDynamicQuery(final String dqQuery,
+    /* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findListByDynamicQuery(java.lang.String, java.lang.String[], java.lang.Object[])
+	 */
+	public List<T> findListByDynamicQuery(final String dqQuery,
 			String[] paraName, Object[] paraValue) {
 		if (logger.isDebugEnabled()) {
 			logger
@@ -298,15 +264,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnList;
 	}
 
-    /**
-     * 根据动态Hql查询对象列表(单个参数).
-	 * 
-     * @param dqQuery 查询用的动态Hql名称.
-     * @param paraName 参数名.
-     * @param paraValue 参数值.
-     * @return 对象列表.
-     */
-	protected List<T> findListByDynamicQuery(final String dqQuery,
+    /* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findListByDynamicQuery(java.lang.String, java.lang.String, java.lang.Object)
+	 */
+	public List<T> findListByDynamicQuery(final String dqQuery,
 			String paraName, Object paraValue) {
 		if (logger.isDebugEnabled()) {
 			logger
@@ -323,13 +284,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnList;
 	}
 	
-    /**
-     * 根据动态Hql查询对象列表(没有参数).
-	 * 
-     * @param dqQuery 查询用的动态Hql名称.
-     * @return 对象列表.
-     */
-	protected List<T> findListByDynamicQuery(final String dqQuery) {
+    /* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findListByDynamicQuery(java.lang.String)
+	 */
+	public List<T> findListByDynamicQuery(final String dqQuery) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("findListByDynamicQuery(String) - start");
 		}
@@ -341,14 +299,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnList;
 	}
 	
-	/**
-	 * 根据动态Hql查询对象列表.
-	 * 
-	 * @param dqQuery 查询用的动态Hql名称.
-	 * @param paras 查询参数.
-	 * @return 对象列表.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findListByDynamicQuery(java.lang.String, java.util.Map)
 	 */
-	protected List<T> findListByDynamicQuery(final String dqQuery,
+	public List<T> findListByDynamicQuery(final String dqQuery,
 			final Map<String, Object> paras) {
 		if (logger.isDebugEnabled()) {
 			logger
@@ -363,16 +317,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnList;
 	}
 
-	/**
-	 * 根据动态Hql查询对象列表.
-	 * 
-	 * @param dqQuery 查询用的动态Hql名称.
-	 * @param paras 查询参数.
-	 * @param firstResult 从第几条记录开始取数据(第一条记录是从0开始计数的).
-	 * @param maxResults 最多取几条记录.
-	 * @return 对象列表.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findListByDynamicQuery(java.lang.String, java.util.Map, java.lang.Integer, java.lang.Integer)
 	 */
-	protected List<T> findListByDynamicQuery(final String dqQuery,
+	public List<T> findListByDynamicQuery(final String dqQuery,
 			final Map<String, Object> paras, final Integer firstResult,
 			final Integer maxResults) {
 		if (logger.isDebugEnabled()) {
@@ -423,15 +371,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return returnList;
 	}
 	
-	/**
-	 * 根据属性名和属性值查找对象列表.
-	 * 
-	 * @param propertyName 属性名.
-	 * @param propertyValue 属性值.
-	 * @param maxResult 最多返回多少条记录. 小于等于0则表示不限制.
-	 * @return 对象列表.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findByProperty(java.lang.String, java.lang.Object, int)
 	 */
-	protected List<T> findByProperty(String propertyName, final Object propertyValue, final int maxResult) {
+	public List<T> findByProperty(String propertyName, final Object propertyValue, final int maxResult) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("findByProperty(String, Object, int) - start, propName=" + propertyName + ",propValue=" + propertyValue + ",max=" + maxResult);
 		}
@@ -462,14 +405,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return list;
 	}
 
-	/**
-	 * 根据属性名和属性值查找对象列表.
-	 * 
-	 * @param propertyName 属性名.
-	 * @param propertyValue 属性值.
-	 * @return 对象列表.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#findByProperty(java.lang.String, java.lang.Object)
 	 */
-	protected List<T> findByProperty(String propertyName, final Object propertyValue) {
+	public List<T> findByProperty(String propertyName, final Object propertyValue) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("findByProperty(String, Object) - start");
 		}
@@ -482,14 +421,10 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		return list;
 	}
 
-	/**
-	 * 根据属性名和属性值查找单个对象.
-	 * 
-	 * @param propertyName 属性名.
-	 * @param propertyValue 属性值.
-	 * @return 对象.
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#getByProperty(java.lang.String, java.lang.Object)
 	 */
-	protected T getByProperty(String propertyName, Object propertyValue) {
+	public T getByProperty(String propertyName, Object propertyValue) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("getByProperty(String, Object) - start");
 		}
@@ -507,5 +442,18 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 			}
 			return null;
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.nestframework.commons.hibernate.IHibernateManager#updateProperty(java.lang.String, K, java.lang.String, java.lang.Object)
+	 */
+	public void updateProperty(String keyName, K keyValue,
+			String propertyName, Object propertyValue) {
+		getHibernateTemplate()
+				.bulkUpdate(
+						"update " + getGenericClass(getClass()).getSimpleName()
+								+ " set " + propertyName + "=? where "
+								+ keyName + "=?",
+						new Object[] { propertyValue, keyValue });
 	}
 }
