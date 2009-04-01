@@ -3,7 +3,7 @@ package org.nestframework.commons.hibernate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class InefficientJdbcPage<E> extends AbstractPage<E> {
+public class InefficientJdbcPage<E> extends JdbcPage<E> {
 
 	/**
 	 * JDBC page.<br>
@@ -16,35 +16,7 @@ public class InefficientJdbcPage<E> extends AbstractPage<E> {
 	 * @param rh Row data handler
 	 */
 	public InefficientJdbcPage(ResultSet rs, int pageNumber, int pageSize, IRowHandler<E> rh) {
-		super(pageNumber, pageSize);
-		try {
-			rs.last();
-			totalCount = rs.getRow();
-			getElementsFromResultSet(rs, rh);
-		} catch (SQLException e) {
-			throw new RuntimeException("JDBC page exception.", e);
-		}
-	}
-
-	/**
-	 * JDBC page.<br>
-	 * 
-	 * Use scoll to find specified page data.
-	 * 
-	 * @param rs Jdbc ResultSet.
-	 * @param totalCount total 
-	 * @param pageNumber current page number.
-	 * @param pageSize page size.
-	 * @param rh Row data handler.
-	 */
-	public InefficientJdbcPage(ResultSet rs, int totalCount, int pageNumber, int pageSize, IRowHandler<E> rh) {
-		super(pageNumber, pageSize);
-		try {
-			this.totalCount = totalCount;
-			getElementsFromResultSet(rs, rh);
-		} catch (SQLException e) {
-			throw new RuntimeException("JDBC page exception.", e);
-		}
+		super(rs, pageNumber, pageSize, rh);
 	}
 	
 	protected void getElementsFromResultSet(ResultSet rs, IRowHandler<E> rh) throws SQLException {
