@@ -339,7 +339,9 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 
 						try {
 							QueryWrap q = new QueryWrap(ss);
-							q.setParamters(paras);
+							if (paras != null) {
+								q.setParamters(paras);
+							}
 							Query qry = q.getQuery(_(dqQuery));
 							if (firstResult != null) {
 								qry.setFirstResult(firstResult);
@@ -380,7 +382,7 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		}
 
 		final String hql = "from " + getGenericClass(getClass()).getSimpleName()
-		+ " where " + propertyName + "=?";
+		+ " where " +  escapeSql(propertyName) + "=?";
 		
 		List list = getHibernateTemplate().executeFind(new HibernateCallback() {
 		
@@ -444,6 +446,13 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		}
 	}
 	
+	protected String escapeSql(String s) {
+		return s.replaceAll("\\s", "")
+			.replaceAll("'", "")
+			.replaceAll("\"", "")
+			.replaceAll(",", "");
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.nestframework.commons.hibernate.IHibernateManager#updateProperty(java.lang.String, K, java.lang.String, java.lang.Object)
 	 */
@@ -452,8 +461,8 @@ public abstract class HibernateManagerSupport<T, K extends Serializable>
 		getHibernateTemplate()
 				.bulkUpdate(
 						"update " + getGenericClass(getClass()).getSimpleName()
-								+ " set " + propertyName + "=? where "
-								+ keyName + "=?",
+								+ " set " + escapeSql(propertyName) + "=? where "
+								+  escapeSql(keyName) + "=?",
 						new Object[] { propertyValue, keyValue });
 	}
 }

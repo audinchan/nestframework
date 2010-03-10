@@ -19,6 +19,22 @@ public class InefficientJdbcPage<E> extends JdbcPage<E> {
 		super(rs, pageNumber, pageSize, rh);
 	}
 	
+	/**
+	 * JDBC page.<br>
+	 * 
+	 * Use scoll to find specified page data.
+	 * 
+	 * @param rs Jdbc ResultSet.
+	 * @param totalCount total 
+	 * @param pageNumber current page number.
+	 * @param pageSize page size.
+	 * @param rh Row data handler.
+	 */
+	public InefficientJdbcPage(ResultSet rs, int totalCount, int pageNumber,
+			int pageSize, IRowHandler<E> rh) {
+		super(rs, totalCount, pageNumber, pageSize, rh);
+	}
+
 	protected void getElementsFromResultSet(ResultSet rs, IRowHandler<E> rh) throws SQLException {
 		computePage();
 		int offset = (currPageNumber - firstPageNumber) * pageSize;
