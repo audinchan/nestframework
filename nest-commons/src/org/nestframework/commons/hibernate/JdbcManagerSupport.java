@@ -3,15 +3,14 @@
  */
 package org.nestframework.commons.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,6 +27,11 @@ public class JdbcManagerSupport extends JdbcDaoSupport implements IJdbcManager {
 	 */
 	private static final Log logger = LogFactory
 			.getLog(JdbcManagerSupport.class);
+	
+	/**
+	 * Whether to support jdbc driver.
+	 */
+	protected boolean isOldJdbc = false;
 
 	protected IQueryProvider queryProvider;
 
@@ -36,15 +40,11 @@ public class JdbcManagerSupport extends JdbcDaoSupport implements IJdbcManager {
 	 *            the queryProvider to set
 	 */
 	public void setQueryProvider(IQueryProvider queryProvider) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("setQueryProvider(IQueryProvider) - start");
-		}
-
 		this.queryProvider = queryProvider;
+	}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("setQueryProvider(IQueryProvider) - end");
-		}
+	public void setOldJdbc(boolean isOldJdbc) {
+		this.isOldJdbc = isOldJdbc;
 	}
 
 	/* (non-Javadoc)
@@ -90,7 +90,8 @@ public class JdbcManagerSupport extends JdbcDaoSupport implements IJdbcManager {
 							logger.debug("extractData(ResultSet) - start");
 						}
 
-						Object returnObject = new JdbcPage<E>(rs, count,
+						Object returnObject = isOldJdbc? new InefficientJdbcPage<E>(rs, count,
+								pageNo, pageSize, rh):new JdbcPage<E>(rs, count,
 								pageNo, pageSize, rh);
 						if (logger.isDebugEnabled()) {
 							logger.debug("extractData(ResultSet) - end");
