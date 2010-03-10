@@ -29,6 +29,25 @@
 	</filter-mapping>
 	-->
 	
+	<!-- CSRF bypass filter 
+	<filter>
+		<filter-name>csrfFilter</filter-name>
+		<filter-class>org.nestframework.commons.security.csrf.CsrfVerifyFilter</filter-class>
+		<init-param>
+			<param-name>config</param-name>
+			<param-value>csrf_config.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>redirect</param-name>
+			<param-value>/check_failed.html</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>csrfFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	-->
+	
 	<!-- Encoding filter -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
@@ -162,6 +181,11 @@
 				org.nestframework.data.JsonHandler,
 				org.nestframework.data.XStreamActionHandler
 			</param-value>
+		</init-param>
+		<init-param>
+			<!-- 自动处理HTML转义，可防止跨站脚本攻击 -->
+			<param-name>escapeHTML</param-name>
+			<param-value>true</param-value>
 		</init-param>
 		<!-- 
 		<init-param>

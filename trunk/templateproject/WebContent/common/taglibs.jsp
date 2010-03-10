@@ -4,6 +4,7 @@
 <%@ taglib prefix="pager" uri="http://nestframework.org/tags/pager" %>
 <%@ taglib prefix="nestfn" uri="http://nestframework.org/tags/function" %>
 <%@ taglib prefix="nest" uri="http://nestframework.org/tags-validate" %>
+<%@ taglib prefix="nestsecurity" uri="http://nestframework.org/tags/security" %>
 <%@ taglib prefix="un" uri="http://jakarta.apache.org/taglibs/unstandard-1.0" %>
 <%@ taglib prefix="app" uri="http://com.becom/tags/app" %>
 

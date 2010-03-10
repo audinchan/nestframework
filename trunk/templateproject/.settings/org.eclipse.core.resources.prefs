@@ -1,7 +1,8 @@
-#Tue Apr 29 16:14:32 CST 2008
+#Wed Sep 16 15:12:01 CST 2009
 eclipse.preferences.version=1
 encoding//conf/db-conf.properties=GBK
 encoding//conf/i18n/messages_zh_CN.properties=GBK
+encoding//src/csrf_config.properties=UTF-8
 encoding//src/sys-conf.properties=UTF-8
 encoding//test/db-conf-test.properties=GBK
 encoding/build.properties=GBK
