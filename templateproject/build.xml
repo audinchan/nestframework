@@ -41,7 +41,7 @@
 	<target name="help" description="--> print help">
 		<echo>构建帮助.</echo>
 		<echo>-----------------</echo>
-		<echo>代码生成帮助，“/”表示同样功能的两种选择。</echo>
+		<echo>代码生成帮助，/表示同样功能的两种选择。</echo>
 		<echo>-----------------</echo>
 		<echo>ant genall/genall2: 生成完整的基础代码(orm,dao,service,spring配置,hibernate配置等)/使用annotation.</echo>
 		<echo>1. ant genconf: 生成hibernate配置.</echo>
