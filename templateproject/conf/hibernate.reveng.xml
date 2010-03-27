@@ -13,6 +13,15 @@
 			hibernate-type="boolean" />
 		<sql-type jdbc-type="TINYINT" precision='1'
 			hibernate-type="boolean" />
+		<sql-type jdbc-type="INTEGER" precision='22' scale="0" 
+			hibernate-type="integer" />	
+		<sql-type jdbc-type="VARCHAR" 
+			hibernate-type="string"/>
+		<sql-type jdbc-type="CLOB" 
+			hibernate-type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+		<sql-type jdbc-type="DATE" 
+			hibernate-type="timestamp"/>
+		
 	</type-mapping>
 
 	<!-- BIN$ is recycle bin tables in Oracle -->
