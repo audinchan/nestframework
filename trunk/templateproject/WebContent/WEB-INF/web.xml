@@ -205,7 +205,7 @@
 	<!-- jcaptcha
 	<servlet>
 		<servlet-name>jcaptcha</servlet-name>
-		<servlet-class>demopackage.templateproject.webapp.util.ImageCaptchaServlet</servlet-class>
+		<servlet-class>demopackage.templateproject.webapp.util.RandomCodeServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 	<servlet-mapping>
