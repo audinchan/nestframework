@@ -72,9 +72,12 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				HSSFRow datarow = sheet.getRow(rowNumber);
 				HSSFRow hlDataRow=null;
 				int hldatacol = 0;
-				if(aSheet.getHighLightRow()!=null)
+				if(aSheet.getHighLightRow()!=null){
 					hlDataRow=sheet.getRow(aSheet.getHighLightRow().getRow());
 					hldatacol = aSheet.getHighLightRow().getCol();
+				}else{
+					hlDataRow=datarow;
+				}
 				if(hlDataRow==null)	
 					hlDataRow=sheet.getRow(rowNumber);
 				//Êä³öÊý¾Ý
