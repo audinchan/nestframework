@@ -47,6 +47,18 @@ public class AssignedSheet {
 	private boolean needCopyTemplateRow=false;
 	
 	/**
+	 * 追加到Sheet
+	 */
+	private String AppendToSheet;
+	
+	public String getAppendToSheet() {
+		return AppendToSheet;
+	}
+	public void setAppendToSheet(String appendToSheet) {
+		AppendToSheet = appendToSheet;
+	}
+
+	/**
 	 * 数据内容
 	 */
 	private List<AssignedCell[]> data;
