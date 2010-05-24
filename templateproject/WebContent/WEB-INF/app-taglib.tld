@@ -12,12 +12,10 @@
     <uri>http://com.becom/tags/app</uri>
     <display-name>App Tags</display-name>
 
-<!--
     <tag>
         <name>test</name>
-        <tag-class>com.becom.rock.webapp.tag.TestTag</tag-class>
-        <body-content>scriptless</body-content>
+        <tag-class></tag-class>
+        <body-content></body-content>
     </tag>
--->
 
 </taglib>
