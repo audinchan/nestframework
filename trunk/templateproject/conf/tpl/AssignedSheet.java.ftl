@@ -1,5 +1,6 @@
 package ${hss_base_package}.dto;
 
+
 import java.util.List;
 
 /**
@@ -51,13 +52,11 @@ public class AssignedSheet {
 	 */
 	private String AppendToSheet;
 	
-	public String getAppendToSheet() {
-		return AppendToSheet;
-	}
-	public void setAppendToSheet(String appendToSheet) {
-		AppendToSheet = appendToSheet;
-	}
-
+	/**
+	 * 设置是否自动调整行高，默认为false，使用模板中指定的行号
+	 */
+	private boolean autoHeight = false;
+	
 	/**
 	 * 数据内容
 	 */
@@ -66,6 +65,7 @@ public class AssignedSheet {
 	public AssignedSheet(){
 		
 	}
+	
 	public AssignedSheet(String sheetName,String templateSheetName){
 		this.sheetName=sheetName;
 		this.templateSheetName=templateSheetName;
@@ -74,12 +74,15 @@ public class AssignedSheet {
 	public String getSheetName() {
 		return sheetName;
 	}
+	
 	public void setSheetName(String sheetName) {
 		this.sheetName = sheetName;
 	}
+	
 	public String getTemplateSheetName() {
 		return templateSheetName;
 	}
+	
 	public void setTemplateSheetName(String templateSheetName) {
 		this.templateSheetName = templateSheetName;
 	}
@@ -140,5 +143,20 @@ public class AssignedSheet {
 		this.needCopyTemplateRow = needCopyTemplateRow;
 	}
 	
+	public boolean isAutoHeight() {
+		return autoHeight;
+	}
+
+	public void setAutoHeight(boolean autoHeight) {
+		this.autoHeight = autoHeight;
+	}
 	
+	public String getAppendToSheet() {
+		return AppendToSheet;
+	}
+	
+	public void setAppendToSheet(String appendToSheet) {
+		AppendToSheet = appendToSheet;
+	}
+
 }
