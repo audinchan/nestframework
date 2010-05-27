@@ -1,7 +1,6 @@
-/**
- * 
- */
 package ${hss_base_package}.service.ext.impl;
+
+package com.becom.enroll.service.ext.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,6 +25,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.nestframework.commons.utils.StringUtil;
 import org.springframework.context.ApplicationContext;
@@ -98,9 +98,10 @@ public class ExcelExportSupportImpl implements IExportSupport {
 
 				// 输出数据
 				outputData(wb, sheet, datarow, hlDataRow, aSheet.getDataRow(),
-						data, aSheet.getAssignedCells(), aSheet
-								.isNeedCopyTemplateRow(), aSheet
-								.getDataRowSpan(), aSheet.getTotalCol(),
+						data, aSheet.getAssignedCells(), 
+						aSheet.isNeedCopyTemplateRow(),
+						aSheet.isAutoHeight(),
+						aSheet.getDataRowSpan(), aSheet.getTotalCol(),
 						hldatacol);
 				//处理合并sheet的记录
 				if(StringUtil.isEmpty(aSheet.getAppendToSheet()) || 
@@ -181,8 +182,9 @@ public class ExcelExportSupportImpl implements IExportSupport {
 
 			// 输出数据
 			outputData(wb, sheet, datarow, hldatarow, para.getDataRow(), data,
-					para.getAssignedCells(), para.isNeedCopyTemplateRow(), para
-							.getDataRowSpan(), para.getTotalCol(), hldatacol);
+					para.getAssignedCells(), para.isNeedCopyTemplateRow(), 
+					para.isAutoHeight(),
+					para.getDataRowSpan(), para.getTotalCol(), hldatacol);
 
 			//单页模式不处理合并sheet操作
 			wb.write(os);
@@ -208,6 +210,7 @@ public class ExcelExportSupportImpl implements IExportSupport {
 	private void outputData(HSSFWorkbook wb, HSSFSheet sheet, HSSFRow datarow,
 			HSSFRow hldatarow, AssignedCell dataRow, List<AssignedCell[]> data,
 			List<AssignedCell> assignedCells, boolean isNeedCopyTemplateRow,
+			boolean autoHeight,
 			int dataRowSpan, int totalCol, int hldatacol) {
 		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
 
@@ -231,9 +234,10 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				// 创建多行，把所有列都创建出来，并使用样式处理
 				for (int i = 0; i < dataRowSpan; i++) {
 					currRow = sheet.createRow(rowNumber + i);
-					// 设置行高
-					if (datarow != null)
+					// 设置行高，模板行存在并且未指定自动行高，则使用模板行的行高
+					if (datarow != null && !autoHeight){
 						currRow.setHeight(datarow.getHeight());
+					}
 					// 创建所有的列
 					for (int j = 0; j < totalCol; j++) {
 						HSSFCell cell = currRow.createCell(j);
@@ -325,6 +329,12 @@ public class ExcelExportSupportImpl implements IExportSupport {
 					// 使用高亮样式
 					cell.setCellStyle(hldatarow.getCell(acell.getCol())
 							.getCellStyle());
+				}
+				//调整行高,变为自动换行
+				if(autoHeight){
+					CellStyle style = cell.getCellStyle();
+					style.setWrapText(true);
+					cell.setCellStyle(style);
 				}
 			}
 			rowNumber += dataRowSpan;
