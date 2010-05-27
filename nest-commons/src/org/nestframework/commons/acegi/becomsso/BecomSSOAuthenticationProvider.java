@@ -10,7 +10,7 @@ import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.nestframework.commons.utils.EncodeUtil;
+import org.nestframework.commons.utils.RSA_Encrypt;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -31,7 +31,7 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 		
 		BecomSSOAuthenticationToken auth = (BecomSSOAuthenticationToken) authentication;
 		if (auth.getClientKey() != null && auth.getRemoteKey() != null
-				&& EncodeUtil.md5(auth.getClientKey() + auth.getLoginName()).toUpperCase().equals(auth.getRemoteKey())) {
+				&& RSA_Encrypt.verify(auth.getClientKey() + auth.getLoginName(),auth.getRemoteKey())) {
 			UserDetails user = null;
 			try {
 				user = getUserDetailsService().loadUserByUsername(auth.getLoginName());

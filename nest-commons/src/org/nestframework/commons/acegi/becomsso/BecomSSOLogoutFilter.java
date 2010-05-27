@@ -18,6 +18,7 @@ import org.acegisecurity.ui.AbstractProcessingFilter;
 import org.acegisecurity.ui.logout.LogoutFilter;
 import org.acegisecurity.ui.logout.LogoutHandler;
 import org.nestframework.commons.utils.EncodeUtil;
+import org.nestframework.commons.utils.RSA_Encrypt;
 
 /**
  * @author audin
@@ -59,18 +60,24 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
     			return;
     		} else {
     			String remoteKey = req.getParameter("authlogout_key");
-    			if (EncodeUtil.md5(req.getSession().getId()).toUpperCase().equals(remoteKey)) {
+    			String redirectUrl = (String)req.getSession().getAttribute("redirectUrl");
+    			if (RSA_Encrypt.verify(req.getSession().getId(),remoteKey)) {
     				// successfull logout
     				if (deleteSession) {
     					req.getSession().invalidate();
     				}
-    				super.doFilter(request, response, chain);
+    				if(redirectUrl==null){
+    					super.doFilter(request, response, chain);
+    				}else{
+    					res.sendRedirect(redirectUrl);
+    				}
     				return;
     			} else {
     				String url = AbstractProcessingFilter.obtainFullRequestUrl(req);
     				res.sendRedirect(url);
     				return;
     			}
+    			
     		}
         }
 		
