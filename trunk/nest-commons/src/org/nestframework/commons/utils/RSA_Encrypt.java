@@ -4,18 +4,25 @@ import javax.crypto.Cipher;
 
 import org.apache.commons.codec.binary.Base64;
 
+import sun.security.rsa.RSAPublicKeyImpl;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.security.interfaces.RSAPublicKey;
 
 /**
  * RSA encrypt
@@ -61,6 +68,7 @@ public class RSA_Encrypt {
 				PRIVATE_KEY_FILE));
 		oos1.writeObject(publicKey);
 		oos2.writeObject(privateKey);
+		writePublicKey(PUBLIC_KEY_FILE+".key");
 		/** clear cache */
 		oos1.close();
 		oos2.close();
@@ -120,6 +128,36 @@ public class RSA_Encrypt {
 				publicKeyPath));
 		publicKey = (PublicKey) ois.readObject();
 		ois.close();
+	}
+	
+	/**
+	 * write publicKey to Txt file
+	 * @param publicKeyPath
+	 */
+	public static void writePublicKey(String publicKeyPath){
+		try {
+			PrintWriter pw;
+			pw = new PrintWriter( new FileWriter( publicKeyPath ) );
+			pw.println("-------------PUBLIC_KEY-------------"); 
+			
+			BigInteger m=((RSAPublicKeyImpl)publicKey).getModulus();
+			BigInteger e=((RSAPublicKeyImpl)publicKey).getPublicExponent();
+			pw.println("bitlen="+m.bitLength()+";");
+			String mStr=m.toString(16);
+			if((mStr.length() % 2)==1)
+				mStr="0"+mStr;
+			pw.println("m="+mStr+";");
+			String eStr = e.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("e="+eStr+";");
+			pw.println("-------------PUBLIC_KEY-------------"); 
+			
+	        pw.close(); 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
 	}
 	/**
 	 * 加密方法 source： 源数据
@@ -208,6 +246,7 @@ public class RSA_Encrypt {
 		//generateKeyPair();
 		getPrivateKey(PRIVATE_KEY_FILE);
 		getPublicKey(PUBLIC_KEY_FILE);
+		writePublicKey(PUBLIC_KEY_FILE+".key");
 		String source = "296502429874592438576248524admin";// 要加密的字符串
 		String cryptograph = encrypt(source);// 生成的密文
 		System.out.println(cryptograph);
