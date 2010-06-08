@@ -2,27 +2,30 @@ package org.nestframework.commons.utils;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 
 import sun.security.rsa.RSAPublicKeyImpl;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 
 /**
  * RSA encrypt
@@ -61,21 +64,14 @@ public class RSA_Encrypt {
 		publicKey = kp.getPublic();
 		/** get private key */
 		privateKey = kp.getPrivate();
-		/** save public key to file as stream */
-		ObjectOutputStream oos1 = new ObjectOutputStream(new FileOutputStream(
-				PUBLIC_KEY_FILE));
-		ObjectOutputStream oos2 = new ObjectOutputStream(new FileOutputStream(
-				PRIVATE_KEY_FILE));
-		oos1.writeObject(publicKey);
-		oos2.writeObject(privateKey);
-		writePublicKey(PUBLIC_KEY_FILE+".key");
-		/** clear cache */
-		oos1.close();
-		oos2.close();
+		/** save public key to file as text */
+		
+		writePublicKey(PUBLIC_KEY_FILE);
+		writePrivateKey(PRIVATE_KEY_FILE);
 	}
 
 	/**
-	 * 初始化私钥（默认位置在classes目录）
+	 * get privateKey from default path
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ClassNotFoundException
@@ -88,7 +84,7 @@ public class RSA_Encrypt {
 	}
 	
 	/**
-	 * 初始化指定位置的私钥
+	 * get privateKey from assigned path
 	 * @param privateKeyPath
 	 * @return
 	 * @throws IOException 
@@ -97,14 +93,28 @@ public class RSA_Encrypt {
 	 */
  	public static void getPrivateKey(String privateKeyPath) throws FileNotFoundException, IOException, ClassNotFoundException{
 		/** 将文件中的私钥对象读出 */
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-				privateKeyPath));
-		privateKey = (PrivateKey) ois.readObject();
-		ois.close();
+		/** 将文件中的私钥对象读出 */
+		String s = ReadFile(privateKeyPath);
+        String mod = GetValue("m=", s);
+        String priExp = GetValue("privateExponent=", s);
+		 BigInteger m = new BigInteger(mod,16);  
+         BigInteger e = new BigInteger(priExp,16); 
+         RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(m,e);
+         KeyFactory keyFactory;
+		try {
+			keyFactory = KeyFactory.getInstance("RSA");
+	         privateKey = keyFactory.generatePrivate(keySpec);  
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InvalidKeySpecException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} 
 	}
  	
  	/**
-	 * 初始化公钥钥（默认位置在classes目录）
+	 * get publicKey from default path
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ClassNotFoundException
@@ -117,20 +127,57 @@ public class RSA_Encrypt {
 	}
 	
 	/**
-	 * 读取指定位置的公钥
+	 * get publicKey from assigned path
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 * @throws ClassNotFoundException 
 	 */
 	public static void getPublicKey(String publicKeyPath) throws FileNotFoundException, IOException, ClassNotFoundException{
 		/** 将文件中的公钥对象读出 */
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-				publicKeyPath));
-		publicKey = (PublicKey) ois.readObject();
-		ois.close();
+		String s = ReadFile(publicKeyPath);
+        String mod = GetValue("m=", s);
+        String pubExp = GetValue("e=", s);
+		 BigInteger m = new BigInteger(mod,16);  
+         BigInteger e = new BigInteger(pubExp,16); 
+         RSAPublicKeySpec keySpec = new RSAPublicKeySpec(m,e);
+         KeyFactory keyFactory;
+		try {
+			keyFactory = KeyFactory.getInstance("RSA");
+	         publicKey = keyFactory.generatePublic(keySpec);  
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InvalidKeySpecException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} 
 	}
 	
-	/**
+    public static String ReadFile(String FileName)
+    {
+        String s = "";
+        try
+        {
+            FileInputStream f = new FileInputStream(FileName);
+            byte b[] = new byte[f.available()];
+            f.read(b);
+            s = new String(b);
+        }
+        catch(Exception exception) { }
+        return s;
+    }
+
+    public static String GetValue(String n, String src)
+    {
+        String s = "";
+        int i1 = src.indexOf(n);
+        i1 += n.length();
+        int i2 = src.indexOf(";", i1);
+        s = src.substring(i1, i2);
+        return s;
+    }
+
+    /**
 	 * write publicKey to Txt file
 	 * @param publicKeyPath
 	 */
@@ -157,32 +204,104 @@ public class RSA_Encrypt {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-
 	}
 	/**
-	 * 加密方法 source： 源数据
+	 * write publicKey to Txt file
+	 * @param publicKeyPath
+	 */
+	public static void writePrivateKey(String privateKeyPath){
+		try {
+			PrintWriter pw;
+			pw = new PrintWriter( new FileWriter( privateKeyPath ) );
+			pw.println("-------------PRIVATE_KEY-------------"); 
+			
+			BigInteger m=((RSAPrivateCrtKey)privateKey).getModulus();
+			BigInteger e=((RSAPrivateCrtKey)privateKey).getPublicExponent();
+			BigInteger privateExponent=((RSAPrivateCrtKey)privateKey).getPrivateExponent();
+			BigInteger p=((RSAPrivateCrtKey)privateKey).getPrimeP();
+			BigInteger q=((RSAPrivateCrtKey)privateKey).getPrimeQ();
+			BigInteger dP=((RSAPrivateCrtKey)privateKey).getPrimeExponentP();
+			BigInteger dQ=((RSAPrivateCrtKey)privateKey).getPrimeExponentQ();
+			BigInteger qInv=((RSAPrivateCrtKey)privateKey).getCrtCoefficient();
+			
+			
+			pw.println("bitlen="+m.bitLength()+";");
+			
+			String mStr=m.toString(16);
+			if((mStr.length() % 2)==1)
+				mStr="0"+mStr;
+			pw.println("m="+mStr+";");
+			
+			String eStr = e.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("e="+eStr+";");
+			
+			eStr = privateExponent.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("privateExponent="+eStr+";");
+			
+			eStr = p.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("p="+eStr+";");
+			
+			eStr = q.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("q="+eStr+";");
+			
+			eStr = dQ.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("dQ="+eStr+";");
+			
+			eStr = dP.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("dP="+eStr+";");
+			
+			eStr = qInv.toString(16);
+			if((eStr.length() % 2)==1)
+				eStr="0"+eStr;
+			pw.println("qInv="+eStr+";");
+			
+			pw.println("-------------PRIVATE_KEY-------------"); 
+			
+	        pw.close(); 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
+
+	/**
+	 * encrypt source data use publicKey
+	 * @param source
+	 * @return
+	 * @throws Exception
 	 */
 	public static String encrypt(String source) throws Exception {
 		getPublicKey();
-		/** 得到Cipher对象来实现对源数据的RSA加密 */
+		/**  */
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		byte[] b = source.getBytes();
-		/** 执行加密操作 */
+		/** do encrypt */
 		byte[] b1 = cipher.doFinal(b);
-		return Base64.encodeBase64URLSafeString(b1);
+		return new String(Hex.encodeHex(b1));
 	}
 
 	/**
-	 * 解密算法 cryptograph:密文
+	 * decrypt cryptograph use privateKey
 	 */
 	public static String decrypt(String cryptograph) throws Exception {
 		getPrivateKey();
-		/** 得到Cipher对象对已用公钥加密的数据进行RSA解密 */
+		/** get Cipher object */
 		Cipher cipher = Cipher.getInstance(ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, privateKey);
-		byte[] b1 = Base64.decodeBase64(cryptograph);
-		/** 执行解密操作 */
+		byte[] b1 = Hex.decodeHex(cryptograph.toCharArray());
+		/** do decrypt */
 		byte[] b = cipher.doFinal(b1);
 		return new String(b);
 	}
@@ -207,7 +326,7 @@ public class RSA_Encrypt {
 	
 			signature.update(data.getBytes());
 			byte[] b1 =  signature.sign();
-			return Base64.encodeBase64URLSafeString(b1);
+			return Hex.encodeHexString(b1);
 		}catch(Exception e){
 			e.printStackTrace();
 			return "";
@@ -230,7 +349,7 @@ public class RSA_Encrypt {
 	        Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);   
 	
 	        signature.initVerify(publicKey);
-			byte[] b1 = Base64.decodeBase64(sign);
+			byte[] b1 = Hex.decodeHex(sign.toCharArray());
 	        signature.update(data.getBytes());   
 	
 	        // 验证签名是否正常   
@@ -246,7 +365,7 @@ public class RSA_Encrypt {
 		//generateKeyPair();
 		getPrivateKey(PRIVATE_KEY_FILE);
 		getPublicKey(PUBLIC_KEY_FILE);
-		writePublicKey(PUBLIC_KEY_FILE+".key");
+		//writePublicKey(PUBLIC_KEY_FILE+".key");
 		String source = "296502429874592438576248524admin";// 要加密的字符串
 		String cryptograph = encrypt(source);// 生成的密文
 		System.out.println(cryptograph);
