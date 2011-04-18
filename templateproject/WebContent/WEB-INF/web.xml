@@ -148,7 +148,7 @@
 	<!-- **** servlets **** -->
  	
 	<!-- dwr(ajax) framework  -->
-	<!-- 
+	<!--  -->
 	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>
 		<servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>
@@ -161,7 +161,7 @@
 		<servlet-name>dwr-invoker</servlet-name>
 		<url-pattern>/dwr/*</url-pattern>
 	</servlet-mapping>
-	 -->
+	
 
 	<!-- nest framework -->
 	<servlet>

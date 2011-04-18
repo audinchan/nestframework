@@ -2,12 +2,9 @@
 
 <dwr>
 	<allow>
-		<!-- 
-		<create creator="spring" javascript="someUtil">
-			<param name="beanName" value="someUtil"/>
+		<create creator="spring" javascript="CheckDateUtil">
+			<param name="beanName" value="checkDateUtil"/>
 		</create>
-		 -->
-
 		<convert converter="hibernate3" match="demopackage.templateproject.model.*" />
 		<convert converter="bean" match="org.nestframework.core.UploadProcessListener$UploadStatus" />
 	</allow>
