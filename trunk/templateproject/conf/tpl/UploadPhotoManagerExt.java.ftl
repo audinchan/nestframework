@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import org.nestframework.action.FileItem;
 
 import ${hss_base_package}.exception.LoadUpPhotoException;
-import ${hss_base_package}.service.ISysParManager;
+import ${hss_base_package}.service.ISysParameterManager;
 import ${hss_base_package}.service.ext.IUploadPhotoManagerExt;
 
 public class UploadPhotoManagerExt implements IUploadPhotoManagerExt {
@@ -26,7 +26,7 @@ public class UploadPhotoManagerExt implements IUploadPhotoManagerExt {
 	private static final Logger logger = Logger
 			.getLogger(UploadPhotoManagerExt.class);
 	
-	private ISysParManager sysParManager;
+	private ISysParameterManager sysParameterManager;
 	
 	/**
 	 * 验证相片的属性.
@@ -81,7 +81,7 @@ public class UploadPhotoManagerExt implements IUploadPhotoManagerExt {
 		try {
 			String filePath = "";
 			// 获取图片存储目录.
-			String photoDir = sysParManager.getParamValue(photoDirInPar);
+			String photoDir = sysParameterManager.getParamValue(photoDirInPar);
 			if (logger.isDebugEnabled())
 			{
 				logger.info("存照片的路径photoDir="+photoDir);
@@ -158,7 +158,7 @@ public class UploadPhotoManagerExt implements IUploadPhotoManagerExt {
 		try {
 			String filePath = "";
 			// 获取图片存储目录.
-			String photoDir = sysParManager.getParamValue(photoDirInPar);
+			String photoDir = sysParameterManager.getParamValue(photoDirInPar);
 			if (logger.isDebugEnabled())
 			{
 				logger.info("存照片的路径photoDir="+photoDir);
@@ -210,7 +210,7 @@ public class UploadPhotoManagerExt implements IUploadPhotoManagerExt {
 			return "";
 		}		
 		// 获取考点图片存储目录.
-		String mapUrlPrefix = sysParManager.getParamValue(photo_url_prefix);	
+		String mapUrlPrefix = sysParameterManager.getParamValue(photo_url_prefix);	
 		if(!mapUrlPrefix.endsWith("/"))
 		{
 			mapUrlPrefix = mapUrlPrefix + "/";

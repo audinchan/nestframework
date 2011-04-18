@@ -3,8 +3,6 @@ package ${hss_base_package}.service.ext;
 import java.io.File;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
 import org.nestframework.action.FileItem;
 
 public interface IUploadPhotoManagerExt {
