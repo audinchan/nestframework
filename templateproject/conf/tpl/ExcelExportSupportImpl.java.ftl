@@ -1,7 +1,5 @@
 package ${hss_base_package}.service.ext.impl;
 
-package com.becom.enroll.service.ext.impl;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -25,7 +25,6 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.nestframework.commons.utils.StringUtil;
 import org.springframework.context.ApplicationContext;
@@ -72,14 +71,21 @@ public class ExcelExportSupportImpl implements IExportSupport {
 			// 创建sheet，并复制模板页中的所有行
 			for (AssignedSheet aSheet : para.getSheets()) {
 				//
-				HSSFSheet sheet = wb.cloneSheet(wb.getSheetIndex(aSheet
+				HSSFSheet sheet = null;
+				if(aSheet.getTemplateSheetName()
+						.equals(aSheet.getSheetName())){
+					//导出SheetName和模板Sheet名一致
+					sheet = wb.getSheet(aSheet
+						.getTemplateSheetName());
+					sheetNames.add(aSheet.getSheetName());
+				}else{
+					sheet = wb.cloneSheet(wb.getSheetIndex(aSheet
 						.getTemplateSheetName()));
-				if (!aSheet.getTemplateSheetName()
-						.equals(aSheet.getSheetName())) {
 					wb.setSheetName(wb.getNumberOfSheets() - 1, aSheet
-							.getSheetName());// ,HSSFCell.ENCODING_UTF_16
+							.getSheetName());
+					sheetNames.add(wb.getSheetName(wb.getNumberOfSheets() - 1));
 				}
-				sheetNames.add(wb.getSheetName(wb.getNumberOfSheets() - 1));
+				
 				// 开始处理
 				int rowNumber = aSheet.getDataRow().getRow();
 				HSSFRow datarow = sheet.getRow(rowNumber);
@@ -98,11 +104,11 @@ public class ExcelExportSupportImpl implements IExportSupport {
 
 				// 输出数据
 				outputData(wb, sheet, datarow, hlDataRow, aSheet.getDataRow(),
-						data, aSheet.getAssignedCells(), 
-						aSheet.isNeedCopyTemplateRow(),
-						aSheet.isAutoHeight(),
-						aSheet.getDataRowSpan(), aSheet.getTotalCol(),
+						data, aSheet.getAssignedCells(), aSheet
+								.isNeedCopyTemplateRow(), aSheet
+								.getDataRowSpan(), aSheet.getTotalCol(),
 						hldatacol);
+				
 				//处理合并sheet的记录
 				if(StringUtil.isEmpty(aSheet.getAppendToSheet()) || 
 						!mergedSheets.containsKey(aSheet.getAppendToSheet())){
@@ -130,6 +136,7 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				for(int i=1;i<slist.size();i++){
 					HSSFSheet sourceSheet = wb.getSheet(slist.get(i));
 					copySheet(sourceSheet, targetSheet);
+					adjustformula(targetSheet);
 					wb.removeSheetAt(wb.getSheetIndex(slist.get(i)));
 				}
 			}
@@ -182,9 +189,8 @@ public class ExcelExportSupportImpl implements IExportSupport {
 
 			// 输出数据
 			outputData(wb, sheet, datarow, hldatarow, para.getDataRow(), data,
-					para.getAssignedCells(), para.isNeedCopyTemplateRow(), 
-					para.isAutoHeight(),
-					para.getDataRowSpan(), para.getTotalCol(), hldatacol);
+					para.getAssignedCells(), para.isNeedCopyTemplateRow(), para
+							.getDataRowSpan(), para.getTotalCol(), hldatacol);
 
 			//单页模式不处理合并sheet操作
 			wb.write(os);
@@ -210,7 +216,6 @@ public class ExcelExportSupportImpl implements IExportSupport {
 	private void outputData(HSSFWorkbook wb, HSSFSheet sheet, HSSFRow datarow,
 			HSSFRow hldatarow, AssignedCell dataRow, List<AssignedCell[]> data,
 			List<AssignedCell> assignedCells, boolean isNeedCopyTemplateRow,
-			boolean autoHeight,
 			int dataRowSpan, int totalCol, int hldatacol) {
 		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
 
@@ -234,10 +239,9 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				// 创建多行，把所有列都创建出来，并使用样式处理
 				for (int i = 0; i < dataRowSpan; i++) {
 					currRow = sheet.createRow(rowNumber + i);
-					// 设置行高，模板行存在并且未指定自动行高，则使用模板行的行高
-					if (datarow != null && !autoHeight){
+					// 设置行高
+					if (datarow != null)
 						currRow.setHeight(datarow.getHeight());
-					}
 					// 创建所有的列
 					for (int j = 0; j < totalCol; j++) {
 						HSSFCell cell = currRow.createCell(j);
@@ -254,6 +258,7 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				if (acell == null)
 					continue;
 				// 对特殊样式的处理
+				
 				if (acell.getUseStyle() == 9) {
 					// 写照片
 					// 处理照片
@@ -296,7 +301,14 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				// 根据类型设置
 				int cType = HSSFCell.CELL_TYPE_STRING;
 
+				
 				Object value = acell.getValue();
+				if (acell.getUseStyle() == 8) {
+					//公式,根据当前行解析公式,如R[-2]C/R[-1]C
+					//Pattern p
+					cell.setCellFormula(cell.getCellFormula());
+					continue;
+				}
 				if (value == null) {
 					cell.setCellValue("");
 				} else {
@@ -330,12 +342,6 @@ public class ExcelExportSupportImpl implements IExportSupport {
 					cell.setCellStyle(hldatarow.getCell(acell.getCol())
 							.getCellStyle());
 				}
-				//调整行高,变为自动换行
-				if(autoHeight){
-					CellStyle style = cell.getCellStyle();
-					style.setWrapText(true);
-					cell.setCellStyle(style);
-				}
 			}
 			rowNumber += dataRowSpan;
 		}
@@ -362,6 +368,8 @@ public class ExcelExportSupportImpl implements IExportSupport {
 				assignCell.setCellValue(cell.getValue().toString());
 			}
 		}
+		//重新计算公式
+		adjustformula(sheet);
 	}
 
 	/**
@@ -407,6 +415,7 @@ public class ExcelExportSupportImpl implements IExportSupport {
 							org.apache.poi.hssf.usermodel.HSSFWorkbook.PICTURE_TYPE_JPEG);
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println(filePath);
 		}
 		return result;
 	}
@@ -472,7 +481,9 @@ public class ExcelExportSupportImpl implements IExportSupport {
 							.setCellErrorValue(sourceCell.getErrorCellValue());
 					break;
 				case HSSFCell.CELL_TYPE_FORMULA:
-					targetCell.setCellFormula(sourceCell.getCellFormula());
+					//调整公式
+					int dataRowSpan=pPosition-pStartRow;
+					targetCell.setCellFormula(adjustFormula(sourceCell.getCellFormula(),dataRowSpan));
 					break;
 				case HSSFCell.CELL_TYPE_NUMERIC:
 					targetCell.setCellValue(sourceCell.getNumericCellValue());
@@ -485,6 +496,29 @@ public class ExcelExportSupportImpl implements IExportSupport {
 		}
 	}
 
+	/**
+	 * 调整公式
+	 * @param cellFormula
+	 * @param dataRowSpan
+	 * @return
+	 */
+	private String adjustFormula(String cellFormula, int dataRowSpan) {
+		Pattern   p   =   Pattern.compile("[a-zA-Z]+[\\d]*");
+		Pattern   p2   =   Pattern.compile("[\\d]+");
+		String str=cellFormula;
+	    Matcher   m   =   p.matcher(str);
+	    Matcher   m2;
+	    while(m.find()){ 
+	    	String s=m.group();
+	    	m2=p2.matcher(s);
+	    	
+	    	while(m2.find()){
+	    		String newS=m2.replaceAll(Integer.toString(Integer.parseInt(m2.group())+dataRowSpan));
+	    		str=str.replaceFirst(m.group(), newS);
+	    	}
+	    } 
+		return str;
+	}
 	/**
 	 * 将sheet中的所有行复制到目标sheet中，并删除原sheet
 	 * 
@@ -546,7 +580,8 @@ public class ExcelExportSupportImpl implements IExportSupport {
 							.setCellErrorValue(sourceCell.getErrorCellValue());
 					break;
 				case HSSFCell.CELL_TYPE_FORMULA:
-					targetCell.setCellFormula(sourceCell.getCellFormula());
+					int offset=targetCell.getRowIndex()-sourceCell.getRowIndex()+1;
+					targetCell.setCellFormula(adjustFormula(sourceCell.getCellFormula(),offset));
 					break;
 				case HSSFCell.CELL_TYPE_NUMERIC:
 					targetCell.setCellValue(sourceCell.getNumericCellValue());
@@ -559,6 +594,38 @@ public class ExcelExportSupportImpl implements IExportSupport {
 		}
 	}
 
+	/**
+	 * 重新计算公式
+	 */
+	private void adjustformula(HSSFSheet sourceSheet) {
+		HSSFRow sourceRow = null;
+		HSSFCell sourceCell = null;
+
+		// 首先获取sourceSheet的最后一行行数
+		int pEndRow = sourceSheet.getLastRowNum();
+
+		// 拷贝行并填充数据
+		for (int i = 0; i <= pEndRow; i++) {
+			sourceRow = sourceSheet.getRow(i);
+			if (sourceRow == null) {
+				continue;
+			}
+			for (int j = sourceRow.getFirstCellNum(); j < sourceRow
+					.getPhysicalNumberOfCells(); j++) {
+				sourceCell = sourceRow.getCell(j);
+				if (sourceCell == null) {
+					continue;
+				}
+				int cType = sourceCell.getCellType();
+				switch (cType) {
+				case HSSFCell.CELL_TYPE_FORMULA:
+					sourceCell.setCellFormula(sourceCell.getCellFormula());
+					break;
+				}
+			}
+		}
+		
+	}
 	/**
 	 * 相对路径转绝对路径
 	 * 

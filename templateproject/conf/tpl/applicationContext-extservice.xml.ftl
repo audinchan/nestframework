@@ -8,12 +8,23 @@
 	
 	<!-- extend managers -->
 	
+	<!--init-->
+	<bean id="initDictionUtil"
+		class="${hss_base_package}.webapp.util.InitDictionUtil" lazy-init="false" init-method="findAllSysDict">
+	</bean>	
+	<bean id="constantBean"
+		class="${hss_base_package}.common.ConstantBean" autowire="byName" lazy-init="false" init-method="init">
+		<property name="propertiesFile" value="sys-conf.properties"></property>
+		<property name="propertiesFileDB" value="db-conf.properties"></property>
+	</bean>    
+    <!-- DWR -->
+    <bean id="checkDateUtil" class="${hss_base_package}.webapp.util.CheckDateUtil"></bean>
 	<!-- Excel Export manager -->
 	<bean id="excelExportSupport"
 		class="${hss_base_package}.service.ext.impl.ExcelExportSupportImpl" autowire="byName">
 	</bean>
-	<!-- Upload Photo manager -->
+	<!-- Upload Photo manager 
 	<bean id="uploadPhotoManagerExt"
 		class="${hss_base_package}.service.ext.impl.UploadPhotoManagerExt" autowire="byName">
-	</bean>
+	</bean>-->
 </beans>

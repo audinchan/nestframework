@@ -5,14 +5,15 @@ package ${hss_base_package}.webapp.action;
 
 import javax.servlet.http.HttpServletRequest;
 
-//import com.becom.rock.model.User;
-
 /**
  * @author audin
  *
  */
 public abstract class BaseAction {
 	
+	public String message;
+	
+	public String error;
 	/**
 	 * 获取登录用户的Session对象.
 	 * 
