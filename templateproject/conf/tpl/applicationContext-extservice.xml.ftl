@@ -23,6 +23,11 @@
 	<bean id="excelExportSupport"
 		class="${hss_base_package}.service.ext.impl.ExcelExportSupportImpl" autowire="byName">
 	</bean>
+	<!-- Excel Import manager -->
+	<bean id="excelImportSupport" class="org.nestframework.importer.impl.ExcelImportSupportImpl" 
+    	autowire="byName">
+    	<property name="importXmlRootPath" value="$[xmlRootPath]"></property>
+    </bean>
 	<!-- Upload Photo manager 
 	<bean id="uploadPhotoManagerExt"
 		class="${hss_base_package}.service.ext.impl.UploadPhotoManagerExt" autowire="byName">
