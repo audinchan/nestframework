@@ -18,7 +18,14 @@
 		<property name="placeholderPrefix" value="$[" />
 		<property name="placeholderSuffix" value="]" />
 	</bean>
-
+	<!--使用Weblogic的JNDI数据源
+	 <bean id="dataSource"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName">
+			<value>$[db.jndiName]</value>
+		</property>
+	</bean> -->
+	<!-- 使用项目本身的数据源配置文件 -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName">
