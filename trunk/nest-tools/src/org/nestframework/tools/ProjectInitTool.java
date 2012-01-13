@@ -1,11 +1,17 @@
 package org.nestframework.tools;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+import cn.xddai.chardet.CharsetDetector;
 
 
 public class ProjectInitTool
@@ -36,23 +42,53 @@ public class ProjectInitTool
     	if (HandleExts.indexOf(',' + fileext + ',') == -1) {
     		return;
     	}
-    	StringWriter writer = new StringWriter(102400);
-    	char[] buf = new char[1024];
-    	FileReader reader = new FileReader(file);
-    	int len = 0;
-    	while ((len = reader.read(buf)) != -1) {
-    		writer.write(buf, 0, len);
-    	}
-    	String content = writer.toString();
-    	reader.close();
-    	writer.close();
+    	//判断文件编码
+    	CharsetDetector charDect = new CharsetDetector();      
+    	InputStream ios = new FileInputStream(file);
+    	String fileCharset="GBK";  
+    	String[] probableSet = charDect.detectChineseCharset(ios);
+    	fileCharset=probableSet[0];
+
+    	String content = readFile(file,fileCharset);
     	for (int i = 0; i < rp.length; i++) {
     		content = content.replaceAll(rp[i][0], rp[i][1]);
     	}
-    	FileWriter fw = new FileWriter(file);
-    	fw.write(content);
-    	fw.close();
+    	writeFile(file,content,fileCharset);
     	
+    }
+    public static String readFile(File f,String fileCharset) {
+    	String fileContent = "";
+		try {
+			if (f.isFile() && f.exists()) {
+				InputStreamReader read = new InputStreamReader(
+						new FileInputStream(f), fileCharset);
+		    	BufferedReader reader = new BufferedReader(read);
+				String line;
+				while ((line = reader.readLine()) != null) {
+					fileContent += line + "\r\n";
+				}
+				read.close();
+			}
+		} catch (Exception e) {
+			System.out.println("读取文件内容操作出错");
+			e.printStackTrace();
+		}
+    	return fileContent;
+    }
+    
+    public static void writeFile(File f, String fileContent, String fileCharset) {
+    	try {
+    	   if (!f.exists()) {
+    		   f.createNewFile();
+    	   }
+    	   OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f),fileCharset);
+    	   BufferedWriter writer=new BufferedWriter(write);  
+    	   writer.write(fileContent);
+    	   writer.close();
+    	} catch (Exception e) {
+    	   System.out.println("写文件内容操作出错");
+    	   e.printStackTrace();
+    	}
     }
 
     /**
