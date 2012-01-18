@@ -25,23 +25,19 @@
 	<bean id="queryProviderMapping" class="org.nestframework.commons.hibernate.QueryProviderMappingImpl">
 		<property name="queryMap">
 			<map>
-				<!-- query example -->
-				<entry key="user.findUsers.query"><value><![CDATA[
-					from User u where 1=1
-					<#if username?has_content>
-						and u.username like %:username%
-					</#if>
-					<#if orderBy?has_content>
-						order by u.${orderBy}
-					<#else>
-						order by u.username
-					</#if>
+				<!-- 获取数据库时间 ，根据当前在用的数据库，将key后面的.XXXXXX去掉，
+				不在用的key可以删掉，或在后面添加.XXXX-->
+				<!-- 获取数据库时间 (Oracle)-->
+				<entry key="getCurrentDateOfDatabase.oracle"><value><![CDATA[
+					SELECT CURRENT_TIMESTAMP from dual
 				]]></value></entry>
-				<entry key="user.findUsers.count"><value><![CDATA[
-					select count(*) from User u where 1=1
-					<#if username?has_content>
-						and u.username like %:username%
-					</#if>
+				<!-- 获取数据库时间 (sqlserver)-->
+				<entry key="getCurrentDateOfDatabase.sqlserver"><value><![CDATA[
+					SELECT getdate()
+				]]></value></entry>
+				<!-- 获取数据库时间 (mysql) 当前在用-->
+				<entry key="getCurrentDateOfDatabase"><value><![CDATA[
+					select SYSDATE()
 				]]></value></entry>
 			</map>
 		</property>
