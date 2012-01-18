@@ -18,7 +18,7 @@
 
 	<!-- **** filters **** -->
 	
-	<!-- P3P filter 
+	<!-- P3P filter -->
 	<filter>
 		<filter-name>p3pFilter</filter-name>
 		<filter-class>org.nestframework.commons.p3p.P3pDisableFilter</filter-class>
@@ -27,7 +27,6 @@
 		<filter-name>p3pFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	-->
 	
 	<!-- CSRF bypass filter 
 	<filter>
@@ -54,7 +53,7 @@
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
 		<init-param>
 			<param-name>encoding</param-name>
-			<param-value>GBK</param-value>
+			<param-value>UTF-8</param-value>
 		</init-param>
 		<init-param>
 			<param-name>forceEncoding</param-name>
@@ -202,7 +201,7 @@
         <url-pattern>*.a</url-pattern>
     </servlet-mapping>
 
-	<!-- jcaptcha
+	<!-- jcaptcha-->
 	<servlet>
 		<servlet-name>jcaptcha</servlet-name>
 		<servlet-class>demopackage.templateproject.webapp.util.RandomCodeServlet</servlet-class>
@@ -212,7 +211,7 @@
 		<servlet-name>jcaptcha</servlet-name>
 		<url-pattern>/captcha.jpg</url-pattern>
 	</servlet-mapping>
-	-->
+	
 	
 	<jsp-config>
 		<taglib>

@@ -1,5 +1,7 @@
-#Thu Mar 11 16:57:26 CST 2010
+#Fri Jan 13 14:42:19 CST 2012
 eclipse.preferences.version=1
+encoding//WebContent/js/date.js=UTF-8
+encoding//WebContent/js/validata.js=UTF-8
 encoding//conf/db-conf.properties=GBK
 encoding//conf/i18n/messages_zh_CN.properties=GBK
 encoding//conf/tpl/applicationContext-extservice.xml.ftl=UTF-8
