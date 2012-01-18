@@ -17,13 +17,23 @@ import ${hss_dao_package}.I${declarationName}DAO;
 import ${pojo.getPackageName()}.${declarationName};
 import ${hss_service_package}.I${declarationName}Manager;
 </#if>
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.nestframework.commons.hibernate.QueryWrap;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
 <#if hss_jdk5>@SuppressWarnings("unchecked")</#if>
 public abstract class Base<#if hss_jdk5 = false>${declarationName}</#if>Manager<#if hss_jdk5><T, K extends Serializable></#if> extends RootManager<#if hss_jdk5><T, K></#if> implements I<#if hss_jdk5>Base<#else>${declarationName}</#if>Manager<#if hss_jdk5><T, K></#if> {
 <#if hss_jdk5>
   <#if merge_dao>
 	private Class<T> entityClass;
+	
+	public String currentDateSql="getCurrentDateOfDatabase";
 	
 	public BaseManager() {
 		entityClass = getGenericClass(getClass());
@@ -74,6 +84,26 @@ public abstract class Base<#if hss_jdk5 = false>${declarationName}</#if>Manager<
 		return getHibernateTemplate().findByExample(instance, firstResult,
 				maxResults);
 	}
+	
+	public Date getCurrentDateOfDatabase() {
+		Date currentDate = (Date)getHibernateTemplate().execute(new HibernateCallback(){
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {				
+				try
+				{
+					QueryWrap q = new QueryWrap(session);
+					Query query = q.getQuery(_("getCurrentDateOfDatabase"));
+					return query.uniqueResult();
+				}
+				catch (Exception ex)
+				{
+				}
+				return null;
+			}
+		});
+		return currentDate;
+	}
+
 <#else>
 	public List<#if hss_jdk5><T></#if> findAll() {
 		return <#if hss_jdk5>getDAO()<#else>${valname}DAO</#if>.findAll();
