@@ -8,6 +8,7 @@ import java.io.Serializable;
 <#assign declarationName = pojo.importType(pojo.getDeclarationName())>
 import ${pojo.getPackageName()}.${declarationName};
 </#if>
+import java.util.Date;
 import java.util.List;
 
 public interface IBase<#if hss_jdk5 = false>${declarationName}</#if>Manager<#if hss_jdk5><T, K extends Serializable></#if> extends IRootManager<#if hss_jdk5><T, K></#if> {
@@ -18,6 +19,8 @@ public interface IBase<#if hss_jdk5 = false>${declarationName}</#if>Manager<#if 
 	public List<#if hss_jdk5><T></#if> findAll();
 	public List<#if hss_jdk5><T></#if> findByExample(<#if hss_jdk5>T<#else>${declarationName}</#if> instance);
 	public List<#if hss_jdk5><T></#if> findByExample(<#if hss_jdk5>T<#else>${declarationName}</#if> instance, int firstResult, int maxResults);
+	
+	public Date getCurrentDateOfDatabase(); 
 }
 </#assign>
 
