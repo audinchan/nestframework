@@ -91,8 +91,7 @@ public abstract class Base<#if hss_jdk5 = false>${declarationName}</#if>Manager<
 					throws HibernateException, SQLException {				
 				try
 				{
-					QueryWrap q = new QueryWrap(session);
-					Query query = q.getQuery(_("getCurrentDateOfDatabase"));
+					Query query = session.createSQLQuery(_("getCurrentDateOfDatabase"));
 					return query.uniqueResult();
 				}
 				catch (Exception ex)
