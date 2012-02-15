@@ -10,6 +10,7 @@ import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.nestframework.commons.utils.Encryption;
 import org.nestframework.commons.utils.RSA_Encrypt;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -24,6 +25,7 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 	private UserDetailsService userDetailsService;
 	private IBecomSSOUserCreateService becomSSOUserCreateService;
 	private boolean autoCreateUser = false;
+	private String encryptType="MD5";
 
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
@@ -31,7 +33,7 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 		
 		BecomSSOAuthenticationToken auth = (BecomSSOAuthenticationToken) authentication;
 		if (auth.getClientKey() != null && auth.getRemoteKey() != null
-				&& RSA_Encrypt.verify(auth.getClientKey() + auth.getLoginName(),auth.getRemoteKey())) {
+				&& encrypt(auth.getClientKey() + auth.getLoginName(),auth.getRemoteKey())) {
 			UserDetails user = null;
 			try {
 				user = getUserDetailsService().loadUserByUsername(auth.getLoginName());
@@ -50,7 +52,16 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 			throw new BadCredentialsException("Authentication failed.");
 		}
 	}
-
+	//校验
+	private boolean encrypt(String data,String sign){
+		if("MD5".equalsIgnoreCase(encryptType)){
+			//MD5方式加密
+			return sign.equals(Encryption.computeDigest(data));
+		}else{
+			//RSA方式加密
+			return RSA_Encrypt.verify(data,sign);
+		}
+	}
 	public boolean supports(Class authentication) {
 		return BecomSSOAuthenticationToken.class
 				.isAssignableFrom(authentication);
@@ -79,6 +90,12 @@ public class BecomSSOAuthenticationProvider implements AuthenticationProvider,
 
 	public void setAutoCreateUser(boolean autoCreateUser) {
 		this.autoCreateUser = autoCreateUser;
+	}
+	public String getEncryptType() {
+		return encryptType;
+	}
+	public void setEncryptType(String encryptType) {
+		this.encryptType = encryptType;
 	}
 
 }
