@@ -70,6 +70,11 @@
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>*.a</url-pattern>
 	</filter-mapping>
+	<!-- encoding filter for Acegi chinese loginname -->
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/j_acegi_security_check</url-pattern>
+	</filter-mapping>
 	
 	<!-- Hibernate opensession in view filter(OSI) -->
 	<filter>
