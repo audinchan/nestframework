@@ -29,8 +29,30 @@ function checkHaveSelect(frm,type,name)
 function checkFields(objs){
 	for(var i=0;i<objs.length;i++){
 		var obj=objs[i];
-		var o=$(obj.id);
+		if(obj.type=='checkbox'){
+			//判断复选框
+			if(checkHaveSelect(obj.frm,'checkbox',obj.name)==0){
+				alert("请选择"+obj.text);
+				o.focus();
+				return false;
+			}
+			continue;
+		}
+		if(obj.type=="radio"){
+			//判断单选框
+			if(checkHaveSelect(obj.frm,'radio',obj.name)==0){
+				alert("请选择"+obj.text);
+				o.focus();
+				return false;
+			}
+			continue;
+		}
+		
+		var o=$$(obj.id);
 		if(!o){
+			continue;
+		}
+		if(o.value.isEmpty() && obj.allowBlank==true){
 			continue;
 		}
 		//判断是否为空
@@ -79,6 +101,22 @@ function checkFields(objs){
 				o.focus();
 				return false;
 			}
+		}else if(obj.type=='float'){
+			if(!o.value.trim().isFloat()){
+				alert(obj.text+"应为数字，请重新输入！");
+				o.focus();
+				return false;
+			}
+			if((obj.minValue || obj.minValue==0) && o.value.trim().toFloat()<obj.minValue){
+				alert(obj.text+"不能小于"+obj.minValue);
+				o.focus();
+				return false;
+			}
+			if((obj.maxValue || obj.maxValue==0) && o.value.trim().toFloat()>obj.maxValue){
+				alert(obj.text+"不能大于"+obj.maxValue);
+				o.focus();
+				return false;
+			}
 		}else if(obj.type=="char_num" || obj.type=="num_char"){
 			if(o.value.trim().onlyCharNumber()){
 				alert(obj.text+"应为数字或字母，请重新输入！")
@@ -94,7 +132,7 @@ function checkFields(objs){
 		}
 		//和其他字段比较
 		if(obj.compareTo){
-			var otherObj=$(obj.compareTo);
+			var otherObj=$$(obj.compareTo);
 			//查找另一个字段的名称
 			if(otherObj){
 				if((obj.compareType=='eq'||obj.compareType=='==') && o.value.trim()!=otherObj.value.trim()){
