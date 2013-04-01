@@ -1,78 +1,60 @@
 package ${hss_base_package}.webapp.util;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.ui.webapp.AuthenticationProcessingFilter;
-import org.acegisecurity.userdetails.UserDetails;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.util.Assert;
+import org.nestframework.commons.utils.StringUtil;
 
-//import com.becom.rock.model.User;
-//import com.becom.rock.service.IUserManager;
-
+import ${hss_base_package}.common.Constant;
+import ${hss_base_package}.exception.BadRandomCodeException;
 /**
  * @author audin
  */
 public class UserAuthenticationProcessingFilter extends
     AuthenticationProcessingFilter
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Log logger = LogFactory
-			.getLog(UserAuthenticationProcessingFilter.class);
-    
-//    private IUserManager userManager;
-    
-    /*
-     * 认证通过后将用户对象从数据库中取出来设置到Session中去。
-     * (non-Javadoc)
-     * @see org.acegisecurity.ui.AbstractProcessingFilter#onSuccessfulAuthentication(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.acegisecurity.Authentication)
-     */
-	@Override
-	protected void onSuccessfulAuthentication(HttpServletRequest request,
-			HttpServletResponse response, Authentication authResult)
-			throws IOException {
-		if (logger.isDebugEnabled()) {
-			logger
-					.debug("onSuccessfulAuthentication(HttpServletRequest, HttpServletResponse, Authentication) - start");
+    @Override
+	public Authentication attemptAuthentication(HttpServletRequest request)
+		throws org.acegisecurity.AuthenticationException {
+	
+		// 加入验证码校验代码.
+		String checkCode = request.getParameter("j_captcha_response");
+		HttpSession session = request.getSession();
+	
+		if (StringUtil.isEmpty(checkCode)
+		 || !checkCode.equalsIgnoreCase((String) session
+				 .getAttribute(Constant.KEY_LOGIN_CHECKCODE)))
+		{
+			throw new BadRandomCodeException("checkCode error");
 		}
-
-		UserDetails ud = (UserDetails) authResult.getPrincipal();
-//		User user = userManager.get(ud.getUsername());
-//        request.getSession().setAttribute("sessionUser",
-//        		user);
-
-		if (logger.isDebugEnabled()) {
-			logger
-					.debug("onSuccessfulAuthentication(HttpServletRequest, HttpServletResponse, Authentication) - end");
+		//解决中文登录 
+		String username = "";
+		try {
+			username = new String(obtainUsername(request).getBytes("iso-8859-1"), "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
+		String password = obtainPassword(request);
+	     
+		 
+		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+					username, password);
+		try
+		{
+			request.getSession().setAttribute(ACEGI_SECURITY_LAST_USERNAME_KEY, username);
+		}
+		catch (AuthenticationException ex)
+		{
+			throw ex;
+		}
+		//验证用户登录信息和用户权限
+		return this.getAuthenticationManager().authenticate(authRequest);
 	}
 
-
-	/**
-	 * @param userManager the userManager to set
-	 */
-//	public void setUserManager(IUserManager userManager) {
-//		this.userManager = userManager;
-//	}
-
-
-	/*
-	 * 确保必要的属性已经设置。
-	 * (non-Javadoc)
-	 * @see org.acegisecurity.ui.AbstractProcessingFilter#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
-//		Assert.notNull(this.userManager, "userManager must be set");
-	}
-	
-	
 }
