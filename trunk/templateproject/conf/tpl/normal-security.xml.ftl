@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="GBK"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:aop="http://www.springframework.org/schema/aop"
@@ -15,7 +15,7 @@
 			<value>
 				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON 
 				PATTERN_TYPE_APACHE_ANT 
-				/**=httpSessionContextIntegrationFilter,logoutFilter,formAuthenticationProcessingFilter,exceptionTranslationFilter,filterSecurityInterceptor
+				/**=httpSessionContextIntegrationFilter,userAuthenticationSessionObjectFilter,logoutFilter,formAuthenticationProcessingFilter,exceptionTranslationFilter,filterSecurityInterceptor
 			</value>
 			<!--  -->
 		</property>
@@ -25,6 +25,11 @@
 		class="org.acegisecurity.ui.ExceptionTranslationFilter">
 		<property name="authenticationEntryPoint"
 			ref="formLoginAuthenticationEntryPoint" />
+	</bean>
+	
+	<!-- 处理用户登录后的session对象 -->
+	<bean id="userAuthenticationSessionObjectFilter" 
+		class="${hss_base_package}.webapp.util.UserAuthenticationSessionObjectFilter">
 	</bean>
 
 	<!-- Define filter to handle FORM authentication -->
@@ -37,13 +42,14 @@
 			<value>/login.jsp?error=user_psw_error</value>
 		</property>
 		<property name="defaultTargetUrl">
-			<value>/admin/</value>
+			<value>/</value>
 		</property>
 		<property name="alwaysUseDefaultTargetUrl" value="true"/>
 		<property name="authenticationManager"
 			ref="authenticationManager" />
 		<property name="exceptionMappings">
 			<value>
+				${hss_base_package}.exception.BadRandomCodeException=/login.jsp?error=check_code_error
 				org.acegisecurity.AuthenticationException=/login.jsp?error=user_psw_error
 				org.acegisecurity.concurrent.ConcurrentLoginException=/login.jsp?error=too_many_user_error
 				org.springframework.jdbc.CannotGetJdbcConnectionException=/login.jsp?error=db_error
