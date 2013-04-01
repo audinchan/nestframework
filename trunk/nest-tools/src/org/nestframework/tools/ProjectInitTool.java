@@ -18,6 +18,8 @@ public class ProjectInitTool
 {
 	public static String HandleExts = ",java,xml,properties,jsp,html,htm,js,css,mf,component,prefs,classpath,project,txt,";
     
+	public static String NohandleDirs=",ext-2.1,images,jquery,lib,";
+	
     public static void handle(File dir, String[][] rp) {
     	File[] files = dir.listFiles();
     	for (int i = 0; i < files.length; i++) {
@@ -31,6 +33,10 @@ public class ProjectInitTool
 					e.printStackTrace();
 				}
     		} else if (file.isDirectory()) {
+    			String filename = file.getName();
+    	    	if (NohandleDirs.indexOf(',' + filename + ',') > -1) {
+    	    		continue;
+    	    	}
     			handle(file, rp);
     		}
     	}
