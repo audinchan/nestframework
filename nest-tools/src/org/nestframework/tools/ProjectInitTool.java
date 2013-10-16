@@ -16,7 +16,7 @@ import cn.xddai.chardet.CharsetDetector;
 
 public class ProjectInitTool
 {
-	public static String HandleExts = ",java,xml,properties,jsp,html,htm,js,css,mf,component,prefs,classpath,project,txt,";
+	public static String HandleExts = ",java,xml,properties,jsp,html,htm,js,css,mf,component,prefs,classpath,project,txt,tld,";
     
 	public static String NohandleDirs=",ext-2.1,images,jquery,lib,";
 	
