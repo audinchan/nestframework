@@ -18,6 +18,7 @@ import org.acegisecurity.ui.AbstractProcessingFilter;
 import org.acegisecurity.ui.logout.LogoutFilter;
 import org.acegisecurity.ui.logout.LogoutHandler;
 import org.nestframework.commons.utils.EncodeUtil;
+import org.nestframework.commons.utils.Encryption;
 import org.nestframework.commons.utils.RSA_Encrypt;
 
 /**
@@ -28,7 +29,8 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
 
 	protected String logoutUrl;
 	protected boolean deleteSession = true;
-	
+	private String encryptType="MD5";
+
 	public BecomSSOLogoutFilter(String logoutSuccessUrl,
 			LogoutHandler[] handlers) {
 		super(logoutSuccessUrl, handlers);
@@ -61,7 +63,7 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
     		} else {
     			String remoteKey = req.getParameter("authlogout_key");
     			String redirectUrl = (String)req.getSession().getAttribute("redirectUrl");
-    			if (RSA_Encrypt.verify(req.getSession().getId(),remoteKey)) {
+    			if (encrypt(req.getSession().getId(),remoteKey)) {
     				// successfull logout
     				if (deleteSession) {
     					req.getSession().invalidate();
@@ -91,5 +93,23 @@ public class BecomSSOLogoutFilter extends LogoutFilter {
 	public void setDeleteSession(boolean deleteSession) {
 		this.deleteSession = deleteSession;
 	}
+	
+	//校验
+	private boolean encrypt(String data,String sign){
+		if("MD5".equalsIgnoreCase(encryptType)){
+			//MD5方式加密
+			return sign.equals(Encryption.computeDigest(data));
+		}else{
+			//RSA方式加密
+			return RSA_Encrypt.verify(data,sign);
+		}
+	}
 
+	public String getEncryptType() {
+		return encryptType;
+	}
+
+	public void setEncryptType(String encryptType) {
+		this.encryptType = encryptType;
+	}
 }
