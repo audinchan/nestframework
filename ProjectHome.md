@@ -1,0 +1,1 @@
+Nest framework is a CoC style MVC framework. It works like struts, but no forms definition, no configurations. We use annotation to define validation, which is designed to be used with action methods, not forms like struts. Nest framework is very easy to integrate with spring framework without any configuration file.
